@@ -39,7 +39,7 @@ Currently the contents are in-flux, but when we have more this section will be e
 |----------|----------|-------------------------------|
 | A:       |          |                               |
 | B:       |          |                               |
-| C:       |          |                               |
+| [C:](C/) | C        | Aztec C Compiler              |
 | D:       |          |                               |
 | E:       |          |                               |
 | F:       |          |                               |
