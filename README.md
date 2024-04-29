@@ -35,21 +35,21 @@ There is a small mailbox here.
 
 Currently the contents are in-flux, but when we have more this section will be expanded.
 
-| Drive    | Contents | Notes                         |
-|----------|----------|-------------------------------|
-| A:       |          |                               |
-| [B:](B/) | BASIC    | BASIC Intepreter              |
-| [C:](C/) | C        | Aztec C Compiler              |
-| D:       |          |                               |
-| E:       |          |                               |
-| F:       |          |                               |
-| [G:](G/) | Games    | Text-based adventures, so far |
-| H:       |          |                               |
-| I:       |          |                               |
-| J:       |          |                               |
-| K:       |          |                               |
-| L:       |          |                               |
-| M:       |          |                               |
-| N:       |          |                               |
-| O:       |          |                               |
-| P:       |          |                               |
+| Drive    | Contents | Notes                                  |
+|----------|----------|----------------------------------------|
+| [A:](A/) | Standard | Standard-ish utilities for general use |
+| [B:](B/) | BASIC    | BASIC Interpreter                      |
+| [C:](C/) | C        | Aztec C Compiler                       |
+| D:       |          |                                        |
+| E:       |          |                                        |
+| F:       |          |                                        |
+| [G:](G/) | Games    | Text-based adventures, so far          |
+| H:       |          |                                        |
+| I:       |          |                                        |
+| J:       |          |                                        |
+| K:       |          |                                        |
+| L:       |          |                                        |
+| M:       |          |                                        |
+| N:       |          |                                        |
+| O:       |          |                                        |
+| P:       |          |                                        |
