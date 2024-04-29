@@ -31,7 +31,14 @@ int argc; char **argv ;
             exit(1);
     }
 
+    /* open the file */
     f = fopen(argv[1], "r");
+    if ( !f ) {
+	printf("Failed to open %s\n", argv[1]);
+	exit(1);
+    }
+
+    /* read character by character, until the end of file */
     while(( c = getc(f)) != EOF)
     {
 
