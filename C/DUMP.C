@@ -8,6 +8,9 @@
  *   AS DUMP
  *   LN DUMP.O C.LIB
  *
+ * NOTE: The C compiler doesn't understand "%02X" to output a hex
+ * value as upper-case, it only understands "%02x", and I added a
+ * manual step to upper-case the hex-digits.
  *
  * Steve Kemp 29/04/2024
  * https://github.com/skx/cpm-dist/
@@ -49,22 +52,34 @@ int argc; char **argv ;
         /* Got a full line? */
         if ( i == 16 ){
 
-            /* Show the offset */
-            printf("%04x ", offset);
+            /* build a line of output here.
+               specifically so we can upper-case it. */
+            char buf[100];
 
-            /* Show the hex */
+            /* set the buffer to be full of nulls */
+            for ( i = 0; i < sizeof(buf); i++)
+                buf[i] = 0x00;
+
+            /* Add the offset */
+            sprintf(buf, "%04x ", offset);
+
+            /* Add the hex contents */
             for (i = 0; i < 16 ; i++ )
-                printf("%02x ", tmp[i]);
+                sprintf(buf + strlen(buf), "%02x ", tmp[i]);
 
-            /* Show the ASCII */
+            /* Upper case the output line - before we add the ASCII*/
+            for ( i = 0 ; i < sizeof(buf); i++ )
+                buf[i] = toupper(buf[i]);
+
+            /* Add the ASCII */
             for (i = 0; i < 16 ; i++ )
                 if ( tmp[i]>= 32 && tmp[i]<128)
-                    printf("%c", tmp[i]);
+                    sprintf(buf + strlen(buf), "%c", tmp[i]);
                 else
-                    printf(" ");
+                    sprintf(buf + strlen(buf), " ");
 
-            /* newline */
-            printf("\n");
+            /* Now output a complete line */
+            printf("%s\n", buf);
 
             /* reset our position, and bump the offset */
             i= 0;
