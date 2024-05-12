@@ -16,3 +16,5 @@ The A-drive contains some "standard" utilities that you might expect to find on 
   * A simple vi-like editor, source code can be found in [this repository](https://github.com/udo-munk/s/).
 * STAT.COM
   * Show file details; note that currently file-sizes are not correct.
+
+Note that the assembler presented here is pretty basic, and you should probably prefer the one included in the [C:](../C/), alongside the Aztec C-compiler.
