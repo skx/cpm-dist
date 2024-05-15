@@ -41,7 +41,7 @@ Currently the contents are in-flux, but when we have more this section will be e
 | [B:](B/) | BASIC    | BASIC Interpreter                      |
 | [C:](C/) | C        | Aztec C Compiler                       |
 | D:       |          |                                        |
-| E:       |          |                                        |
+| [E:](E/) | Editor   | The Wordstar Editor, v3.3              |
 | F:       |          |                                        |
 | [G:](G/) | Games    | Text-based adventures, so far          |
 | H:       |          |                                        |
