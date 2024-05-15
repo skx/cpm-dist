@@ -2,6 +2,8 @@
 
 The G-drive contains games, in this case:
 
+* GORILLA.COM
+  * The classic missile-game.
 * HITCH.COM
   * Hitchhiker's Guide To The Galaxy, Infocom
 * LEATHER.COM
