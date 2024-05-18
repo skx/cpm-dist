@@ -3,7 +3,8 @@
 The G-drive contains games, in this case:
 
 * GORILLA.COM
-  * The classic missile-game.
+  * The classic missile-game, written by Francesco Sblendorio.
+  * [The source repository](https://github.com/sblendorio/gorilla-cpm) lives on Github.
 * HITCH.COM
   * Hitchhiker's Guide To The Galaxy, Infocom
 * LEATHER.COM
