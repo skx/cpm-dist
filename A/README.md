@@ -18,3 +18,14 @@ The A-drive contains some "standard" utilities that you might expect to find on 
   * Show file details; note that currently file-sizes are not correct.
 
 Note that the assembler presented here is pretty basic, and you should probably prefer the one included in the [C:](../C/), alongside the Aztec C-compiler.
+
+
+
+## Custom Utilities
+
+The following utilities are specific to my [cpmulator](https://github.com/skx/cpmulator/), as they use custom BIOS functions:
+
+* CTRLC.COM
+  * Allow changing the number of Ctrl-C characters which will trigger a CP/M reboot.  (0 to disable).
+* CONSOLE.COM
+  * Allow changing the cpmulator output writer between ANSI and ADM-3A emulation, at runtime.
