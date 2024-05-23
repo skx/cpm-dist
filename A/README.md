@@ -25,7 +25,13 @@ Note that the assembler presented here is pretty basic, and you should probably 
 
 The following utilities are specific to my [cpmulator](https://github.com/skx/cpmulator/), as they use custom BIOS functions:
 
-* CTRLC.COM
-  * Allow changing the number of Ctrl-C characters which will trigger a CP/M reboot.  (0 to disable).
+* CCP.COM
+  * Allow changing the CCP at runtime.
 * CONSOLE.COM
   * Allow changing the cpmulator output writer between ANSI and ADM-3A emulation, at runtime.
+* CTRLC.COM
+  * Allow changing the number of Ctrl-C characters which will trigger a CP/M reboot.  (0 to disable).
+* QUIET.COM
+  * Disable the startup-banner printed every time the CCP reloads via a warm/cold-boot.
+* TEST.COM
+  * Test if the binary is running under cpmulator, show the version if so.
