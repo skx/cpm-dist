@@ -16,8 +16,14 @@ The A-drive contains some "standard" utilities that you might expect to find on 
   * A simple editor.
 * LOAD.COM
   * Loader for generated .hex files, produced by ASM.COM
+* PAUSE.COM
+  * Pause for a key-press.  Source included in `PAUSE.ASM`.
 * S.COM
   * A simple vi-like editor, source code can be found in [this repository](https://github.com/udo-munk/s/).
+* SLASH.COM
+  * Submit commands without a ".SUB" file
+  * Example "SLASH G: ; ZORK1"
+  * Source from [slant](http://www.retroarchive.org/cpm/cdrom/SIMTEL/SIGM/VOLS000/VOL072/)
 * STAT.COM
   * Show file details; note that currently file-sizes are not correct.
 
