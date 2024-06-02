@@ -1,0 +1,125 @@
+Welcome to the HELP Command
+How to use the HELP Command
+How to write .HLP Files
+Help on CP/M in general
+:HELP: Welcome to the HELP Command
+     Welcomå  tï thå HELĞ Command¡   Thå HELĞ Commanä ió designeä tï assisô 
+you¬  thå  CP/Í  user¬  iî  thå uså oæ CP/Í iî generaì  anä  specifiã  CP/Í 
+commandó  iî  particular®   Iô  ió  designeä  aó  aî  interactive¬  on-linå 
+assistancå system.
+     HELĞ pulló iî fileó nameä <FILENAME>.HLĞ froí disë anä displayó  theså 
+tï thå useò iî á pageä mode®  Theså fileó arå oæ twï basiã typeó -- indexeä 
+anä non-indexed.
+
+     Indexeä fileó arå thoså .HLĞ fileó whicè starô witè aî index®  Thió ió 
+aî  examplå  oæ  aî indexeä file®   Wheî HELĞ loadó  aî  indexeä  file¬  iô 
+displayó  thió indeø tï thå useò anä allowó hií tï selecô entrieó froí  it®  
+Thå  useò maù selecô aó manù entrieó aó hå desireó iî anù ordeò hå  desireó 
+bù  simplù typinç thå letteò oæ hió selection®   Oncå thå useò haó madå hió 
+selection¬ helğ wilì looë uğ thå bodù oæ texô hå selecteä anä displaù iô tï 
+hií  iî á pageä mode®   Wheî thå useò haó finisheä readinç  hió  selection¬ 
+HELĞ  theî returnó hií tï thå indeø menu®   Typinç á Control-Ã  wilì returî 
+thå useò tï CP/M.
+     Non-indexeä  fileó  arå  thoså .HLĞ fileó whicè dï noô starô  witè  aî 
+index®   Iî sucè cases¬  HELĞ wilì immediatelù displaù thå contentó oæ  thå 
+filå tï thå useò and¬  wheî thå useò haó finisheä lookinç aô it¬  HELĞ wilì 
+returî tï CP/M.
+     HELĞ ió menu-driven¬ anä alì thå commandó availablå tï thå useò aô anù 
+giveî timå arå displayeä tï him®  
+
+     HELĞ caî bå á verù usefuì tooì foò on-linå referencå tï thå user®  It¬ 
+iî conjunctioî witè thå manù HLĞ fileó no÷ available¬ haó alreadù proveî tï 
+be of significant value.
+                                             Richard Conn
+:HELP: How to use the HELP Command
+     Thå HELĞ Commanä ió executeä iî onå oæ threå ways:
+          (1) by just typing 'HELP'
+          (2) by typing 'HELP FILENAME', where FILENAME
+              is the name of a disk file named FILENAME.HLP
+          (3) by typing 'HELP FILENAME.EXT', where
+              FILENAME.EXT is the name of a file created in
+              the format of a help file
+
+     Iæ thå useò typeó jusô 'HELP'¬  hå wilì receivå thå HELP.HLĞ helğ filå 
+(no÷ beinç displayeä tï you)®  Foò alì otheò formó oæ thå HELĞ command¬ thå 
+useò wilì seå thå specifieä helğ filå information®  Generallù speaking¬ thå 
+namå  oæ thå helğ filå shoulä bå indicativå oæ itó  subject¬  likå  CPM.HLĞ 
+shoulä contaiî helğ informatioî oî CP/M.
+:HELP: How to write .HLP files
+     Fileó  useä bù thå HELĞ prograí arå eitheò simplå CP/M-standarä  fileó 
+oæ   ASCIÉ   texô  oò  ASCIÉ  fileó  generateä  bù  thå  Worä   Staò   texô 
+editor/formatter®  Theså files¬ aó mentioneä above¬ arå oæ twï basiã typesº 
+indexeä  anä non-indexed¬  anä eacè typå ió relateä tï thå otheò anä ió  oæ 
+thå samå basiã format®
+
+
+                          Grouping of Information
+
+     Informatioî  displayeä tï thå useò ió groupeä bù thå indeø iî  indexeä 
+HLĞ  fileó  anä maù alsï bå groupeä bù lineó beginninç witè Forí Feeä  (^L© 
+characters®  Groupinç ió aî effectivå waù tï logicallù organizå informatioî 
+sï  thaô  meaninç wilì bå morå cleaò tï thå useò anä unitó  oæ  informatioî 
+will not pass between screen displays.
+
+
+                          Non-Indexed .HLP Files
+
+     Non-indexeä .HLĞ fileó arå simplå ASCIÉ fileó whicè starô witè á coloî 
+(:© aó thå firsô characteò oæ thå filå anä consisô oæ ASCIÉ texô (witè eacè 
+linå terminateä bù á carriagå return/linå feeä characteò combination)®  Thå 
+informatioî  iî  sucè  á helğ filå consistó oæ alì texô afteò  thå  leadinç 
+coloî  uğ tï eitheò thå terminatinç end-of-filå marë (control-Z© oò  á  ne÷ 
+linå whicè startó witè á colon.
+
+
+                            Indexed .HLP Files
+
+     Indexeä  .HLĞ  fileó arå simplå ASCIÉ fileó whicè dï noô starô witè  á 
+coloî  (:©  aó thå firsô characteò oæ thå file®   Thió typå  oæ  .HLĞ  filå 
+consistó  oæ onå oò morå normaì ASCIÉ texô lineó aó thå firsô lineó oæ  thå 
+filå  followeä bù informatioî sectionó whicè begiî witè á linå whoså  firsô 
+characteò  ió  á  coloî  anä enä witè eitheò thå firsô  linå  oæ  thå  nexô 
+informatioî sectioî oò thå enä oæ thå file.
+:HELP: General Information on CP/M
+     CP/Í ió á monitoò controì prograí foò microcomputeò systeí developmenô 
+whicè  useó IBM-compatiblå flexiblå diskó (floppù disks© foò masó  storage®  
+Usinç  á  microcomputeò  mainframå  baseä oî Intel'ó 808°  oò  Zilog'ó  Z8° 
+microprocessor¬   CP/Í   provideó   á  generaì  environmenô   foò   prograí 
+construction¬  storage¬  anä editing¬ alonç witè assemblù anä prograí debuç 
+facilities®   Aî importanô featurå oæ CP/Í ió thaô iô caî bå easilù altereä 
+tï  executå  witè anù computeò configuratioî whicè useó aî  Inteì  808°  oò 
+Ziloç  Z8° Microprocessoò anä haó aô leasô 16Ë byteó oæ maiî memorù witè uğ 
+tï fouò IBM-compatablå diskettå drives.
+     Thå  CP/Í monitoò provideó accesó tï programó througè á  comprehensivå 
+filå  managemenô  system®    Thå  filå  subsysteí  supportó  á  nameä  filå 
+structure¬  allowinç dynamiã allocatioî oæ filå spacå aó welì aó sequentiaì 
+anä  randoí  filå access®   Usinç thió filå system¬  á uğ  tï  6´  distincô 
+programó caî bå storeä iî botè sourcå anä machine-executablå form.
+     Digitaì  Research¬  thå  designeò oæ CP/M¬  haó provideä á seô oæ  siø 
+manualó whicè describå thå uså anä operatioî oæ CP/Í iî detail.
+
+
+
+
+
+
+     These manuals are:
+          1®  Aî Introductioî tï CP/Í Featureó anä Facilities
+          2.  ED:  A Context Editor for the CP/M Disk System
+          3.  ASM:  CP/M Assembler User's Manual
+          4®  DDTº  CP/Í Dynamiã Debugginç Tooì User'ó Manual
+          5.  CP/M Interface Guide
+          6.  CP/M System Alteration Guide
+
+     Aó thå readeò caî see¬  CP/Í supportó á contexô editor¬  aî  assembleò 
+(Intel-compatable)¬  anä  á  debuggeò system®   Theså arå availablå iî  thå 
+basiã CP/Í package®   Therå ió á largå varietù oæ otheò softwarå  availablå 
+whicè  caî  ruî undeò CP/Í witè littlå oò nï modification®   Sucè  softwarå 
+includeó  severaì  assembleró (botè 808° anä  Z80)¬  á  symboliã  debugger¬ Šseveraì  high-leveì  languageó (includinç FORTRAÎ  IÖ  {compiler}¬  BASIC-Å 
+{translator}¬  CBASIÃ {translator}¬ manù interpretivå BASICs¬ ALGOL¬ FOCAL¬ 
+anä  C)¬  anä  severaì special-purposå applicationó programó (sucè aó  texô 
+formattinç systemó anä accountinç systems).
+
+     Refeò  tï thå indicateä manualó and/oò thå CP/Í helğ filå foò  furtheò 
+information.
+
