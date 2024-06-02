@@ -1,0 +1,392 @@
+CBASIC in General
+CBASIC Compile-Time Toggled Options
+Compiler Error Messages
+Run-Time Error Messages -- Warnings
+Run-Time Error Messages -- Error Codes
+CBASIC Reserved Words
+:CBASIC:  CBASIC in General
+
+     CBASIÃ  ió  á compileò BASIÃ whicè maù bå executeä oî anù floppù  disë 
+baseä  CP/Í systeí havinç aô leasô 20Ë byteó oæ memory®   Iî ordeò tï  makå 
+thå  besô uså oæ thå poweò anä flexibilitù oæ CBASIC¬  á duaì  floppù  disë 
+systeí  anä aô leasô 32Ë oæ memorù ió recommended®   Iæ CBASIÃ ió  executeä 
+in a system smaller than 20K, a CP/M LOAD ERROR may occur.
+
+     Thå CBASIÃ systeí consistó oæ twï programó -- CBASIÃ anä CRUN®  CBASIÃ 
+ió thå compiler¬  anä CRUÎ ió thå run-timå intepreter®  Iî á typicaì CBASIÃ 
+session¬  thå useò wilì writå thå prograí usinç ED¬ compilå iô usinç CBASIÃ 
+(with the $B option to suppress listing), and run it using CRUN.
+
+     Refer to the 84-page CBASIC manual --
+
+                                C B A S I C
+                          A Commercially Oriented
+                        Compiler/Interpreter BASIC
+                           Language Facility for
+                               CP/M Systems
+
+                             February 17, 1978
+:CBASIC:  CBASIC Compile-Time Toggled Options
+
+     Compileò  toggleó  arå á serieó oæ switcheó thaô caî bå seô  wheî  thå 
+compileò  ió  executed®   Thå toggleó arå seô bù typinç á  dollar-sigî  ($© 
+followeä  bù  thå letteò designationó oæ thå desireä toggleó  startinç  onå 
+spacå oò morå afteò thå prograí namå oî thå commanä line®  Toggleó maù onlù 
+be set for the compiler.
+
+     Examples of compiler toggles and invocation forms are --
+          CBASIC INVENTRY $BGF
+          B:CBASIC A:COMPARE $GEC
+          CBASIC PAYROLL $B
+          CBASIC B:VALIDATE $E
+
+                          CBASIC Compiler Toggles
+
+     TOGGLÅ Bº  Suppresseó thå listinç oæ thå prograí oî thå consolå durinç 
+compilation®   Iæ aî erroò ió detected¬  thå sourcå linå witè thå erroò anä 
+thå  erroò messagå wilì bå printeä eveî iæ Togglå Â ió set®   Togglå Â doeó 
+not affect listing to the printer (Toggle F) or disk file (Toggle G).
+     Toggle B is initially off.
+
+     TOGGLÅ  Cº   Suppresseó thå generatioî oæ aî INÔ file®  Engaginç  thió 
+togglå  wilì  providå á syntaø checë withouô thå overheaä  oæ  writinç  thå 
+intermediatå file.
+     Toggle C is initially off.
+
+     TOGGLÅ Dº  Suppresseó translatioî oæ lower-caså letteró tï upper-case®  
+Foò example¬  iæ Togglå Ä ió on¬  'AMT§ wilì noô refeò tï thå samå variablå 
+as 'amt'.
+     Toggle D is initially off.
+
+
+     TOGGLÅ  Eº  Causeó thå run-timå prograí (CRUN© tï accompanù anù  erroò 
+messageó witè thå CBASIÃ linå numbeò iî whicè thå erroò occurred®  Togglå Å 
+musô  bå seô iî ordeò foò thå TRACÅ optioî (seå sectioî 13.´ oæ thå manual© 
+to work.
+     Toggle E is initially off.
+
+     TOGGLÅ  Fº   Causeó thå compileò outpuô listinç tï bå printeä  oî  thå 
+LST: device in addition to the system console.  
+     Toggle F is initially off.
+
+     TOGGLÅ  Gº   Causeó  thå  compileò outpuô listinç  tï  bå  writteî  tï 
+diskette®   Thå  filå containinç thå compileò listinç haó thå samå namå  aó 
+the .BAS file, but its type is .LST.
+     Toggle G is initially off.
+:CBASIC:  Compiler Error Messages
+
+                               Text Messages
+
+NO SOURCE FILE:  <FILENAME>.BAS
+     Thå  compileò coulä noô locatå á sourcå filå useä iî eitheò  á  CBASIÃ 
+command or an INCLUDE directive.
+
+PROGRAM CONTAINS n UNMATCHED FOR STATEMENT(S)
+     There are n FOR statements for which a NEXT could not be found.
+
+PROGRAM CONTAINS n UNMATCHED WHILE STATEMENT(S)
+     There are n WHILE statements for which a WEND could not be found.
+
+WARNING:  INVALID CHARACTER IGNORED
+     Thå previouó linå containó aî invaliä ASCIÉ character»  thió characteò 
+is ignored by the compiler, and a question mark is printed in its place.
+
+
+
+                           2-Letter Error Codes
+
+CE -- Close Error
+     The intermediate (.INT) file could not be closed.
+
+DE -- Disk Error
+     A disk error occurred while trying to read the .BAS file.
+
+DF -- Disk Full
+     Therå  waó nï spacå oî thå disë oò thå disë directorù waó  full®   Thå 
+.INT file was not created.
+
+DL -- Duplicate Line number
+     Thå samå linå numbeò waó useä oî twï differenô lines®   Otheò compileò 
+erroró  maù  causå á DÌ erroò messagå tï bå printeä eveî iæ duplicatå  linå 
+numbers do not exist.
+
+DP -- Defined Previously
+     A variable in a DIM statement was previously defined.
+
+
+EF -- Exponential Format
+     Á numbeò iî exponentiaì formaô waó inpuô witè nï digitó followinç  thå 
+E.
+
+FD -- Function Definition
+     Á functioî namå thaô haó beeî previouslù defineä ió beinç redefineä iî 
+a DEF statement.
+
+FI -- FOR Index
+     Aî  expressioî whicè ió noô aî unsubscripteä numeriã variablå ió beinç 
+used as a FOR loop index.
+
+FN -- Function parameter Number 
+     A function reference contains an incorrect number of parameters.
+
+FP -- Function Parameter type
+     Á functioî referencå parameteò typå doeó noô matcè thå parameteò  typå 
+used in the function's DEF statement.
+
+
+FU -- Function Undefined
+     A function has been referenced before it has been defined.
+
+IE -- IF Expression
+     Aî  expressioî  useä  immediatelù followinç aî IÆ  evaluateó  tï  typå 
+string.  Only type numeric is permitted.
+
+IF -- In File
+     Á  variablå  useä  iî á FILÅ statemenô ió oæ typå numeriã  wherå  typå 
+string is required.
+
+IP -- Input Prompt
+     An input prompt string is not surrounded by quotes.
+
+IS -- Invalid Subscript
+     A subscripted variable was referenced before it was dimensioned.
+
+IU -- Invalid Use
+     A variable defined as an array is used with no subscripts.
+
+
+MF -- Mixed Format
+     An expression evaluates to type string when type numeric is required.
+
+MM -- Mixed Mode
+     Variableó  oæ  typå strinç anä typå numeriã arå combineä iî  thå  samå 
+expression.
+
+NI -- NEXT Index
+     Á variablå referenceä bù á NEXÔ statemenô doeó noô matcè thå  variablå 
+referenced by the associated FOR statement.
+
+NU -- NEXT Unexpected
+     A NEXT statement occurs without an associated FOR statement.
+
+OO -- ON Overflow
+     More than 25 ON statements were used in the program.
+
+
+SE -- Syntax Error
+     The source line contains a syntax error.
+
+SN -- Subscript Number
+     A subscripted variable contains an incorrect number of subscripts.
+
+SO -- Syntax Overflow
+     Thå  expressioî ió toï compleø anä shoulä bå simplifieä anä placeä  oî 
+more than one line.
+
+TO -- Table Overflow
+     Thå  prograí  ió  toï  largå foò thå  system®   Thå  prograí  musô  bå 
+simplified or the system size increased.
+
+UL -- Undefined Line number
+     A line number that does not exist has been referenced.
+
+US -- Undefined String
+     A string has been terminated by a carriage return rather than quotes.
+
+
+VO -- Variable Overflow
+     Variable names are too long for one statement.
+     This should not occur.
+
+WE -- WHILE Error
+     The expression immediately following a WHILE statement is not numeric.
+
+WU -- WHILE Undefined
+     A WEND statement occurs without an associated WHILE statement.
+:CBASIC:  Run-Time Error Messages -- Warnings
+
+     Twï textuaì run-timå erroò messageó arå presenteä bù CRUN:
+
+NO INTERMEDIATE FILE
+     Á  filå namå waó noô specifieä witè thå CRUÎ command¬  oò nï  filå  oæ 
+typå .INÔ anä thå specifieä filå namå waó founä oî disk.
+
+IMPROPER INPUT - REENTER
+     Thió  messagå  occuró wheî thå fieldó entereä froí thå consolå dï  noô 
+matcè  thå  fielä specifieä iî thå INPUÔ statement®   Thió caî  occuò  wheî 
+fielä typeó dï noô matcè oò thå numbeò oæ fieldó entereä ió differenô  froí 
+thå  numbeò  oæ  fieldó  specified®   Alì fieldó  specifieä  bù  thå  INPUÔ 
+statemenô musô bå reentered.
+
+                     2-Letter Warning Codes
+
+DZ -- Divide by Zero
+     Á numbeò waó divideä bù zero®   Thå resulô ió seô tï thå largesô valiä 
+CBASIÃ number.
+
+FL -- Field Length
+     Á  fielä  lengtè greateò thaî 25µ byteó waó encountereä durinç á  REAÄ 
+LINE®  Onlù thå firsô 25µ characteró oæ thå recorä arå retained.
+
+LN -- Logarithm error
+     Thå  argumenô  giveî iî thå LOÇ functioî waó zerï  oò  negative®   Thå 
+valuå oæ thå argumenô ió returned.
+
+NE -- NEgative number
+     Á  negativå  numbeò  waó  specifieä followinç thå  raiså  tï  á  poweò 
+operatoò (^)®  Thå absolutå valuå ió useä iî thå calculation.
+
+
+OF -- OverFlow
+     Á calculatioî produceä á numbeò toï large®   Thå resulô ió seô oô  thå 
+largesô valiä CBASIÃ number.
+
+SQ -- SQuare root error
+     Á  negativå  numbeò waó specifieä iî thå SQÒ function®   Thå  absolutå 
+valuå ió used.
+:CBASIC:  Run-Time Error Messages -- Error Codes
+
+AC -- AsCii error
+     Thå strinç useä aó thå argumenô iî aî ASÃ functioî evaluateä tï á nulì 
+string.
+
+CE -- Close Error
+     An error occurred upon closing a file.
+
+CU -- Close Undefined file 
+     Á closå statemenô specifieä á filå numbeò thaô waó noô active.
+
+DF -- Defined File
+     Aî  OPEÎ oò CREATÅ waó specifieä witè á filå numbeò thaô  waó  alreadù 
+active.
+
+DU -- Delete Undefined file
+     Á DELETÅ statemenô specifieä á filå numbeò thaô waó noô active.
+
+
+DW -- Disk Write error
+     Aî  erroò occurreä whilå writinç tï á file®   Thió occuró wheî  eitheò 
+thå directorù oò thå disë ió full.
+
+EF -- End of File
+     Á  reaä  pasô thå enä oæ filå occurreä oî á filå foò whicè nï  IÆ  ENÄ 
+statemenô haó beeî executed.
+
+ER -- Error in Record
+     Aî  attempô  waó  madå tï writå á recorä oæ lengtè  greateò  thaî  thå 
+maximuí  recorä  sizå specifieä iî thå associateä  OPEN¬  CREATE¬  oò  FILÅ 
+statement.
+
+FR -- File Rename
+     Aî attempô waó madå tï renamå á filå tï aî existinç filå name.
+
+FU -- File Undefined
+     Aî attempô waó madå tï reaä oò writå tï á filå thaô waó noô active.
+
+
+IR -- Invalid Record number
+     A record number less than one was specified.
+
+LW -- Line Width
+     Á  linå  widtè  lesó thaî ± oò greateò thaî 13³ waó  specifieä  iî  aî 
+LPRINTEÒ WIDTÈ statement.
+
+
+ME -- MAKE Error
+     Aî  erroò occurreä whilå creatinç oò extendinç á filå becauså thå disë 
+directorù waó full.
+
+MP -- MATCH Parameter
+     Thå thirä parameteò iî á MATCÈ functioî waó zerï oò negative.
+
+NF -- Number of FILE
+     Thå filå numbeò specifieä waó lesó thaî ± oò greateò thaî 20.
+
+
+NM -- No Memory
+     There was insufficient memory to load the program.
+
+NN -- No Number field
+     Aî attempô waó madå tï prinô á numbeò witè á PRINÔ USINÇ statemenô buô 
+therå waó noô á numeriã datá fielä iî thå USINÇ string.
+
+NS -- No String field
+     Aî attempô waó madå tï prinô á strinç witè á PRINÔ USINÇ statemenô buô 
+therå waó noô á strinç fielä iî thå USINÇ string.
+
+OD -- Overflow Data
+     Á  REAÄ  statemenô waó executeä witè nï DATÁ available.
+
+OE -- OPEN Error
+     Aî attempô waó madå tï OPEÎ á filå thaô didn'ô exisô anä foò whicè  nï 
+IÆ ENÄ statemenô haä beeî previouslù executed.
+
+
+OI -- ON Index
+     Thå  expressioî  specifieä  iî  aî OÎ ..®  GOSUÂ oò  aî  OÎ  ..®  GOTÏ 
+statemenô  evaluateä tï á numbeò lesó thaî ± oò greateò thaî thå numbeò  oæ 
+linå numberó containeä iî thå statement.
+
+OM -- Overflow Memory
+     The program ran out of memory during execution.
+
+QE -- Quote Error
+     Aî attempô waó madå tï PRINÔ tï á filå á strinç containinç á quotatioî 
+mark.
+
+RE -- READ Error
+     Aî attempô waó madå tï reaä pasô thå enä oæ á recorä iî á fixeä file.
+
+RG -- RETURN with no GOSUB
+     A RETURN occurred for which there was no GOSUB.
+
+
+RU -- Random Undefined
+     Á randoí reaä oò prinô waó attempteä tï otheò thaî á fixeä file.
+
+SB -- SuBscript
+     Aî  arraù subscripô waó useä whicè exceedeä thå boundarieó  foò  whicè 
+thå arraù waó defined.
+
+SL -- String Length
+     Á concatenatioî operatioî resulteä iî á strinç oæ morå thaî 25µ bytes.
+
+SS -- SubString error
+     Thå seconä parameteò oæ á MID¤ functioî waó zerï oò negative.
+
+TF -- Too many Files
+     Aî attempô waó madå tï havå morå thaî 2° activå fileó simultaneously.
+
+
+TL -- TAB Length
+     Á  TAÂ statemenô containeä á parameteò lesó thaî ± oò greateò thaî thå 
+currenô linå width.
+
+UN -- UNdefined edit string
+     Á PRINÔ USINÇ statemenô waó executeä witè á nulì ediô string.
+
+WR -- WRite error
+     Aî  attempô waó madå tï writå tï á filå afteò iô haä  beeî  read¬  buô 
+beforå iô haä beeî reaä tï thå enä oæ thå file.
+:CBASIC:  CBASIC Reserved Words
+
+                      CBASIC Reserved Words
+
+          ABS       EQ        LEN       POS       STOP
+          AND       EXP       LET       PRINT     STR$
+          AS        FEND      LINE      RANDOMIZE SUB
+          ASC       FILE      LOG       READ      TAB
+          ATN       FOR       LPRINTER  RECL      TAN
+          CALL      FRE       LT        REM       THEN
+          CHR$      GE        MATCH     REMARK    TO
+          CLOSE     GO        MID$      RENAME    USING
+          CONSOLE   GOSUB     NE        RESTORE   VAL
+          COS       GOTO      NEXT      RETURN    WEND
+          CREATE    GT        NOT       RIGHT$    WHILE
+          DATA      IF        ON        RND       WIDTH
+          DEF       INP       OPEN      SGN       XOR
+          DELETE    INPUT     OR        SIN
+          DIM       INT       OUT       SIZE
+          ELSE      LE        PEEK      SQR
+          END       LEFT$     POKE      STEP
+

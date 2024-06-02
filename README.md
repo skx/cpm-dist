@@ -44,7 +44,7 @@ Currently the contents are in-flux, but when we have more this section will be e
 | [E:](E/) | Editor   | The Wordstar Editor, v3.3                |
 | F:       |          |                                          |
 | [G:](G/) | Games    | Text-based adventure-games.              |
-| H:       |          |                                          |
+| [H:](H/) | Help     | Help files for various tools & systems.  |
 | [I:](I/) | Utility  | Instruction-tester for our Z80 emulator. |
 | J:       |          |                                          |
 | K:       |          |                                          |
