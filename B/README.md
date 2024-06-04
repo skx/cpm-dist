@@ -14,6 +14,13 @@ The B-drive contains BASIC, in this case:
 
 
 
+## Sample Programs
+
+* [STARS.BAS](STARS.BAS)
+  * Show a sin-wave of stars.
+
+
+
 ## Microsoft Basic: Saving & Loading Programs
 
 If you enter a program you can save it via `SAVE "NAME"`, this will create a file named `NAME.BAS` with a tokenized representation of the program you entered.  If you prefer to save the literal ASCII version of the program run:
