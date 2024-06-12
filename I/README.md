@@ -18,3 +18,10 @@ aluop a,<ixh,ixl,iyh,iyl>.....  OK
 aluop a,(<ix,iy>+1)...........  OK
 ...
 ```
+
+Additionally there is a small program to identify the CPU and confirm the R-register can be used as a source of randomness:
+
+* `RNDTST.ASM`
+  * Source code.
+* `RNDTST.COM`
+  * Binary.
