@@ -1,0 +1,104 @@
+GENERAL INFORMATION
+SYNTAX
+:GENERAL INFORMATION
+Thió  prograí ió á replacemenô foò thå cp/í "LOAD¢ program®   Whù
+replacå "LOAD"¿   well..®  LOAD.COÍ haó á fe÷ deficiencies®   Foò
+example¬  iæ  youò  heø file'ó origiî  ió  abovå  100h¬  LOAD.COÍ
+prependó blanë spacå tï thå outpuô filå tï insurå iô wilì worë aó
+á CP/Í transient®  Iô doesn'ô carå iæ thå filå ió noô intendeä aó
+á  CP/Í transienô anä iô alsï doesn'ô likå heø recordó witè mixeä
+loaä  addresses®   Foò example¬  onå thaô loadó belo÷ á  previouó
+record»  whicè  ió  á perfectlù  legitimatå  happenstance®  Also¬
+LOAD.COÍ  caî  loaä  onlù  onå prograí aô  á  time¬  anä  haó  nï
+provisioî foò á loaä biaó iî thå commanä specification®  Finally¬
+therå  ió nï provisioî foò useò specificatioî oæ thå outpuô  filå
+name.
+ 
+Iî  itó simplesô form¬  MLOAD'ó syntaø ió identicaì tï  LOAD.COM®
+Thus¬  therå  shoulä  bå nï probleí iî learninç tï  uså  thå  ne÷
+program®   Thå  onlù significanô differencå herå ió  that¬  undeò
+LOAD.COM¬  alì  fileó arå outpuô startinç aô 100h¬  eveî iæ  theù
+originatå  elsewhere®   MLOAÄ  outputó startinç aô thå  heø  filå
+origiî (actually¬  thå firsô heø recorä specifieó thå outpuô loaä
+address)®  Thå biaó optioî maù bå useä tï overridå this.
+~
+Aî  examplå shoulä clarifù this®   Supposå yoõ havå á  filå  thaô
+loadó  aô 1000h®   LOAD.COÍ woulä savå aî outpuô filå thaô beginó
+aô  100è  anä loadó pasô 1000è (tï whereveò  thå  prograí  ends)®
+MLOAÄ wilì savå aî outpuô filå startinç froí 1000è only®  If¬ foò
+somå  reason¬  yoõ neeä thå filå tï starô aô 100è iî spitå oæ itó
+1000è  origiî  (é caî thinë oæ severaì circumstanceó  wherå  thió
+woulä  bå  necessary)¬  you'ä havå tï specifù á  biaó  tï  MLOAD®
+Thus¬ usinç thió example¬ "MLOAÄ MYFILÅ 0F00¢ woulä do.
+ 
+Notå thaô thió prograí re-initializeó itselæ eacè timå iô ió run®
+Thus¬  iæ  youò systeí supportó á direcô brancè tï thå tpá (viá á
+zero-lengtè .COÍ file¬  oò thå ZCPÒ "GO¢ command)¬ yoõ maù safelù
+re-executå MLOAD.
+:SYNTAX
+     mloaä [<outnam=>][<file1.type>,]<file2>[,<file3...>İ [bias]
+ 
+             ZCPR2-stylå  dõ specó arå fullù supported¬  foò botè
+             inpuô anä outpuô files®  Thus¬ thå followinç commanä
+             lineó arå permissable:
+ 
+              b3>mload a4:myfile.com=0:bigfil,b6:patch1,c9:patch2
+              a6>mload b5:=c3:mdm717.com,mdmpatch
+
+<outnam¾     ió thå Optionaì outpuô filå name®  Onlù thå Optionaì
+             drivå  anä useò speã anä thå primarù filenamå maù bå
+             specified®    Thå   outpuô   filetypå   ió   deriveä
+             exclusivelù  froí thå 3-bytå strinç aô  103è  withiîŠ             MLOAD.
+~
+             Iæ  nï  outpuô filenamå ió  specified¬  iô  wilì  bå 
+             deriveä froí thå firsô inpuô filename¬ witè filetypå 
+             oæ  'COM'¬  iæ noô otherwiså specifieä (thió defaulô 
+             filetypå maù bå patcheä directlù intï mloaä viá  DDÔ 
+             oò  witè  MLOAÄ  itself¬  usinç á patcè  filå  - itó 
+             locatioî  ió  aô 103È iî MLOAD.COM)®   Notå  thaô  á 
+             commanä linå oæ thå forí "C:=<FILENAME>¢ wilì  placå 
+             thå  outpuô  filå  oî thå "C¢ drivå  witè  thå  samå 
+             primarù filenamå aó thå inpuô file.
+~
+<file1.type¾ ió  aî  Optionaì  Non-Heø  filå  tï  bå  patcheä  bù
+             subsequentlù   nameä  Heø  files®    Specifyinç  thå
+             filetypå enableó thió function.
+
+             Thió  featurå  obviatinç anù neeä tï uså  DDT®   Thå
+             firsô (anä onlù thå first© filespeã (afteò thå  "="¬
+             iæ  used©  maù bå Non-heø anä thå filetypå  Musô  bå
+             specified.   Examples:
+
+             1®  mloaä ws.com,wspatch
+             Loadó  WS.COM¬  overlayó  iô witè  wspatch.hex¬  anä
+             writeó thå outpuô tï WS.COM.
+
+             2®  mloaä MEXTEST=MEX112.COM,MXO-US13
+             Loadó MEX112.COM¬ overlayó iô witè MXO-US13.HEX¬ anä
+             writeó  thå outpuô filå tï  MEXTEST.COM®  Notå  thaô
+             thió   ió  thå  Recommendeä  Techniquå  becauså   iô
+             preserveó thå originaì file!
+
+             3.  mloaä ws.ovr,ovrpatch
+             Loadó WS.OVÒ anä patcheó iô witè "OVRPATCH.HEX".
+~
+<file2¾      specifieó thå filå tï bå loaded¬ unlesó á file1.typå
+             haó  beeî specified®   Iî thaô case¬  iô specifieó á
+             a Hex file to load.
+
+<file3¾      specifieó Hex file(ó) tï loaä.
+
+<bias¾       ió thå offseô withiî  thå saveä imagå tï applù  wheî
+             loadinç thå file.
+~
+MLOAÄ  witè  nï  argumentó printó á  smalì  helğ  message®   Thió
+messagå  ió  alsï  printeä wheneveò á commanä linå  syntaø  erroò
+occurs.
+ 
+Filenameó  Maù  contaiî drive/useò specs¬  anä musô  Noô  contaiî
+wildcards®   Inpuô filenameó musô bå separateä bù commas¬  anä  á
+spacå ió requireä betweeî thelasô filenamå anä thå optionaì bias.
+ ŠÁ   loaä  informatioî  summarù  ió  printeä  aô  thå   successfuì
+conclusioî  oæ  thå load®   Anù erroró iî loadinç wilì  generallù
+includå thå namå oæ thå filå iî question.
+

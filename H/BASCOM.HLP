@@ -1,0 +1,96 @@
+Command Differences BASIC-80 v. BASCOM
+BASCOM Commands Line
+BASCOM Switches
+BASCOM Compile-Time Error Messages
+BASCOM Run Time Error Messages
+:Command Differences BASIC-80 V. BASCOM
+
+ThÂ followinÁ direcÙ modÂ commandÛ arÂ NO‘ implemente‰ oÓ thÂ compileÚ† an‰ ç
+wilÏ generatÂ aÓ erroÚ messagÂ:
+
+	AUTO		CLOAD		CSAVE		CONT
+	DELETE		EDIT		ERASE		LIST
+	LLIST		LOAD		MERGE		NEW
+	RENUM		SAVE
+
+
+ThÂ† followinÁ statementÛ arÂ use‰ differentl˘ witË thÂ compileÚ thaÓ† witË ç
+thÂ interpreteÚ (refeÚ tÔ thÂ manuaÏ foÚ details©:
+
+	CALL		CHAIN		CLEAR		COMMON
+	COS		DEFINT		DEFSNG		DEFDBL
+	DEFSTR		DIM		END		ERASE
+	EXP		FOR/NEXT	LOG		ON ERROR GOTO
+	RESUME n	REM		RUN		SIN
+	STOP		SQR		TAN		TROFF
+	TRON		USRn		WHILE/WEND	%INCLUDE
+:BASCOM Commands Line
+
+ThÂ compileÚ iÛ invoke‰ b˘ thÂ BASCOÕ command, as follows:
+
+          BASCOM
+or
+          BASCOM command line
+
+    where "command line" is:
+
+          [dev:][obj file][,[dev:][lst file]]=[dev:]source file[/switch ...]
+
+IÊ jusÙ BASCOÕ iÛ used¨† thÂ useÚ wilÏ bÂ prompte‰ witË aÓ asterisk¨† afteÚ ç
+whicË hÂ shoul‰ enteÚ thÂ comman‰ line.
+:BASCOM Switches
+
+CONVENTIONS:
+/4   Recognize Microsoft 4.51 BASIC Interpreter conventions (/C not allowed)
+/T   Use MBASIC 4.51 execution conventions.
+/√†  Rela¯† linÂ† numberinÁ†  constraintsª†† lineÛ† nee‰† noÙ† bÂ† numbere‰ ç
+     sequentially; /4 and /C may not be used together
+   * Note: use /4/T for 4.51 lexical and execution conventions
+
+ERROR TRAPPING:
+/E   Use this switch if ON ERROR GOTO with RESUME <line number> is used
+/ÿ   UsÂ thiÛ switcË iÊ OŒ ERRO“ GOTœ witË RESUME¨ RESUM≈ 0¨ oÚ RESUM≈ NEX‘ ç
+     is usedä
+SPECIAL CODE:
+/Z   Use Z80 opcodes
+/N   Do not list disassembled object code in the listing file
+/O   Substitute the OBSLIB.REL runtime library for BASLIB.REL as the default
+     runtime library searched by the linker after a linker /E or /G switch.
+/D   Generate debug code for runtime error checking
+/S   Write quoted strings of more than 4 chars as they are encountered
+     to an .REL file and not to data area in RAM. 
+:BASCOM Compile-Time Error Messages
+
+COMPILE-TIME FATAL ERRORS:
+
+    BS  Bad Subscript			OV  Math Overflow
+    CD  Duplicate COMMON Variable	SN  Syntax Error
+    CN  COMMON Array Not Dimensioned	SQ  Sequence Error
+    CO  COMMON Out of Order		TC  Too Complex
+    DD  Array Already Dimensioned	TM  Type Mismatch
+    FD  Function Already Defined	UC  Unrecognizable Command
+    FN  FOR/NEXT Error			UF  Function Not Defined
+    IN  %INCLUDE Error			WE  WHILE/WEND error
+    LL  Line Too Long			/0  Division by Zero
+    LS  String Constant Too Long	/E  Missing '/E' Switch
+    OM  Out of Memory			/X  Missing '/X' Switch
+
+
+COMPILE-TIME WARNING ERRORS:
+
+    ND  Array Not Dimensioned		SI  Statement Ignored
+:BASCOM Run Time Error Messages
+
+      2   Syntax error             52   Bad file number
+      3   RETURN without GOSUB     53   File not found
+      4   Out of data              54   Bad file mode
+      5   Illegal function call    55   File already open
+      6   Floating/Integer ovfl    57   Disk I/O error
+      9   Subscript out of range   58   File already exists
+     11   Division by zero         61   Disk full
+     14   Out of string space      62   Input past end
+     20   RESUME without error     63   Bad record number
+     21   Unprintable error        64   Bad filename
+     50   Field overflow           67   Too many files
+     51   Internal error
+

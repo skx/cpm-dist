@@ -1,0 +1,27 @@
+:XLATE (XIZ V2) - Translates 8080 to Z80 source code
+
+XLAT≈† translateÛ† InteÏ 808∞ assembl˘ languagÂ sourcÂ codÂ† intÔ ç
+Zilog Z80 assembly language source code.
+
+The program command line is:
+
+     XLATE B:8080file.typ B:Z80file.typ
+
+     AlÏ† parameterÛ arÂ optionalÆ†  IÊ† omitted¨† thÂ† followinÁ ç
+     values are assumed:
+
+          8080 source filetype  - .ASM
+          Z80  output filetype  - .Z80
+          Z80  output file name - same as source file name
+          Drive                 - Currently logged drive
+
+Examples:
+     XLATE PRGM1               - Translates PRGM1.ASM to PRGM1.Z80
+     XLATE PRGM1 PRGM2         - Translates PRGM1.ASM to PRGM2.Z80
+     XLAT≈ PRGM1.TX‘ PRGM2.MA√ - TranslateÛ PRGM1.TX‘ tÔ PRGM2.MAC
+~
+Other Defaults:
+     Byte 0103h........00h defaults to .Z80 extent, FF to .MAC
+     Byte 0104h........00h does not print .Z80 and ASEG for MAC
+     Byte 0105h........00h normal Zilog DEFB, etc., FF to DB, etc.
+

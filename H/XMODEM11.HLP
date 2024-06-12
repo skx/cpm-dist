@@ -1,0 +1,386 @@
+
+                              XMODEM PROTOCOL
+                            (How DOES it work?)
+                                     by
+                                Dave Larsen
+
+                            Update 1.1 ~ 22Jan87
+
+                  Copyright (C) 1986, All rights reserved.
+
+
+
+On  more than one occasion,  I've been asked to reveal the secrets of Xmodem
+protocol.   Xmodem is probably the most widely used communications  protocol
+in  the personal computer world.   Everyone knows what it is and yet no  one
+seems  to know how it works.   This text will help to relieve that  problem.
+Or just add to it...
+
+Xmodem  was  originally  described by Ward Christensen  and has  been  known
+variously as Christensen  protocol,  KMD  and so on.  In the years since its
+first development,  Xmodem has gone through many modifications.  Xmodem with
+CRC,  1k packet transfers and batch transfers are all improvements upon  the
+original  Xmodem protocol which relies on the generation of checksum  values
+for  error detection in file transfers.   This is the flavor I will describe
+here.
+
+NOTE:  This text is designed to help you write your own Xmodem protocol file
+       transfer  routine regardless  of the language you happen to be  using
+       and  thus  is necessarily explained in  generic  terms.   Programming
+       details are entirely your problem.
+
+
+DEFINITIONS:
+
+A.  "Flag  Byte"  and  "Status Byte"  Arbitrary names I've  given  to  bytes
+    transferred during an Xmodem protocol data transfer.
+
+B.  "Block  Number"   Xmodem sends its data in  128 Byte  "Blocks."   "Block
+    Number"  refers to the number of the block being transferred.
+
+C.  "Local  Block  Number"   The  Block  Number  that  you  keep  track   of
+    internally when receiving a file.
+
+D.  "Remote  Block Number"  The Block Number that the sending computer sends
+    to you when you're receiving a file.
+
+E.  "Checksum  #1"  and "Checksum #2"  One byte values that Xmodem  uses  in
+    order to detect errors in data transfer.
+
+F.  "Prompt  the  keyboard."   By  this  I mean  that  you  should  send  an
+    appropriate message to the monitor and wait for a reply.
+
+G.  "Check the keyboard."  In this instance,  you should check the  keyboard
+    to see if a key has been pressed.  Do not wait for a reply.
+
+H.  "Get  the  __________."  When I say to "get" something,  that means  you
+    should  check  your  status port and wait until it tells  you  there  is
+    something in your data port.  Then, get the data from the data port.
+
+I.  "Send  the __________."  When I say to "send" something,  that means you
+    should send the indicated data out the data port. If you are receiving a
+    file,  as  a precautionary measure you should check the status port  and
+    make sure that the line is clear.
+
+
+OVERVIEW:
+
+Xmodem  could  be  described as "receiver  driven."   In  other  words,  the
+receiving  computer is in control of the file transfer.  It dictates to  the
+sending  computer when it is ready to receive data,  whether or not there is
+an error, and so on.
+
+Below is a simplified example of an Xmodem transfer session.   Data sent  by
+the  receiving computer is in parenthesis "()" and data sent by the  sending
+computer is in square brackets "[]".
+
+    1. (Flag Byte)
+    2. [Status Byte]
+    3. [Block Number]
+    4. [Checksum Byte #1]
+    5. [128 Byte "Block" of Data]
+    6. [Checksum Byte #2]...............go back to #1
+
+First,  the  receiving  computer sends a Flag Byte to the sending  computer.
+Depending  on  this value,  the sending computer will  resend   the  current
+block,  send  the  next block,  or abort the transfer.   Then,  the  sending
+computer sends a Status Byte.  This byte informs the receiving computer that
+the  transfer  has  been canceled,  is complete,  or that  it  is  ready  to
+continue.  Next, the sending computer sends the Block Number, then the first
+Checksum  Byte,  then  the 128 Byte Block of Data and  finally,  the  second
+Checksum Byte.  The receiving computer evaluates the checksum data and sends
+the appropriate Flag Byte and so on.
+
+
+RECEIVING A FILE:
+
+1.  Prompt the keyboard for a file name and open it for input.
+
+2.  You should use this step to set aside whatever buffers,  arrays,  and/or
+    variables you may need.
+
+3.  Check  the  keyboard for a cancel command.   This is done  primarily  to
+    allow  you to gracefully escape from an unwanted transfer  session.   If
+    you've canceled the transfer, go to #4c below.
+
+4.  Send a Flag Byte to the sending computer.   The Flag Byte will be one of
+    the following:
+
+    a. ACK  (Acknowledge   06 HEX,  crtl-F) - Indicates that there  were  no
+       errors  in the last block sent.   The sending computer will send  the
+       next block.
+
+    b. NAK  (Not Acknowledge  15 HEX,  crtl-U) - Indicates that there was an
+       error in the last block sent.  The sending computer will  resend that
+       block.  NOTE: WHEN A FILE TRANSFER IS STARTED UP, THE VERY FIRST FLAG
+       BYTE  THAT  YOU SEND OUT MUST BE A NAK.   In this  way,  the  sending
+       computer  is  prompted  to send you the  first  block.   Essentially,
+       you've tricked it in to thinking that there was an error in the first
+       block so it resends it.  Tricky huh?
+
+    c. CAN (Cancel  18 HEX,  crtl-X) - Indicates that the transfer has  been
+       canceled by the receiving computer.  Generally, you will have to send
+       more  than one CAN.   Five to ten CAN's in as many seconds should  do
+       the trick.  This is done in order to prevent aborting a file transfer
+       accidentally.   It  should be noted however that a CAN is  generally,
+       but not universally, recognized by Xmodem protocols.  You may have to
+       wait until the sending computer gets tired and abandons the send.  In
+       any event, you should close the file that you opened in #1 and end.
+
+5.  Get the Status Byte.  The Status Byte will be one of the following:
+
+    a. SOH  (Start of Heading  01 HEX,  ctrl-A) - Indicates that the sending
+       computer is ready to send a block.
+
+    b. EOT (End of Transmission  04 HEX,  ctrl-D) - Indicates that the  file
+       transfer  is  complete.   To  prevent accidentally  ending  the  file
+       transfer  session,  it  would  be advisable to wait for five  to  ten
+       seconds to see if a byte other than EOT comes.   If different data is
+       received,  go back to #4b.  If not, close the file that you opened in
+       #1, send out a final ACK, and end.
+
+    c. CAN (Cancel  18 HEX,  crtl-X) - Indicates that the transfer has  been
+       canceled  by the sending computer.   Again,  to prevent  accidentally
+       ending  the file transfer session,  it would be advisable to wait for
+       five  to  ten  seconds to see if a byte  other  than  CAN  comes.  If
+       different data is received,  go back to #4b.   If not, close the file
+       that you opened in #1, and end.
+
+NOTE:  If  the Status Byte is not one of the above,  or if no Status Byte is
+       received within 10 seconds, go back to #4b.  If you do not receive an
+       appropriate Status Byte after 10 tries,  you might as well forget it.
+       Close the file that you opened in #1, and end.
+
+6.  Get the Block Number.   Put this value into a variable, you will need it
+    to calculate the checksum.   If no Block Number is received within about
+    2 seconds, go back to #4b.
+
+NOTE:  This  value  is  the nth block according  to  the  sending  computer.
+       Referred to hereafter as Remote Block Number.   You should keep track
+       of  the  Block  Number  internally  as  well  (Local  Block  Number).
+       Additionally,  you  should  know  that at the beginning of  the  file
+       transfer,  the Block Number will be 1 and will go up to  255.   After
+       the 255th block has been received, the Block Number will reset to 0.
+
+7.  Get Checksum Byte #1.   Put this value into a variable, you will need it
+    later.   Again,  if  no checksum is received within about 2 seconds,  go
+    back to #4b.
+
+8.  Get a Block (128 Bytes) of Data.   As this data comes in,  store it in a
+    buffer  or array of some sort.   If you have to wait more than a  second
+    for  any single data byte chances are good that something  is  seriously
+    wrong.  Go to #4b.
+
+9.  Get Checksum Byte #2.   Put this value into a variable as well.   Again,
+    if no checksum is received within about 2 seconds, go back to #4b.
+
+****************************************************************************
+* The sending computer is now waiting for you to send it a NAK or an  ACK. *
+* Before  you can do that,  you must decide if you've received  everything *
+* without error.  The sending computer will wait for several seconds while *
+* you do this, so don't panic.                                             *
+****************************************************************************
+
+10. Compare the Local Block Number and the Remote Block Number.  If they are
+    equal fine, go to #14.
+
+11. If  they are unequal,  you'll want to keep track of how many times  this
+    happens.   Then go back to #4b.   If the Block Numbers are unequal three
+    times  in  a row then that probably means that the sending  computer  is
+    either a block ahead of you or a block behind you.
+
+12. If the sending computer is a block ahead of you there is nothing you can
+    do about it.  Go to #4c.
+
+13. If the sending computer is 1 block behind you all you have to do is tell
+    it to send the next block.   Go to #4a.  If the sending computer is more
+    than one block behind, you should give it up and try again.  Go to #4c.
+
+14. Evaluate the checksum data.  Perform the following calculations:
+
+(1)  + (Remote Block Number) + (Checksum Byte #1) + (The ASCII value of each
+character in the 128 Byte Block of Data).   Let's call this value X.  Plug X
+into one of the following formulas:
+
+In Hexadecimal form: Let Y = (X-(X/100h)*100h)   (ie. If X = 213D, Y = 3D)
+
+In Decimal form: Let Y = (X-INT(X/256)*256)   (ie. X = 8509, Y=61)
+
+Where INT returns the largest integer less than or equal to (X/256).
+
+15. If Y = Checksum #2 then there are no errors.  Save the 128 Byte Block to
+    disk  or whatever.   Increment the counter you are using for Local Block
+    Number and go to #3.
+
+16. If Y is unequal to Checksum #2 then you've got an error.  Go to #4b.
+
+NOTE:  Any time that you "go to" someplace,  you will probably want to reset
+       some  of  the  variables you are  using.   In  particular,  you  will
+       probably want to clear out the buffer or array you are using to  hold
+       the block of data.  Again, exact program details are left up to you.
+
+
+SENDING A FILE:
+
+Since  sending  a file is pretty much the same as receiving a file, only  in
+reverse,  this  section is a little shorter.   But not to fear,  all will be
+made clear.
+
+1.  Prompt the keyboard for a file name and open it for output.
+
+2.  You should use this step to set aside whatever buffers,  arrays,  and/or
+    variables you may need.
+
+3.  Check  the  keyboard  for a cancel  command.   If  you've  canceled  the
+    transfer, then go to #9c.
+
+4.  Get a Flag Byte.
+
+    a. If it's an ACK, send the next block.
+
+    b. If it's a NAK, resend the current block.  Go to #9a.
+
+    c. If it's a CAN,  close the file that you opened in #1, and end.  Note,
+       you  should  check to make sure this is correct.   (See  RECEIVING  A
+       FILE, #5c.)
+
+NOTE:  Many  implementations of Xmodem protocol that I've seen will assume a
+       NAK and resend the block if an appropriate Flag Byte is not  received
+       within  10  seconds.   I  do not recommend  this.   Rather,  let  the
+       protocol be completely receiver driven.   In other words, simply wait
+       for  an  appropriate Flag Byte.   If you do not receive it  within  1
+       minute close the file that you opened in #1, and end.
+
+****************************************************************************
+* As  you should know by now,  the receiving computer is currently waiting *
+* for you to send the Status Byte.   In this time, you'll prepare the data *
+* you need to send.                                                        *
+****************************************************************************
+
+5.  Check to see if there are still 128 bytes left in the file.  If yes,  go
+    to #7.
+
+6.  Since Xmodem can only send data in 128 Byte Blocks,  if there are  fewer
+    than 128 bytes left in the file you will need to pad the end of the file
+    with  control-Z's (1AH) so that you'll have a complete block.  There are
+    no "short" blocks.
+
+7.  Calculate  Checksum  #1.   Checksum #1 is calculated as FF (Hex) or  255
+    (Decimal) minus the Block Number.
+
+8.  Calculate Checksum #2.  This is done the same as before.  (See RECEIVING
+    A FILE, #14.)
+
+9.  Send a Status Byte.
+
+    a. Send a SOH if you're ready to send a block.
+
+    b. Send an EOT if you're finished with the transfer.
+
+    c. Send  a CAN if you've canceled the transfer in #3 above.   Close  the
+       file that you opened in #1, and end.  Note, you may have to send more
+       than one CAN.  (See RECEIVING A FILE, #4c.)
+
+10. Send the Block Number.  Again, remember that the first Block Number will
+    be 1 and go to 255.  After the 255th block, reset to zero.
+
+11. Send Checksum Byte #1.
+
+12. Send a Block (128 Bytes) of Data.
+
+13. Send Checksum Byte #2.
+
+14. Go to #3.
+
+
+HEX DUMP:
+
+I've included here a hex dump of an example file transfer session so you can
+see exactly what happens.  Only the data received is shown.
+
+
+    01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16
+    -----------------------------------------------
+ A  01 01 FE 20 20 20 20 20 20 20 20 20 20 20 20 20   Receiving computer
+ B  20 20 20 20 20 20 20 20 20 20 20 20 20 20 20 20   sends out a NAK.  The
+ C  20 20 20 20 20 20 20 20 0D 0A 20 20 43 4C 45 41   sending computer sends
+ D  52 49 4E 47 48 4F 55 53 45 20 4C 4F 43 41 4C 20   Status Byte: A01 (01H)
+ E  53 59 53 54 45 4D 53 20 44 49 52 45 43 54 4F 52   Block #: A02     (01H)
+ F  59 0D 0A 20 20 20 20 20 20 20 20 20 20 20 55 70   Checksum #1: A03 (FEH)
+ G  64 61 74 65 64 20 28 30 36 2F 31 36 2F 38 36 29   Data: A04-I03     [OK]
+ H  0D 0A 20 20 20 20 20 20 20 20 54 68 61 6E 6B 73   Checksum #2: I04 (43H)
+ I  20 74 6F 43 01 02 FD 20 42 72 69 61 63 20 48 65   Receiving computer
+ J  72 73 74 69 67 0D 0A 20 20 20 20 20 20 20 20 20   sends out an ACK.  The
+ K  20 20 61 6E 64 20 4A 6F 65 20 57 68 69 70 70 6C   sending computer sends
+ L  65 20 21 21 0D 0A 0D 0A 0D 0A 20 34 2D 42 20 43   Status Byte: I05 (01H)
+ M  4F 4D 57 68 79 20 64 69 64 20 79 6F 75 20 64 65   Block #: I06     (02H)
+ N  63 6F 64 65 20 74 68 69 73 3F 20 20 2D 38 39 36   Checksum #1: I07 (FDH)
+ O  36 0D 0A 0D 0A 20 37 54 48 20 46 4F 52 43 45 2E   Data I08-Q07   [ERROR]
+ P  2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E   Checksum #2: Q08 (77H)
+ Q  2E 2E 2E 2E 38 38 35 77 01 02 FD 20 42 72 69 61   Receiving computer
+ R  6E 20 48 65 72 73 74 69 67 0D 0A 20 20 20 20 20   sends out a NAK.  The
+ S  20 20 20 20 20 20 61 6E 64 20 4A 6F 65 20 57 68   sending computer sends
+ T  69 70 70 6C 65 20 21 21 0D 0A 0D 0A 0D 0A 20 34   Status Byte: Q09 (01H)
+ U  2D 42 20 43 4F 4D 50 55 54 45 52 20 53 54 4F 52   Block #: Q10     (02H)
+ V  45 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 38 39 30   Checksum #1: Q11 (FDH)
+ W  2D 38 39 36 36 0D 0A 0D 0A 20 37 54 48 20 46 4F   Data Q12-Y11      [OK]
+ X  52 43 45 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E   Checksum #2: Y12 (77H)
+ Y  2E 2E 2E 2E 2E 2E 2E 2E 38 38 35 77 01 03 FC 2D   Receiving computer
+ Z  34 31 31 33 0D 0A 0D 0A 20 41 52 4D 41 44 41 2E   sends out an ACK.  The
+AA  2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E   sending computer sends
+BB  2E 2E 2E 2E 2E 2E 2E 38 35 35 2D 37 32 33 30 0D   Status Byte: Y13 (01H)
+CC  0A 0D 0A 20 41 52 4D 41 44 41 20 2F 2F 2E 2E 2E   Block #: Y14     (03H)
+DD  2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E   Checksum #1: Y15 (FCH)
+EE  2E 2E 38 35 35 2D 32 37 30 36 0D 0A 0D 0A 20 41   Data: Y16-GG15    [OK]
+FF  54 41 52 49 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E   Checksum #2: GG16(50H)
+GG  2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 2E 32 36 50   Receiving computer
+HH  04                                                sends out an ACK.  The
+                                                      sending computer sends
+                                                      Status Byte: HH01(04H)
+                                                      Receiving computer
+                                                      recognizes EOT, sends
+                                                      ACK and quits.  [DONE]
+
+
+A FEW FINAL NOTES:
+
+As  far as I know,  there is no set "standard" for  Xmodem  protocol.   Ward
+Christensen developed it,  placed it in the public domain,  and from then on
+it  was subject to change and modification by many people.   The basic frame
+work is the same but there are many different methods for achieving the same
+end.  I have presented but one of them.
+
+Experienced programmers will probably notice that putting 128 Bytes of  Data
+into  a  buffer,  then pulling the data out of the buffer to  calculate  the
+ASCII value of each character is somewhat redundant.   The justification for
+this is simple.   Since part of the idea behind this document is to describe
+Xmodem  protocol for implementation on many different computers and in  many
+different  languages,  I had to take into account the simple fact that  some
+computers  and  programming  languages are faster than  others.   I  had  to
+describe  Xmodem so that it would work if you were programming in slow BASIC
+or  the fast Assembler.   By calculating the ASCII value of  each  character
+outside  of  the sending/receiving loop,  no processing time is  used  which
+could  cause  data loss in slower languages like BASIC.   (Or at  high  baud
+rates.)   Once you understand the ins and outs of Xmodem and the limitations
+of  your  hardware  and software,  streamlining your program  should  be  no
+trouble and is recommended.
+
+I sincerely hope that this information has been of benefit to you.  I know I
+could have used something like this when I started out!   Donations will  be
+gladly  accepted (College students are always broke!) but are not  expected.
+In any case,  please send suggestions, corrections, complaints, and the like
+to:
+
+Out To Lunch Software
+c/o Dave Larsen
+101 E. 14th ave.  Suite S
+Columbus, OH  43201-1855
+
+Permission  to reprint this text,  in part or in whole,  is freely given for
+non-commercial  uses only as long as proper credit is given to  the  author.
+Any  other  uses of this text are strictly forbidden without  the  expressed
+written consent of the author.
+
+- eof -uthor.
+Any  other  uses of this text are strictly forbidden without  the  expressed
+written consent of 

@@ -1,0 +1,514 @@
+LZED: THE MANUAL  Copyrights and Credits
+INTRODUCTION
+INSTALLING LZED
+INVOKING LZED
+SCREEN FORMAT
+COMMAND SET
+ERROR MESSAGES
+TERMINAL AND ENVIRONMENT DESCRIPTORS
+MODIFICATIONS
+POKE AND GO
+TXTTOWS
+:LZED Copyrights and Credits
+
+LZED                               LZED: THE MANUAL
+Copyright 1986 by Zivio, Inc.      Copyright 1986 by Zivio, Inc.
+All Rights Reserved.               All Rights Reserved.
+ 
+LZED is the creation of Paul Pomerleau,  working with Zivio, Inc. 
+to  bring Z-System users application programs and utilities truly 
+suitable to their operating system environment.  Inquiries should 
+be directed to Zivio,  Inc.,  P.O.  Box 803305, Chicago, Illinois 
+60680-3305.   Modem  calls  at 312-649-1730 or  312-664-1730  (24 
+hours) or voice calls at 215-443-9031 (daily and evenings till 10 
+P.M. E.S.T.).
+
+LZED, Zivio: trademarks of Zivio, Inc.
+WordStar: trademark of MicroPro International Corporation.
+NewWord: trademark of NewStar Software, Inc.
+Turbo Pascal: trademark of Borland International Inc.
+Z-System, ZCPR3: trademarks of Echelon, Inc. and Richard L. Conn.
+
+:INTRODUCTION
+
+LZED, the "Little Z EDitor", is a memory-based text editor for Z-
+System users. Occupying slightly less than 10k, LZED is a  highly 
+efficient text entry and alteration tool, requiring only a  Z80-, 
+NSC800-,  or  HD64180-based  computer  with  the  ZCPR3   command 
+processor installed. Its main advantages over conventional,  non-
+ZCPR3  programs  that  do similar  chores  include  extraordinary 
+speed, minimal disk space, full terminal independence without the 
+bother   of  elaborate  installation  programs  or  research   in 
+computer/terminal   manuals,  and  extreme  flexibility   through 
+sophisticated interaction with the Z-System environment.  
+
+
+
+The  commands  of  LZED  are a large  subset  of  those  used  in 
+WordStar, NewWord, Turbo Pascal's editor, and many other  popular 
+text  handling programs - users experienced with such tools  will 
+have  little or no need for this manual beyond those points  that 
+are LZED- or ZCPR3-specific. Although not a true word  processor, 
+LZED is very likely to become your favorite tool for manipulating 
+text,  so be prepared.  LZED's only significant limitation  as  a 
+text  editor  is  that work file size may  not  exceed  available 
+memory  after  LZED itself is loaded. This is  seldom  a  problem 
+other than for large Assembly Language source files, where it can 
+be  readily overcome with any of several assembly and/or  linkage 
+techniques.  You've made a very wise purchase - enjoy!
+
+:INSTALLING LZED
+
+LZED is installed as a ZCPR3 utility.  There are no configuration 
+files or installation menus to fiddle with. Here is what you do:
+
+A0:BASE>Z3INS SYS LZED.COM<cr>
+
+Z3INS  Version 1.3
+** Installing File LZED    .COM
+
+Instead of the usual bulky installation files, you need only  the 
+ZCPR3  installation  utility, Z3INS, and your ENV  file,  usually 
+called SYS.ENV. That's all there is to it.  If LZED does not work 
+properly after installation, the most likely source of trouble is 
+a defective or incomplete TCAP (*.Z3T) or environment  descriptor 
+(*.ENV) file.  Consult a ZCPR3 reference book or help file.
+
+:INVOKING LZED
+
+LZED               Starts LZED with no specified work file
+
+LZED //	           Calls up a short, ZCPR3-style help message
+
+LZED A7: or LZED WORDPROC:	
+
+                   Logs into specified DU (drive/user) or DIR
+                   (named directory or NDR) before execution
+
+LZED A7:MYFILE.TXT or LZED WORDPROC:MYFILE.TXT
+
+                   Reads or opens specified file in 
+                   specified DU or DIR 
+
+:LZED SCREEN FORMAT
+
+LZED's screen has two sections, an information section  occupying 
+the  top  two  lines and a text  editing  section  occupying  the 
+remainder of your screen.  For example:
+
+vvvvvvvvvvvvvvvvvvvvvv<top-of-screen>vvvvvvvvvvvvvvvvvvvvvvvvvvvv
+|DU=A0:  DIR=BASE      LIN=1       COL=1         FREE MEM=40000 |
+|XX:MYFILE.DOC                                   INSERT ON      |
+|---------------------------------------------------------------|
+|This is an LZED test file.  LZED is a very fast and terminal-  |
+|independent ASCII text editor for Z80, NSC800 and HD64180 based|
+|microcomputers running Z-System or ZCPR3.                      |
+|                       (more text)                             |
+|                                                               |
+|                                                               |
+|                                                               | 
+^^^^^^^^^^^^^^^^^^^^^<bottom-of-screen>^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+
+Status Line Number 1:
+
+DU               Shows logged drive and user followed by a colon
+
+DIR              ZCPR3 NDR, shown only if NDR's are
+                 implemented in the ZCPR3 environment and 
+                 the logged DU corresponds to a valid NDR entry
+
+LIN              Current line of text
+
+COL              Current column of text, which may run beyond 
+                 right edge of screen to column 256, beyond which 
+                 the counter - and LZED's screen displays in 
+                 general - are not to be relied on, although the 
+                 accuracy and integrity of the text buffer itself 
+                 are not compromised
+
+FREE MEM         Space (in bytes) remaining for additional text
+
+
+
+Status Line Number 2:
+
+XX:MYFILE.DOC    Shows DU and filename of working file if name
+                 of working file has been chosen.  If a filename
+                 has not been chosen shows "Unnamed File".
+
+MISC INFO        Occupies same space as XX:MYFILE.DOC.  "Select 
+                 a Menu:" shows if ^J or linefeed is pressed.  
+                 Menu title appears if a menu is subsequently 
+                 selected. "Directory:" shows if ^KF is pressed.
+
+INSERT           Shows status of the INSERT toggle (INSERT ON
+                 pushes text forward to make room for new text
+                 and INSERT OFF overwrites existing text).
+
+
+
+Text Editing Section:
+
+The text editing section (everything below the line of hyphens at 
+the top of your screen) contains the text you are working on, the 
+directory  of  the  logged  DU after  the  ^KF  "show  directory" 
+function  is invoked, and the LZED help screens, error  messages, 
+and prompts for user response.
+
+:THE LZED COMMAND SET
+
+Help Commands:
+
+^JM             Main (Single Key Commands)
+^JQ             Quick (^Q Double Key Commands)
+^JK             Block (^K Double Key Commands)
+
+Single Key Commands:
+
+^S ^D ^E ^X     Cursor up, down, left, right
+<BS> ^H         Cursor left, same as ^S
+^A ^D           Cursor one word left, right
+^R ^C           Screen up, screen down
+^G <DEL> ^T ^Y  Delete cursor char, delete char left, delete
+                 word right, delete line 
+^N              Insert line, keep cursor in current position 
+^L              Repeat last search or search and replace 
+^V              Toggle insert mode
+
+
+
+Quick (^Q) Double Key Commands:
+	
+^QS ^QD               Cursor to far left, right
+^QE ^QX	              Cursor to top of screen, bottom of screen
+
+^QR ^QC               Find top of file, bottom of file
+^QB ^QK               Find beginning of block, end of block
+
+
+
+^QF                   Find text
+^QA                   Find and replace text
+		
+^QF and ^QA Options:
+
+Ignore case?          Finds string, STRING, StrinG, etc.
+Backwards?            Search from cursor to beginning of file 
+                       instead of from cursor to end of file
+
+
+** Note on ^QF AND ^QA:
+
+The length of text to be searched for or replaced may not exceed 
+32 characters.
+
+
+
+^QY	              Delete to end of line
+^Q<DEL>	              Delete to beginning of line
+^QZ	              Delete (zap) all text (with safety prompt)
+^QT                   Change current TAB stop (with options)
+
+
+
+
+Block, File, and Miscellaneous (^K) Double Key Commands:
+
+Block:
+
+^KB ^KK               Mark block beginning, end 
+^KC                   Copy block to cursor position
+                       (if cursor is inside block, cursor moves 
+                       to beginning of block)
+^KY                   Delete block
+^KV                   Move block to cursor position
+                       (if cursor is inside block, cursor moves
+                       to beginning of block)
+^KW                   Write block to file (prompts for filename) 
+^KP                   Print block to list device
+                       (optional initialization string sent to 
+                       printer -- example :^[B^C)
+^KH                   Hides block highlighting and destroys
+                       current block markers
+
+
+
+File:
+
+^KR                   Read file from disk into current work 
+                       file at cursor position - inserts a file
+                       or, if in "Unnamed File" mode, opens that
+                       file for editing
+^KN                   Change name of working file (shows on 
+                       information line)
+
+Disk:
+
+^KF                   File listing (directory) of logged DU
+^KL                   Log DU or DIR (omitting either drive
+                       or user preserves current drive or
+                       user)
+
+
+
+Saving:
+
+^KS                   Save text to file using filename on
+                       information line and continue editing
+                       current text
+^KX                   Save text to file using filename on
+                       information line and exit to system
+^KD                   Save text to file using filename on
+                       information line, clear text from memory,
+                       and remain in edit mode
+
+** Note: ^KS, ^KX, and ^KD prompt for filename if no filename is
+         listed on the information line.  LZED uses an intermed-
+         iate file with the extension .T$P; for this reason, you
+         should never use .T$P as an extension for an LZED file.
+
+^KQ                   Exit to system without saving text to 
+                       file
+
+
+
+** Note on ^KN, ^KL, ^KW, ^KR, ^KD, and INSERT OFF:
+
+^KN  Change Filename/DU/DIR:
+
+Allows you to change not only the name of the file, but its drive 
+and  user location as well.  This unique feature takes  advantage 
+of  the flexible storage facilities of ZCPR3, permitting  you  to 
+save text under multiple filenames and store the files in the  DU 
+or DIR of your choice.  
+
+^KL  Log DU or DIR:
+
+By allowing you to log into a new DU or DIR LZED gives you access 
+to  ALL FILES ON DISK without exiting to ZCPR3.  LZED  will  even 
+log  in where ZCPR3 fears to tread, user areas 16 through 31,  so 
+long  as  your  environment descriptor  is  configured  for  such 
+access.
+
+
+
+^KW  Save Marked Block:
+
+Allows  you to write a portion of your text to disk, possibly  to 
+be read into another file later on.   When programming,  this can 
+be used, in a limited fashion, to overcome the memory limitations 
+of LZED by marking a block,  writing it to an external file  with 
+^KW,  and  replacing it with an INCLUDE or MACLIB  statement,  or 
+some functional equivalent. 
+
+^KR  Read File:
+
+Allows  you  to insert a file from any DU or DIR  into  the  text 
+being  currently edited.  Because LZED allows access to files  in 
+all  drives  and users, it is excellent for  the  development  of 
+subroutines  or  standard header files.  Files may be  stored  in 
+any DU or DIR and read into  the current working file as needed.
+
+
+
+^KD  Done Editing File:
+
+The  ^KD  command is used when you are finished  working  on  the 
+current  text.   It writes the text to a file,  clears  the  edit 
+buffer,  but does not exit LZED.  If you wish to start editing  a 
+new file, you can use ^KN to name the new file.  The ^KR  command 
+can  be used to read a new file into the edit buffer.  ^KN  could 
+then be used to rename the file. 
+
+
+
+INSERT OFF:
+
+The ^V command toggles INSERT ON/OFF.  With INSERT OFF, all newly 
+entered  text  will  overwrite existing text with  the  following 
+exceptions:
+
+TABS and CARRIAGE RETURNS with INSERT OFF:
+
+Even  with INSERT OFF, LZED still inserts characters before  TABS 
+and  CR's (carriage returns). If LZED is writing over a  TAB,  it 
+will insert characters before the TAB until the TAB is exhausted. 
+If  LZED  is  writing  at  the end of  a  line,  it  will  insert 
+characters before the CR. 
+
+Pressing CR will cause the cursor to move to the beginning of the 
+next  line.   Pressing TAB will cause the cursor to move  to  the 
+next  TAB stop. Pressing either CR or TAB will insert  characters 
+as necessary to move the cursor to the beginning of the next line 
+or to the next TAB stop, respectively.
+
+
+
+^N with INSERT OFF:
+
+The  ^N command inserts a CR just as with  INSERT ON.
+
+
+
+** Note on PASSWORDED DIRECTORIES:
+
+The LZED commands that handle the DIR form respect passwording of 
+directories.   If you attempt an operation involving a passworded 
+directory,  you will be prompted for the password.  If you do not 
+give the correct password, LZED will ignore your command.
+
+:ERROR MESSAGES
+
+Out of Memory          Too much text
+File Not Found         ^KR's filename was not in DIR or DU
+String Not Found       ^QS, ^QA, or ^L have exhausted 
+                       occurrences of string in text
+Disk Full              No more room on disk to save files.
+                       CHANGE DISKS AND REPEAT THE SAVE COMMAND
+No Block Marked        Block function called when no block marked
+Block Too Large        Ran out of memory when extracting block
+
+:ZCPR3 TCAP AND ENV REQUIREMENTS FOR RUNNING LZED
+
+Clear screen
+Clear to end of line
+Cursor positioning
+Terminal width/height
+
+TCAP FEATURE STRONGLY RECOMMENDED:
+
+Highlighting on/off
+
+:LZED MODIFICATION, POKE AND GO TECHNIQUES
+
+Patch Points for Advanced Users:
+
+Feature: SAVCCP
+Address: 10bh
+Values:  00h  = overwrite ZCPR3 and Warm Boot on exit
+         0ffh = preserve ZCPR3 and return to exit
+                (2k less text buffer if CCP is preserved)
+
+Feature: INVERSE
+Address: 10ch
+Values:  00h  = use dim video
+         0ffh = use inverse video, draw to end of
+                screen when highlighting
+Note:    Dim video is significantly faster on most terminals.
+
+
+
+Feature: USRPUNCT
+Address: 10dh..116h
+Values:  [see below]   
+
+LZED  treats all characters in the USRPUNCT list  as  punctuation 
+marks.  All word-oriented commands - ^A, ^F, ^T - will cause  the 
+cursor to stop after any punctuation mark in this list.  You  may 
+want to change these settings.  For example, ()[] would be useful 
+in  Pascal  and  $  would be useful  in  assembler.   If  all  10 
+punctuation indicators are not needed, fill punctuation indicator 
+space  by  repeating one of the  punctuation  characters  already 
+listed, for example, '.,!().....'
+
+Feature: INSERT (initial mode, toggled with ^V)
+Address: 117h
+Values:  0ffh = Insert On is default
+         00h  = Insert Off is default
+
+
+
+Feature: TABSTOP (initial setting, adjusted with ^QT)
+Address: 118h
+Values:  Tab expansion minus one 
+         (valid values are 1, 3, 7 or 15 only)
+
+Feature: BACKUP
+Address: 119h
+Values:  0ffh = Preserve backup (.BAK) file
+         00h  = Destroy .BAK file
+
+:POKE and GO Aliases:
+
+If  you  have  ZCPR3 implemented with the intrinsic  GET  and  GO 
+commands  and are using a Resident Command Package with the  POKE 
+command,  you will be able to create aliases  that  automatically 
+modify LZED in memory to run with the default values you need for 
+a particular task.
+
+
+
+Example 1:
+	
+Alias: LZED-C
+
+Purpose:  Load  LZED  to destroy CCP, Warm Boot  on  exit,  treat 
+specified characters as punctuation for C  language  programming,  
+and  edit file with name specified by first parameter on  command 
+line.
+
+GET 100 LZED.COM;POKE 10B 00;POKE 10D "._,?!;:[]?;GO $1
+
+
+
+Example 2:
+
+Alias: LZED-I
+
+Purpose:  Load LZED to run with reverse video highlighting.  Edit 
+file with name specified by first parameter on command line.
+	
+LDR REVERSE.Z3T;GET 100 LZED.COM;POKE 10C FF;GO $1
+
+The  number  of  different  aliases  you  can  create  with  this 
+technique  is limited only by the permutations of LZED's  default 
+settings.
+
+
+
+Source Code Listing of Patch Points:
+
+; User Patches
+
+        org     10bh
+
+SAVCCP:         db      0ffh
+INVERSE:        db      0ffh
+USRPUNCT:       db      ',.?!;:::::'
+INSERT:         db      0ffh
+TABSTOP:        db      7
+BACKUP:         db      0ffh
+
+
+:TEXT TO WORDSTAR OR NEWWORD
+
+TXTTOWS.COM  is provided to LZED owners as a means of  converting 
+files  created  with LZED into WordStar/NewWord  document  files. 
+This allows you to use LZED to generate documents for  subsequent 
+formatting  and  printing with either of these  word  processors. 
+TXTTOWS.COM is included with LZED by virtue of the generosity  of 
+its  author, Sigi Kluger (ESKAY Software Service), who placed  it 
+in the public domain for such purposes.
+
+TXTTOWS  is  invoked by typing its name followed by  a  filename, 
+which may contain wildcard characters. Examples:
+
+B0:WORK>txttows *.doc	        (process all DOC files)
+B0:WORK>txttows txttows.doc	(process one file only)
+
+
+
+TXTTOWS will display the name of the file it is currently working 
+on. All modified data are written into a file TXTTOWS$.TMP. After 
+successful   completion,   the  original  file  is  deleted   and 
+TXTTOWS$.TMP is renamed to the original file's name. This insures 
+that  in case of failure the original file  remains  intact.  The 
+input  file  will only be deleted if TXTTOWS successfully  closes 
+the output file. 
+
+:CREDITS 
+
+emains  intact.  The 
+input  file  will only be delet

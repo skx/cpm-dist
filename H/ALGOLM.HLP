@@ -14,14 +14,14 @@ ALGOL-M Run-Time Error and Warning Messages
 
           ALGOLM filename $option
 
-wherå 'filename§ ió thå namå oæ thå filå 'filename.ALG§ whicè containó 
-thå  sourcå  oæ  thå ALGOL/Í program®   Upoî executinç  thió  command¬ 
-ALGOL/Í  wilì  compilå thió sourcå prograí intï thå pseudï  codå  filå 
+where 'filename' is the name of the file 'filename.ALG' which contains 
+the  source  of  the ALGOL/M program.   Upon executing  this  command, 
+ALGOL/M  will  compile this source program into the pseudo  code  file 
 'filename.AIN' which can then be executed by typing --
 
           RUNALG filename
 
-wherå 'filename§ ió thå namå oæ thå filå 'filename.INT§ whicè containó 
+where 'filename' is the name of the file 'filename.INT' which contains 
 the ALGOL/M pseudo code.
 
      The options recognized by the ALGOL/M Compiler are --
@@ -52,7 +52,8 @@ the ALGOL/M pseudo code.
              of the  fact  that  the  standard  publication  language  is
              ALGOL-60.    Therefore,  there  exists  a  large  source  of
              applications programs and library procedures  which  can  be
-             simply converted to execute under ALGOL-M.Š:ALGOL-M LANGUAGE DESCRIPTION -- Type Declarations
+             simply converted to execute under ALGOL-M.
+:ALGOL-M LANGUAGE DESCRIPTION -- Type Declarations
 
                      ALGOL-M supports three types of variables: integers,
              decimals,   and  strings.  Integers may be any value between
@@ -106,7 +107,8 @@ the ALGOL/M pseudo code.
              console on a new line.  The desired output is specified in a
              write  list  which  is  enclosed  in  parentheses.    String
              constants  may be used in a write list and are characterized
-             by being enclosed in quotation marks.   Any  combination  ofŠ             integer,  decimal  and  string  variables or expressions may
+             by being enclosed in quotation marks.   Any  combination  of
+             integer,  decimal  and  string  variables or expressions may
              also be used in a write list.  A WRITEON statement  is  also
              available  which  is  essentially  the  same  as  the  WRITE
              statement except that output continues on the same  line  as

@@ -1,0 +1,76 @@
+:PIP Command
+     PIĞ  (Peripheraì  Interchangå  Program© ió thå  CP/Í  transienô  whicè 
+implementó thå basiã mediá conversioî operationó necessarù tï load¬  print¬ 
+punch¬  copy¬  anä  combinå  disë files®   PIĞ ió initiateä bù onå  oæ  thå 
+following forms --
+
+          PIĞ            Engagå  PIP¬  prompô thå useò witè '*'¬  anä  reaä 
+                         commanä lineó directlù froí thå console®  PIĞ useä 
+                         iî  thió  waù ió exiteä bù eitheò typinç aî  emptù 
+                         commanä linå (jusô á carriagå return© oò á  Ctrl-Ã 
+                         as the first character of the line.
+          PIĞ  cmnä      Engagå PIP¬  executå  thå specifieä  command¬  anä 
+                         return to CP/M.
+
+     The form of each command line in PIP is --
+
+          destination = source#1, source#2, source#3, ..., source#n
+~
+     The general forms of PIP command lines are --
+
+          x:=y:afî       Copù  alì  fileó  satisfyinç afî froí drivå  ù  tï 
+                         drivå x®   'y§ maù bå omitted¬  and¬  iæ  so¬  thå 
+                         currently logged-in drive is selected.
+          x:ufn=yº       Copù  thå filå giveî bù ufî froí ù tï x®   'x§ maù 
+                         bå omitted¬  and¬  iæ so¬  thå currentlù logged-iî 
+                         drive is selected.
+          x:afn=y:afî    Likå thå above¬ buô ø and/oò ù maù bå omitted» thå 
+                         defaulô   drivå  ió  selecteä  foò   thå   omitteä 
+                         drive(s).
+          ld=pä          Copù  froí  thå specifieä physicaì devicå  tï  thå 
+                         specifieä  logicaì device®   Valiä logicaì deviceó 
+                         are --
+                              CON:, RDR:, PUN:, LST:
+                         Valid physical devices are --
+                              TTY:, CRT:, UC1:, PTR:, PTP:, UR1:, UR2:,
+                              UP1:, UP2:, LPT:, UL1:
+~
+     Additional device names which may be used in PIP commands are --
+
+          NUL:      Send 40 Nulls (ASCII 0) to the device.
+          EOF:      Send a CP/M End of File character (ASCII Ctrl-Z).
+          INP:      Special PIP input source to be patched (see manual).
+          OUTº      Speciaì  PIĞ  outpuô  destinatioî tï  bå  patcheä  (seå 
+                    manual).
+          PRNº      Samå aó LST:¬  buô  tabó arå expandeä aô  everù  eightè 
+                    characteò position¬ lineó arå numbered¬ anä pagå ejectó 
+                    are inserted every 60 lines with an initial eject.
+~
+     Thå  useò  caî  alsï specifù onå oò morå PIĞ  parameteró  encloseä  iî 
+square brackets separated by zero or more blanks.  These parameters are --
+
+     Â    Blocë modå  transfer®   Datá ió buffereä bù PIĞ untiì aî ASCIÉ X-
+          Off character (Ctrl-S) is received from the source device.
+     Dî   Deletå characteró  whicè extenä pasô columî î iî thå transfeò  oæ 
+          data to the destination from the character source.
+     E    Echo all transfer operations to the console.
+     F    Filter (remove) form feeds from the file.
+     Gn   Get File from User Number n (n in the range 0 - 15)
+     È    Heø datá transfer®  Alì datá ió checkeä foò propeò Inteì heø filå 
+          format.
+     I    Ignore ':00' records in the transfer of Intel hex format file.
+     L    Translate upper case to lower case alphabetics.
+     N    Add line numbers to each line transferred to the destination.
+     O    Object file (non-ASCII) transfer.  Ignore End of File.
+~
+     Pn   Include page ejects at every n lines.
+     Qs^Ú Quiô  copyinç  froí thå sourcå devicå oò filå wheî thå  strinç  ó 
+          (terminated by Ctrl-Z) is encountered.
+     R    Read system files
+     Ss^Z Start copying from the source file when the string s is seen.
+     Tn   Expand tabs to every nth column.
+     U    Translate lower case to upper case alphabetics.
+     V    Verify that data has been copied correctly.
+     W    Write over R/O files without console interrogation
+     Z    Zero the parity bit on input for each ASCII character.
+

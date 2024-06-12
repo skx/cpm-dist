@@ -1,0 +1,561 @@
+What is RATFOR?
+RATFOR statements
+IF-ELSE statement
+WHILE statement
+FOR statement
+REPEAT-UNTIL statement
+BREAK and NEXT statements
+SWITCH construct
+Statement Grouping and Null Statments
+FREE-FORM input
+Comments
+Character Translation
+STRING Data Type
+Quoted Character Strings
+DEFINE macro
+Other macros
+INCLUDE statement
+Implementation
+Conclusions
+Other Reference Literature
+:What is RATFOR?
+
+RATFOÒ  ió  á preprocessoò foò FORTRAN® Itó primarù purposå ió 
+tï  encouragå  readablå anä well-structureä codå whilå  takinç 
+advantagå    oæ   thå    universality¬     portability¬    anä  
+efficiencù   oæ  FORTRAN®  Thió  ió donå  bù   providinç   thå  
+controì  structureó  noô  availablå  iî  barå FORTRAN¬  anä bù 
+improvinç thå "cosmetics¢ oæ thå language® 
+
+RATFOÒ   allowó foò alì thå featureó oæ normaì  FORTRAN¬  pluó 
+makeó availablå theså controì structuresº 
+          
+     "if"-"else"
+     "while", "for", and "repeat"-"until" for looping
+     "break" and "next" for controlling loop exits
+     "switch" construct for allowing selection of alternatives
+      statement grouping with braces
+          
+
+
+
+
+
+
+Thå cosmetiã aspectó oæ RATFOÒ havå  beeî  designeä  tï   makå  
+iô conciså anä reasonablù pleasinç tï thå eyeº 
+          
+          free form input
+          unobtrusive comment convention
+          translation of >, <=, etc. into .GT., .LE., etc.
+          string data type
+          quoted character strings
+          "define" statement for symbolic constants
+          "include" statement for including source files
+Š
+RATFOÒ   ió  implementeä  aó  á  preprocessoò whicè translateó 
+thå abovå featureó intï FORTRAN¬  whicè caî theî bå  feä  intï  
+almosô  anù FORTRAN compiler® 
+
+:RATFOR statements
+
+Eacè   oæ  thå RATFOÒ featureó wilì no÷ bå discusseä  iî  morå 
+detail®  Iî  thå  following¬  á  "statement¢  ió   anù   legaì  
+statemenô  iî  FORTRANº  assignment¬  declaration¬  subroutinå  
+call¬   I/O¬ etc.¬ oò anù oæ thå RATFOÒ statementó themselves®  
+Anù   FORTRAN  oò  RATFOÒ  statemenô  oò grouğ  oæ  theså  caî 
+bå  encloseä  iî braceó ({}© oò bracketó ([]© -- tï makå iô  á 
+compounä statement¬  whicè ió theî  equivalenô  tï  á   singlå 
+statemenô anä usablå anywherå á singlå statemenô caî bå used® 
+
+
+:IF-ELSE statement 
+
+RATFOÒ    provideó    aî   "else¢  statemenô  tï  handlå   thå 
+constructioî "iæ á conditioî ió true¬ dï thió thing¬ otherwiså 
+dï thaô thing"®  Thå syntaø ió 
+          
+          if (legal FORTRAN condition)
+               statement(s)
+          else
+               statement(s)
+          
+wherå   thå   elså  parô  ió   optional®  Thå  "legaì  FORTRAN 
+condition¢  ió  anythinç  thaô caî legallù gï intï  á  FORTRAN  
+logicaì   IF®   Thå  RATFOÒ statementó  maù  bå  onå  oò  morå 
+valiä  RATFOÒ oò FORTRAN statementó oæ anù kind®  Iæ morå thaî 
+onå statemenô ió desired¬ thå  statementó  musô bå encloseä bù 
+braces®
+
+See the example on the next screen.
+
+
+
+
+  
+IF-ELSE example¬ 
+
+          if (a > b)
+               {
+               k = 1
+               call remark (...)
+               }
+          else if (a < b)
+               {
+               k = 2
+               call remark (...)
+               }
+          else
+               returnŠ          
+
+:WHILE statment 
+
+Thå  whilå statemenô ió  simplù á loopº  "whilå somå conditioî 
+ió true¬ repeaô thió grouğ oæ  statements"®  Thå syntaø ió 
+
+          while (legal FORTRAN condition)
+                 statement(s)
+          
+Aó   witè   thå  if¬   "legaì FORTRAN condition¢ ió  somethinç 
+thaô  caî  gï  intï á FORTRAN logicaì  IF®  Thå  conditioî  ió  
+testeä   beforå  executioî oæ  anù  oæ thå RATFOÒ  statements¬ 
+sï iæ thå conditioî ió noô met¬ thå looğ wilì bå executeä zerï 
+times®  Also¬  aó witè  thå  IF¬   thå  RATFOÒ statementó  caî  
+bå  anù  valiä  RATFOÒ oò FORTRAN constructs® Iæ morå thaî onå 
+statemenô ió desired¬  thå  statementó  musô  bå  encloseä  bù 
+braces® Foò example¬ 
+
+          while (getc(c) != EOF)
+               {
+               c = cnvt (c)
+               call putc (c)
+               }
+:FOR statment 
+
+Thå  "for¢  statemenô  ió  similaò  tï thå "while¢ excepô thaô 
+iô  allowó  expliciô initializatioî anä incremenô   stepó   aó  
+parô  oæ  thå statement® Thå syntaø ió 
+
+          for (init; condition; increment)
+               statement(s)
+          
+wherå   "init¢  ió  anù  singlå  FORTRAN statemenô whicè  getó 
+donå oncå beforå thå looğ begins®  "Increment¢ ió anù   singlå  
+FORTRAN   statemenô whicè  getó  donå aô thå enä oæ eacè  pasó 
+througè  thå  loop¬  beforå  thå test®  "Condition¢  ió  agaiî 
+anythinç  thaô ió legaì  iî  á  logicaì  IF®  Anù   oæ   init¬  
+condition¬    anä  incremenô  maù  bå  omitted¬  althougè  thå 
+semicolonó musô remain® Á non-existenô conditioî ió treateä aó  
+alwayó true¬   sï "for¨ »  »  )¢ ió aî indefinitå repeat®  Thå 
+"for¢  statemenô  ió particularlù usefuì foò  backwarä  loops¬ 
+chaininç   alonç   lists¬   loopó thaô  mighô  bå   donå  zerï 
+times¬  anä similaò thingó whicè arå harä tï expresó witè á DÏ 
+statement®
+
+See the next screen for examples.
+
+Herå arå twï exampleó oæ "for¢ loopsº 
+
+          for (i=1; getarg(i, file, MAXLINE) != EOF; i=i+1)
+               {
+               int = open (file, READ)
+               while (getlin (line, int) != EOF)
+                    {Š                    for (j=80; j>0; j=j-1)
+                       call putc (line(j))
+                    }
+               call close (int)
+               }
+          
+Thå  abovå  codå  simplù  readó cardó froí á  lisô  oæ  files¬  
+reverseó  thå ordeò  oæ  thå characters¬  anä writeó thå cardó 
+ontï á standarä outpuô file® (Thå "!=¢ meanó .NE.© 
+
+
+:REPEAT-UNTIL statement
+
+Thå  "repeat-until¢ statementó allo÷  foò  repetitioî   oæ   á  
+grouğ   oæ statementó untiì á specifieä conditioî ió met®  Thå 
+syntaø isº 
+          repeat
+               statement(s)
+          until
+               condition
+          
+Thå  "until¢  ió  optional®  Oncå  again¬  iæ  morå  thaî  onå  
+RATFOÒ statemenô ió desired¬  thå statementó musô bå  encloseä 
+bù brackets®   Iæ thå  "until¢  parô  ió  omitted¬  thå resulô 
+ió  aî  infinitå looğ whicè musô bå brokeî witè á  "break¢  oò  
+"next¢  statemenô  (seå  below)®  E.g.: 
+
+          repeat
+               {
+               call putc (BLANK)
+               col = col + 1
+               }
+               until (tabpos(col,tabs) == YES)
+:BREAK and NEXT 
+
+RATFOÒ   provideó  statementó  foò  leavinç  á  looğ earlù anä 
+foò beginninç thå nexô iteration® 
+
+"Break¢ causeó  aî  immediatå  exiô  froí  whateveò  looğ   iô  
+ió  containeä   iî   (whicè  maù   bå  á  "while"¬  "for"¬  oò 
+"repeat")®  Controì resumeó witè thå nexô statemenô afteò  thå  
+loop®   Onlù  onå  looğ  ió terminateä  bù  á  "break"¬   eveî  
+iæ  thå "break¢ ió containeä insidå severaì nesteä loops®  Foò 
+exampleº 
+
+          repeat
+               {
+               if (getc(c) == EOF)  break
+               ...
+               }
+          
+
+
+
+Š
+
+
+
+"Next¢  ió á brancè tï thå bottoí oæ thå loop¬  sï  iô  causeó  
+thå  nexô   iteratioî   tï  bå   done®   "Next¢  goeó  tï  thå 
+conditioî  parô  oæ  á "while¢ oò "until"¬  tï thå toğ  oæ  aî 
+infinitå "repeat¢  loop¬   anä  tï thå reinitializå parô oæ  á 
+"for"® Foò exampleº 
+
+          for (i=1; i<10; i=i+1)
+               {
+               if (array(i) == BLANK)  next
+               ...
+               }
+          
+
+:SWITCH Construct 
+
+Aî   assortmenô   oæ  alternativeó  maù  bå  specifieä   usinç 
+thå switcè construct® Thå syntaø isº 
+
+     switch (expr):
+        {
+        case a: statement
+        case b: statement
+        case c: statement
+        ....
+        default: statement
+        }
+
+Thå  "default¢ caså ió optional®  
+
+     switch (i):
+        {
+        case 25: do_this_stuff
+        case -2: do_this_stuff
+        default: otherwise do_this
+        }
+:Statement Grouping and Null Statements
+     
+RATFOÒ allowó á grouğ oæ statementó tï bå treateä aó á uniô bù 
+enclosinç theí iî braceó -- û anä }®  Thió ió truå  throughouô 
+thå languageº  whereveò á singlå RATFOÒ statemenô caî bå used¬ 
+therå coulä alsï bå severaì encloseä iî braces.
+
+For example:
+     
+               if (x > 100)
+               {
+               call error (...)
+               err = 1
+               return
+               }
+     ŠIæ   braceó   arå   noô   valiä  characteró   iî   thå   locaì 
+operatinç  system¬  thå characteró "$(¢ anä "$)¢ maù  bå  useä 
+insteaä  oæ  "{¢ anä "}¢ respectively® 
+     
+
+     
+
+RATFOÒ   alsï  allowó  foò nulì statements¬  mosô usefuì afteò 
+"for¢  anä "while¢ statements®  Á semicoloî alonå indicateó  á  
+nulì statement® Foò instance¬ 
+     
+               while (getlin(line, int) != EOF) ; 
+               
+woulä   reaä   lineó  froí á filå untiì  thå  end-of-filå  waó 
+reached and 
+     
+               for (i=1; line(i) == BLANK; i=i+1) ; 
+               
+positionó afteò leadinç blankó iî á line® 
+
+:FREE-FORM input 
+     
+Statementó  maù bå placeä anywherå oî á linå anä severaì   maù 
+appeaò  oî  onå  linå  iæ  theù  arå  separateä bù semicolons® 
+Nï  semicoloî ió needeä aô  thå  enä  oæ  eacè  linå   becauså  
+RATFOÒ assumeó  therå  ió  onå statemenô peò linå unlesó  tolä 
+otherwise®  RATFOÒ will¬ however¬ continuå lineó wheî iô seemó  
+obviouó  thaô theù arå noô yeô done® 
+     
+Anù   statemenô  thaô  beginó  witè  aî  all-numeriã fielä  ió 
+assumeä  tï  bå á FORTRAN labeì anä ió placeä iî columnó   1-µ  
+upoî output® 
+     
+Statementó   maù   bå   passeä  througè  thå  RATFOÒ  compileò 
+unaltereä  bù  insertinç  á percenô sigî  (%©  aó  thå   firsô  
+characteò   oî  thå line®   Thå  percenô wilì bå removed¬  thå 
+resô  oæ thå linå shifteä onå positioî tï thå left¬  anä   thå  
+linå    senô   ouô   withouô   anù  changes®    Thió   ió    á  
+convenienô   waù  tï  pasó regulaò FORTRAN  oò  assemblù  codå 
+througè thå RATFOÒ compiler® 
+
+
+:Comments 
+     
+Á  sharğ characteò "#¢ iî á linå markó  thå  beginninç  oæ   á 
+commenô   anä  thå  resô  oæ  thå  linå  ió  considereä tï  bå 
+thaô  comment®  Commentó anä codå caî co-exisô oî   thå   samå  
+line®  For example, 
+     
+        function dummy (x)
+        # I made up this function to show some comments
+        dummy = x         #I am simply returning the parameter
+        return
+        end
+               Š
+:Character Translation
+     
+Sometimeó  thå  characteró >¬  <=¬  etc® arå easieò tï reaä iî 
+FORTRAN  conditioî  statementó  thaî  thå   standarä   FORTRAN  
+.EQ.¬  .LT.¬   etc.®   RATFOÒ  allowó  eitheò  convention®  Iæ 
+thå speciaì characteró  arå  used¬   theù  arå  translateä  iî  
+thå  followinç mannerº 
+     
+               ==          .EQ.
+               != ^= ~=    .NE.
+               <           .LT.
+               >           .GT.
+               <=          .LE.
+               >=          .GE.
+               |           .OR.
+               &           .AND.
+               
+For example: 
+               for (i=1; i<= 5; i=i+1)
+               ...
+               if (j != 100)
+               ...
+:STRING Data Type 
+
+Alì    characteò    arrayó   iî   RATFOÒ  arå   sequenceó   oæ  
+ASCIÉ  characters¬   storeä  right-adjusted¬  onå  peò   arraù  
+element¬   witè  thå  strinç  terminateä  witè  aî EOÓ marker® 
+Aî  automatiã  waù tï initializå strinç characteró  arrayó  ió 
+provided® Thå syntaø isº 
+
+     string name "characters" 
+     or 
+     string name(n) "characters" 
+
+RATFOÒ  wilì  definå namå tï  bå   á   characteò   (or¬   morå  
+likely¬  integer©   arraù lonç enougè tï accomodatå thå  ASCIÉ 
+codeó  foò thå giveî characteò string¬  onå peò  element®  Thå 
+lasô   worä  oæ  namå ió  initializeä  tï  EOS®  Iæ á sizå  ió 
+given¬  namå  ió declareä tï bå aî integeò arraù oæ sizå  'n'®  
+Iæ   severaì  strinç  statementó appeaò   consecutively¬   thå  
+generateä  declarationó  foò thå arraù wilì precedå  thå  datá 
+statementó thaô initializå them® 
+
+See the next screen for examples.
+
+For example, the declarations: 
+
+          string errmsg "error" 
+          string done "bye" 
+
+would be converted by RATFOR into the FORTRAN: 
+
+          integer error(6)
+          integer done(4)
+          data error(1), error(2), error(3), error(4),Š          error(5), error(6) /LETE, LETR, LETR, LETO, LETR, EOS/
+          data done(1), done(2), done(3), done(4) /LETD, LETO,
+          LETN, LETE, EOS/
+
+
+:Quoted Character Strings
+
+Texô encloseä iî matchinç doublå oò singlå quoteó ió converteä 
+tï nH..® format¬ buô ió otherwiså unaltered®  Foò instance,
+
+          call remark ("Error detected")
+would translate to
+          call remark (14hError detected)
+          
+and
+          data string /"Can't find answer"/
+would become
+          data string /17hCan't find answer/
+          
+Iæ  thå  locaì operatinç systeí doeó noô supporô  botè   uppeò  
+anä   loweò caså  holleritè  strings¬  aî escapå mechanisí  ió 
+generallù provideä tï allo÷ thå useò tï indicatå case® 
+
+Somå operatinç systemó arå noô capablå oæ findinç thå  enä  oæ  
+á  FORTRAN   holleritè   string®   Iî   thió caså  iô  maù  bå 
+necessarù  foò thå useò tï marë thå enä oæ heò  quoteä  strinç 
+witè á  specifiã  character¬ sucè aó á period® 
+:DEFINE 
+
+Anù   strinç   oæ alphanumeriã characteró caî bå defineä aó  á 
+nameº  thereafter¬  wheneveò thaô namå  occuró  iî  thå  inpuô  
+(delimiteä  bù non-alphanumerics©  iô ió replaceä bù thå  resô 
+oæ thå definitioî line® Thå syntaø isº 
+
+define(name, replacement string) 
+
+whicè    definå   "name¢   aó   á   macrï   whicè   wilì    bå   
+replaceä    witè "replacemenô  string¢  wheî  encountereä   iî  
+thå  sourcå  files® Aó a simple example: 
+
+          define(ROW,10)
+          define(COLUMN,25)
+          
+          dimension array (ROW, COLUMN)
+and
+          
+          define(EOF,-1)
+          if (getlin(line, fd) == EOF) ....
+
+          
+Definitionó maù bå includeä anywherå iî  thå  code¬   aó  lonç  
+aó  theù  appeaò  beforå  thå  defineä namå occurs®  Thå nameó 
+oæ macrï maù contaiî letters¬  digits¬  periods¬ anä underlinå 
+characters¬   buô  musô starô  witè  á letter® Uppeò anä loweò 
+caseó ARÅ significanô (thuó EOÆ ió noô thå samå aó eof)® Š
+Anù  occurrenceó oæ thå stringó '$n§ iî thå replacemenô  text¬  
+wherå  ± <½  î  <½  9¬  wilì bå replaceä witè thå ntè argumenô 
+wheî thå macrï ió actuallù invoked® Foò exampleº 
+
+               define(bump, $1 = $1 + 1) 
+
+will cause the source line 
+
+               bump(i) 
+
+to be expanded into 
+
+               i = i + 1 
+
+
+:Other macros
+
+In addition to define, four other built-in macros are provided: 
+
+arith(x,op,y) performó  thå  "integer¢  arithmetiã   specifieä  
+              bù  oğ (+,-,*,/©  oî  thå  twï  numeriã operandó 
+              anä returnó thå resulô aó itó replacement® 
+
+incr(x)       convertó thå strinç ø tï  á  number¬   addó  onå  
+              tï    it¬    anä  returnó   thå  valuå  aó   itó 
+              replacemenô (aó á characteò string)® 
+
+ifelse(a,b,c,d©  compareó  á anä â aó characteò  strings»   iæ  
+              theù  arå thå  same¬  ã ió pusheä bacë ontï  thå 
+              input¬ elså ä ió pusheä back® 
+
+substr(s,m,n) produceó  thå  substrinç  oæ ó whicè  startó  aô 
+              positioî  í (witè  origiî  one)¬   oæ lengtè  n® 
+              Iæ  î  ió omitteä oò toï big¬  thå resô  oæ  thå 
+              strinç ió used¬  whilå  iæ í ió ouô oæ rangå thå 
+              resulô ió á nulì string® 
+:INCLUDE 
+
+Fileó   maù   bå   inserteä   intï thå inpuô  streaí  viá  thå 
+"include¢ command® Thå statemenô 
+
+          include filename 
+or 
+          include "filename" 
+
+insertó  thå  filå  founä oî inpuô filå  "filename¢  intï  thå 
+RATFOÒ   inpuô iî  placå  oæ  thå  includå   statement®   Thió  
+ió especiallù usefuì iî insertinç commoî blocks®
+
+See the example on the next screen.
+
+
+
+Š
+
+
+
+
+Include example:
+
+          function exampl (x)
+          include comblk
+          exampl = x + z
+          return
+          end
+          
+might translate into
+          
+          function exampl (x)
+          common /comblk/ q, r, z
+          exampl = x + z
+          return
+          end
+
+:Implementation 
+
+RATFOÒ waó originallù writteî iî C¬   á  high-leveì  language¬  
+oî  thå  Uniø  operatinç  system®  Ouò versioî ió  writteî  iî 
+RATFOÒ itself¬ originallù broughô uğ bù á bootstrağ writteî iî 
+FORTRAN® 
+
+RATFOÒ  generateó codå bù readinç inpuô fileó anä  translatinç  
+anù RATFOÒ  keywordó  intï  standarä  FORTRAN®  Thus¬  iæ  thå 
+firsô  tokeî  (word© oî á sourcå linå ió noô á  keyworä  (likå 
+"for"¬   "while"¬   etc.©  thå   entirå  statemenô  ió  simplù 
+copieä  tï thå outpuô witè appropriatå characteò   translatioî  
+anä   formatting®   RATFOÒ  knowó  verù   littlå FORTRAN   anä  
+thuó  doeó noô handlå anù FORTRAN erroò detection®  Erroró  iî 
+RATFOÒ keyworä syntaø arå generallù  noteä  bù  á  messagå  tï  
+thå user'ó  terminaì  alonç  witè  aî indicatioî oæ thå sourcå 
+linå numbeò whicè causeä thå problem® 
+
+:Conclusions
+
+RATFOÒ   demonstrateó  thaô  witè  modesô   efforô    FORTRAN-
+baseä programmeró  caî  increaså theiò productivitù bù usinç á 
+languagå  thaô  provideó theí  witè  thå  controì   structureó  
+anä  cosmetiã  featureó essentiaì  foò structureä  programminç 
+design®  Debugginç  anä subsequenô revisioî  timeó  arå   mucè  
+fasteò   thaî  thå  equivalenô  effortó  iî  FORTRAN¬   mainlù  
+becauså  thå codå caî bå easilù read®  Thuó iô becomeó  easieò  
+tï  writå  codå  thaô  ió   readable¬   reliable¬   anä   eveî 
+estheticallù    pleasing¬    aó   welì   aó   beinç   portablå  
+tï  otheò environments® 
+
+:Other Reference Literature 
+
+1)  Kernighan¬   Briaî  W.¬   "RATFOR--á  Preprocessoò  foò  á  Š    Rationaì  FORTRAN"®   Softwarå - Practicå anä  Experience¬ 
+    Vol® 5¬ ´ (Oct-Deã 75)¬ pp® 395-406® 
+
+2)  Kernighan¬   Briaî  W®   anä  P®  J®  Plauger¬   "Softwarå   
+    Tools"® Addison-Wesleù Publishinç Company¬ Reading¬ Mass.¬ 
+    1976® 
+
+3)  Thå RATFOÒ useò documenô 
+
+4)  Thå Uniø commanä "rc¢ iî thå Uniø Manuaì (RC(I)© 
+
+5)  Thió HELĞ filå waó builô froí thå RATFOR.PRÍ filå froí thå 
+    "Softwarå Tools¢ CP/Í disks® Volumå 24¬ filå 2¸ iî thå BDÓ 
+    "C¢ onlinå catalogue¬ BDSCAT.ALL.
+
+Thå  onlù onå oæ theså whicè ió likelù tï bå readilù availablå 
+tï mosô microcomputeò useró ió thå "Softwarå Tools¢ book® Thió 
+ió  highlù recommendeä aó á generaì texô eveî iæ yoõ  arå  noô 
+particularlù interesteä iî RATFOR.
+

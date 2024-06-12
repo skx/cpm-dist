@@ -1,0 +1,158 @@
+Calling SID
+SID commands
+Some command examples
+SID utility files
+:Calling the program
+
+  Syntax:
+
+       SID {pgm-filespec} {,sym-filespec}
+
+  Explanation:
+
+  The SID symbolic debugger  allows  you  to   monitor   and   test
+  programs  developed  for  the  8080 microprocessor.  SID supports
+  real-time  breakpoints,  fully  monitored   execution,   symbolic
+  disassembly,  assembly,  and  memory  display and fill functions.
+  SID  can  dynamically  load  SID  utility  programs  to   provide
+  traceback and histogram facilities.
+
+: Commands:
+
+        Command              Meaning
+
+     As              (Assemble)    Enter assembly language
+                                   statements
+                                   s is the start address
+
+     Cs{b{,d}}       (Call)        Call to memory location from SID
+                                   s is the called address
+                                   b is the value of the BC register
+                                   pair d is the value of the DE
+                                   register pair
+
+     D{W}{s}{,f}     (Display)     Display memory in hex and ASCII
+                                   W is a 16-bit word format
+                                   s is the start address
+                                   f is the finish address
+
+        Command              Meaning
+
+     Epgm-filespec   (Load)        Load program and symbol table
+      {,sym-filespec}              for execution
+
+
+
+     E*sym-filespec  (Load)        Load a symbol table file
+
+     Fs,f,d          (Fill)        Fill memory with constant value
+                                   s is the start address
+                                   f is the finish address
+                                   d is an eight-bit data item
+
+     G{p}{,a{,b}}     (Go)         Begin Execution
+                                   p is a start address
+                                   a is a temporary breakpoint
+
+        Command              Meaning
+
+     H                (Hex)        Displays all symbols with
+                                   addresses in Hex
+     H.a                           Displays hex, decimal, and ASCII
+                                   values of a where
+                                   a is a symbolic expression
+
+     Ha,b                          Computes hex sum and difference
+                                   of a and b where
+                                   a and b are symbolic expressions
+
+     Icommand tail   (Input)       Input CCP command line
+
+     L{s}{,f}        (List)        List 8080 mnemonic instructions
+                                   s is the start address
+                                   f is the finish address
+
+        Command              Meaning
+
+     Ms,h,d          (Move)        Move Memory Block
+                                   s is the start address
+                                   h is the high address of the block
+                                   d is the destination start address
+
+     P{p{,c}}        (Pass)        Pass point set, reset, and display
+                                   p is a permanent breakpoint address
+                                   c is initial value of pass counter
+
+     Rfilespec{,d}   (Read)        Read Code/Symbols
+                                   d is an offset to each address
+
+     S{W}s           (Set)         Set Memory Values
+                                   s is address where value is sent
+                                   W is 16 bit word
+
+        Command              Meaning
+
+     T{n{,c}}        (Trace)       Trace Program Execution
+                                   n is the number of program steps
+                                   c is the utility entry address.
+
+     T{W}{n{,c}}     (Trace)       Trace Without Call
+                                   W instructs SID not to trace
+                                   subroutines
+                                   n is the number of program steps
+                                   c is the utility entry address
+
+     U{W}{n{,c}}     (Untrace)     Monitor Execution without Trace
+                                   n is the number of program steps
+                                   c is the utility entry address
+                                   W instructs SID not to trace
+                                   subroutines
+
+        Command              Meaning
+
+     V                (Value)      Display the value of the next
+                                   available location in memory
+                                   (NEXT), the next location after
+                                   the largest file read in (MSZE),
+                                   the current value of the Program
+                                   counter (PC), and the address of
+                                   the end of available memory (END)
+
+     Wfilespec,s,f  (Write)        Write the contents of a contiguous
+                                   block of memory to filespec.
+                                   f is finish address
+
+     X{f}{r}        (Examine)      Examine/alter CPU state.
+                                   f is flag bit C,Z,M,E or I.
+                                   r is register A,B,D,H,S or P.
+
+: Examples:
+
+  A>SID
+
+       CP/M loads SID from drive A into memory.  SID displays the
+       # prompt when it is ready to accept commands.
+
+  A>B:SID SAMPLE.HEX
+
+       CP/M loads SID and the program file SAMPLE.HEX into memory
+       from drive B.
+
+: SID Utilities:
+
+  SID utilities, HIST.UTL and TRACE.UTL are special  programs  that
+  operate with SID to provide additional debugging facilities.  The
+  mechanisms for system  initialization,   data   collection,   and
+  data  display  are  described  in the CP/M SID User's Guide.
+
+  The HIST utility creates a histogram  (bar  graph)   showing  the
+  relative   frequency   of   execution   of   code within selected
+  program segments of the test program.  The  HIST  utility  allows
+  you   to  monitor  those  sections  of  code  that  execute  most
+  frequently.
+
+  The TRACE utility obtains a backtrace of  the  instructions  that
+  led  to  a particular breakpoint address in a program under test.
+  You can collect  the  addresses  of  up   to   256   instructions
+  between pass points in U or T modes.
+

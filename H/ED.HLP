@@ -1,0 +1,60 @@
+:ED Command
+     Thå  EÄ  Prograí  ió thå CP/Í  systeí  contexô  editor¬  whicè  allowó 
+creatioî anä alteratioî oæ ASCIÉ files®   Completå detailó arå giveî iî thå 
+user's manual.
+
+     The following are the error indicators given by ED --
+
+          ?    Unrecognized Command
+          >    Memory buffer full
+          #    Cannot apply command the number of times specified
+          O    Cannot open LIB file in R command
+~
+     The following are the control characters recognized by ED --
+
+          ^C        System reboot
+          ^E        Physical <CR> <LF> (not entered in command)
+          ^H        Character delete (backspace)
+          ^I        Logical tab
+          ^J        New line (line feed)
+          ^L        Logical <CR> <LF> in search and substitute strings
+          ^M        New line (carriage return)
+          ^U        Line delete
+          ^X        Line delete and backspace
+          ^Z        String terminator
+          Rubout    Character delete
+          Break     Discontinue command
+~
+     The following are the commands recognized by ED --
+
+          nA        Append lines
+          +/- B     Beginning/Bottom of buffer
+          +/- nC    Move character positions
+          +/- nD    Delete characters
+          E         Exit
+          nFs^Z     Find string
+          H         End edit, close and reopen files
+          Is^Z      Insert characters
+          nJ        Place strings in juxtaposition
+          +/- nK    Kill (delete) lines
+          +/- nL    Move down/up lines
+          nM        Macro definition
+          O         Return to original file
+          +/- nP    Move and print pages
+          Q         Quit with no file changes
+          R         Read library file
+~
+          nSs1^Zs2^Z
+                    Substitute s2 for s1
+          +/- nT    Type lines
+          +/- U     Translate lower to upper case if U; none if -U
+          +/- V     Engage/disengage line numbers (verify)
+          0V        Print memory buffer info (free/total usage)
+          nW        Write lines
+          nX        Transfer n lines to X$$$$$$$.LIB
+          0X        Empty X$$$$$$$.LIB
+          nZ        Sleep
+          +/- n     Move and type (+/- nLT)
+          n:        Move to absolute line (V engaged)
+          :n        Process from current line to specified line (V engaged)
+

@@ -1,0 +1,42 @@
+:      Z8E - Z80 DEBUGGING MONITOR         COMMAND SUMMARY REFERENCE
+
+                    []        Denotes Optional Argument
+                    [/]       Do Not Trace Subroutine
+                    [*]       Do Not Trace BDOS Call  
+                    [(] [)]   I/O Port Monitor Mode
+
+CMD         Description                      Arguments
+
+ A        Inline  Assembly             StartAddr 
+ B        Set Breakpoint               Addr1[,Pass Count]  [Addr2..AddrN]
+ C        Clear Breakpoint             Addr1               [Addr2..AddrN]
+ D        Dump Memory                  [StartAddr]         [End/Count] 
+ E        Examine Memory               StartAddr
+ F        Find                         StartAddr           MatchData
+ G        Go                           ExecutionAddr
+ H        Display Symbol Table         [FirstSymbol]
+ I        Input File                   FileName            [,Load Address]
+ J        Full Screen/Animated Debug   [/] [*] [Addr]      [Timeout]
+ K        Set Memory Window            StartAddr           [Size]
+ M        Move Memory                  SourceStart    SourceEnd    DestStart
+~
+                    []        Denotes Optional Argument
+                    [/]       Do Not Trace Subroutine
+                    [*]       Do Not Trace BDOS Call  
+                    [(] [)]   I/O Port Monitor Mode
+
+CMD         Description                      Arguments
+
+ N        Output to Port NO Pre-Read   [(] PortAddr [)]
+ O        Output Current Breakpoints
+ P        Exam/Modify PSW (Flag Reg)
+ Q        Query I/O Port               [(] PortAddr [)]
+ R        Examine/Modify Registers     RegSpecifier
+ S        Single-Step                  [/]  [Count]
+ U        Write Symbol Table To Disk   FileName    
+ V        Verify Memory                SourceStart     SourceEnd   DestStart
+ W        Write to Disk                FileName        [StartAddr] [EndAddr] 
+ X        Examine Machine State
+ Y        Fill Memory                  FromAddr        ToAddr       Data
+ Z        Disassemble                  StartAddr       End/Count    FileName
+

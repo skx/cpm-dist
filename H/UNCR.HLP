@@ -1,0 +1,36 @@
+:UNCR  [d:]<afn>  [d:]   [/Q | /V | /C]
+
+where  [d:]<afn> is any filename (with optional drive spec).  The second    
+       [d:] is an optional drive specifier  where  the  output  will  be
+       directed.  If either "d:" is not specified, the default  (logged)
+       drive will be used.  All input & output takes place in  the  cur-
+       rent user area.
+ 
+       Note that the resulting filename will be recreated from the  name
+       of the file that was originally crunched.
+ 
+       It  is not necessary that the file to be uncrunched have  "Z"  as
+       the  middle letter of the extension; an attempt will be  made  to
+       uncrunch  any filename explicitly specified.  Note  however  that
+       "UNCR *.*" will be internally converted to "UNCR *.?Z?" to facil-
+       itate quickly uncrunching all crunched files in a mixed group.
+~
+UNCR  [d:]<afn>  [d:]   [/Q | /V | /C]
+
+       Three  command line options, "/Q", "/V" or "/C",  are  available.
+       If  used, the option should be last on the command line, and  the
+       "/" must be preceded by a space. Only one option may be selected.
+ 
+       "/Q"  and  "/V" will "quiet down" a version of UNCR    which  has
+       been  configured to be "verbose", or cause a "verbose" run  of  a
+       program  normally configured to be "quiet".  This relates to  the
+       amount of information sent to the console.
+ 
+       "/C", the confirm option,  is  used  for  selective  uncrunching.
+       When used in conjunction with wildcard  filespecs,  this  option
+       causes the program to ask "Y/N" for each matching file. Only  the
+       files to which "Y" is responded will  be  uncrunched.   Selecting
+       this option causes the program to  automatically  ask  for  added
+       confirmation  if a pre-existing file is about to be  overwritten,
+       regardless of the program's configuration.
+

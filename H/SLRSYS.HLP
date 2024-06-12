@@ -1,0 +1,274 @@
+;
+
+ SLR Systems Assembly Language Tools
+
+        A. SLRMAC (Intel macro assembler)
+
+        B. Z80ASM (Zilog macro assembler)
+
+        C. SLR180 (Hitachi/Zilog assembler)
+
+        D. SLRNK (Linker)
+
+        E. Virtual Memory Tools
+
+        F. Ordering Information
+:A
+
+
+ SLRMAC
+
+
+     SLRMAC is an ultra-high-speed macro assembler for source code written
+in Intel mnemonics.  In our own tests we found that it would assemble ZCPR3
+system modules such as ZCPR3.ASM about five times faster than Digital
+Research's MAC assembler.  It is highly compatible with existing public-domain source code.  In only very rare cases have we found it necessary to
+make any changes to the source code to make it compatible with SLRMAC.
+
+     SLRMAC can assemble source code to HEX files (like MAC) or to REL files
+(like M-80).  It can also generate COM files directly in a single pass!
+
+     The next screens list some of the technical specifications, command
+line options, configuration options, and pseudo-ops recognized.
+
+    The latest version of SLRMAC is designed to work with ZCPR3 systems and
+to automatically set the program error flag in the message buffer to reflect
+whether assembly errors were detected.
+
+
+ SLRMAC -- Technical Specifications
+
+    *   Assembles to COM, HEX, or REL files in one pass
+    *   Optional two-pass mode for fully resolved listings
+    *   Full macro facility
+    *   M80/RMAC compatible (Intel mnemonics only)
+    *   Accepts symbol definitions from the console
+    *   Nested conditionals and include files
+    *   Relocatable format supports math on externals
+    *   Intel nmemonics with Z80.LIB extensions built in
+    *   Absolute, program, data, and common areas
+    *   Fastest assembler on the market
+    *   Sorted symbol and cross-reference tables
+    *   Labels have 16 significant characters
+    *   Support for automatic time and date in listings
+    *   Assemble for execution at another address
+    *   User configurable
+    *   Colons not required on labels
+    *   Reserved words may be redefined as macros and/or labels
+
+
+
+ Command Line Options
+
+
+    *   Select COM, HEX, SLR REL, or Microsoft REL output
+    *   Select listing output type and devices
+    *   Select/Deselect upper/lower case distinction
+    *   Select 1- or 2-pass mode
+    *   Specify an indirect command file (like submit but much faster)
+    *   Disallow console I/O and auto-detach
+    *   Select symbol table and/or cross reference
+    *   Select automatic declaration of external symbols
+    *   Select 6 or 7 characters in Microsoft REL format
+
+
+
+ Configuration Options
+
+
+    *   Set default command line switch settings
+    *   Set default printer page length and width
+    *   Control listing of more than 4 bytes of code per source line
+    *   Set macro listing default
+    *   Set the byte order for printing 16-bit values
+    *   Set flag for suppressing PAGE and TITLE lines in listing
+    *   Select time/date in listing, with options for clocks not
+        supported directly by the operating system
+    *   Use/Do-Not-Use multisector I/O
+    *   Define listing format
+    *   Set error page and abort limits
+    *   Set number of bytes per HEX record
+    *   Set all file extensions
+    *   Define printer initialization and termination strings
+
+
+
+ Pseudo-Op List
+
+
+        ABS             DS              EXITM           IFDIF
+        ASEG            DSEG            EXT             IFE
+        ASET            DW              EXTERNAL        IFF
+        BYTE            EJECT           EXTRN           IFIDN
+        CLIST           ELSE            GLOBAL          IFNB
+        COM             END             IF              IFNDEF
+        COMMON          ENDIF           IF0             IFT
+        CSEG            ENDM            IF1             INCLUDE
+        DATA            ENT             IF2             IRP
+        DB              ENTRY           IFB             IRPC
+        DC              EQU             IFDEF           LIST
+
+continued
+
+
+
+ Pseudo-Op List continued
+
+
+        LOCAL           PROG            .LALL           .XCREF
+        MACLIB          PUBLIC          .LFCOND         .XLIST
+        MACRO           REL             .LIST           $EJECT
+        MEND            REPT            .PHASE          $INCLUDE
+        MTLIST          SET             .PRINTX         $TITLE
+        NAME            SUBTTL          .RADIX          $+MACRO
+        NCLIST          TITLE           .REQUEST        $-MACRO
+        NLIST           .ACCEPT         .SALL           $*MACRO
+        NMTLIST         .COMMENT        .SFCOND         $+PRINT
+        ORG             .CREF           .TFCOND         $-PRINT
+        PAGE            .DEPHASE        .XALL
+:B
+
+
+
+ Z80ASM
+
+
+    Z80ASM is nearly identical to SLRMAC except that it works with Zilog
+opcodes instead of Intel opcodes.  See the section of this help file on
+SLRMAC for technical specifications, command line options, configuration
+options, and pseudo-ops recognized.
+
+    The following additional pseudo-ops are handled: COND, DEFB, DEFC, DEFL,
+DEFM, DEFS, DEFW, DEFZ, ENDC, *EJECT, and .Z80.   SET, $+MACRO, $-MACRO,
+$*MACRO, $+PRINT, and $-PRINT are not recognized.
+
+    The latest version of Z80ASM is designed to work with ZCPR3 systems and
+to automatically set the program error flag in the message buffer to reflect
+whether assembly errors were detected.
+:C
+
+
+
+ SLR180 Hitachi/Zilog Assembler
+
+
+    This assembler is almost identical to Z80ASM except that it recognizes
+the additional opcodes of the Hitachi HD64180 microprocessor.  See the entries
+under Z80ASM and (especially) SLRMAC for more detailed information.
+:D
+
+
+ SLRNK Linker
+
+
+    SLRNK is a super high speed linker, running from 3 to 7 times faster
+than L-80.  Below, and on the following screens, are listed some of the
+technical specifications, command line options, and configuration options of
+SLRNK.
+
+
+ Technical Specifications
+
+    *   Links SLR and Microsoft format REL files
+    *   Outputs COM or HEX files
+    *   Supports three logical address spaces
+    *   Symbol table sorted and ZSID compatible
+    *   Generates detailed load map
+    *   Supports nested indirect command files
+
+
+
+ Command Line Options
+
+
+    *   Select/Modify loading address for any address space
+    *   Select output type (COM or HEX)
+    *   Force undefined globals to zero
+    *   Select indirect command file
+    *   Select symbol table output
+    *   Select library search mode
+    *   Origin symbols by name
+    *   List undefined symbols
+
+
+
+ Configuration Options
+
+
+    *   Select tabs or spaces between symbols in SYM file
+    *   Use/Do-Not-Use multisector I/O
+    *   Set number of bytes per HEX output record
+    *   Define default extensions for all files
+:E
+
+
+
+
+ Virtual Memory Assemblers and Linkers
+
+
+    The virtual memory versions of the assemblers (SLRMAC+ and Z80ASM+) and
+linker (SLRNK+) allow all internal tables to overflow to disk.  Thus the
+size of one's disk and not the size of the TPA is the limiting factor in
+determining the size of files that can be assembled and linked.
+
+    SLRNK+ also has many additional features which are listed in the
+following screens.
+
+
+
+ SLRNK+ Additional Technical Specifications
+
+    *   Works with Microsoft compilers
+    *   Outputs SPR and PRL files
+    *   Supports 8 logical address spaces
+    *   Generates intermodule cross refrences
+    *   Hex files do not fill unused space
+    *   ALL internal tables overflow to disk
+    *   Supports manual overlays
+
+
+ SLRNK+ Additional Command Line Options
+
+    *   Select address space grouping options
+    *   Save and restore system state to disk
+    *   Select sorted cross reference output
+    *   Select commons to be treated as address spaces
+    *   Origin common blocks by name
+    *   Select devices and filenames for listing outputs
+
+
+
+
+ SLRNK+ Additional Configuration Options
+
+
+    *   Size limit on symbols in SYM file
+    *   Lines per page on list device and console
+    *   Page/Do-Not-Page console output
+    *   Form feeds at beginning and/or end of listings
+    *   Loading order of CSEG, DSGE, and COMMON segments
+:F
+
+ Ordering Information
+
+
+The SLR assembly language tools can be ordered by sending a check to
+
+                        Sage Microsystems East
+                        1435 Centre Street
+                        Newton Centre, MA 02159
+
+or by leaving a private message for Jay Sage on the bulletin board including
+the following information: your full name, address, phone number, credit card
+type, number, and expiration date, and the products you wish to order.
+
+SLRMAC, Z80ASM, and SLRNK are $49.95 each; SLR180 is $69.95.  If you are
+interested in one of the virtual-memory tools, please inquire.
+
+If you presently own one of the SLR tools, you can upgrade to the newest
+version by sending your original disks and $20 per upgrade to the address
+above.  If you bought the original version or an earlier upgrade from Sage
+Microsystems, then you can get upgrades over the system without having to
+return your diskette.
+

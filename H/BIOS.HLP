@@ -1,0 +1,108 @@
+Page Zero Locations
+BIOS Jump Vector Adresses
+I/O Status Byte Organization/Meaning
+:Page Zero Locations
+     Locations (hex)	Meaning/Explanation
+
+     0,1,2		Set to JMP WBOOT in BIOS. e.g., C3 03 E8 - JMP E803
+     3			IOBYTE (See Section re: I/O Status Byte)
+     4			Current default drive/user (drive 0=A, 15=P, etc.)
+			High nibble=user no.  Low nibble=drive no.
+			ie, user|drive=0000|0001=user0|drive B
+     5,6,7		BDOS entry point. e.g., C3 06 DA - JMP DA06
+     08-27		Interrupt locations 1 through 5 not used
+      * 20		 * RTOKFG sign-on reentry flag from reentry to PBBS
+			   from CP/M. (PBBS, BYE)
+      * 21		 * LOGST ASCII logon time 8 bytes (PBBS)
+      * 2C		 * USREC User record No. 2 bytes (PBBS)
+     30-37		Interrupt location 6, not currently used. Reserved
+     38-3A		Restart7; contians a jump instruction into DDT or SID
+			program when running in debug mode for programmed break
+			points, but is not otherwise used by CP/M.
+~
+     Locations (hex)	Meaning/Explanation
+
+     3B-3F		Not currently used. Reserved.
+      * 3B		 * KILBEL  Bell Toggle (BYE, CHAT, PBBS)
+      * 3C		 * MSPEED (BYE, KMD, PBBS)
+      * 3D		 * Maximum Drive Number (ZCMD, BYE, PBBS, KMD)
+      * 3E		 * Wheel Byte (ZCMD, BYE, PBBS, KMD) 0=Remote User
+      * 3F		 * Maximum User Number (ZCMD, BYE, PBBS, KMD)
+     40-4F		A 16 byte area reserved for scratch by CBIOS, but is
+			not used for any other purpose by CP/M.
+      * 40		 * Fraction of a second 1/62th
+      * 41		 * Seconds
+      * 42		 * Minutes
+      * 43		 * Hours
+      * 44		 * Month
+      * 45		 * Day
+      * 46		 * Year
+      * 4E		 * Mode byte for floppy disk
+~
+     Locations (hex)	Meaning/Explanation
+
+     50-5B		Not currently used. Reserved
+      * 54		 * Count of uploads (KMD, PBBS)
+      * 55		 * Count of downloads (KMD, PBBS)
+     5C-7C		Default file control block produced for a transient
+			program by the Console Command Processor.
+     7D-7F		Optional default random record position
+     80-FF		Default 128-byte disk buffer which is also filled with
+			the command line when a transient is loaded under CCP.
+:BIOS Jump Vector Addresses
+     ThÂ† followinÁ iÛ · tablÂ representinÁ thÂ entr˘ pointÛ intÔ thÂ† CP/Õ ç
+BIOS of the major routines accessable to the user:
+
+     Routine   Actual Address      Comment
+
+     BOOT         E800H            Cold Start (Start of CBIOS)
+     WBOOT        E803H            Warm Start (WBOOTE)
+     CONST        E806H            Console Status
+                                    Reg A = 00 if no char ready
+                                    Reg A = FF if char ready
+     CONIN        E809H            Console char in (Reg A)
+     CONOUT       E80CH            Console char out (Reg C)
+     LIST         E80FH            List out (Reg C)
+     PUNCH        E812H            Punch out (Reg C)
+     READER       E815H            Reader in (Reg A)
+~
+     Routine   Actual Address      Comment
+
+     HOME         E818H            Move to track 00
+     SELDSK       E81BH            Select disk given by Reg C (A=0,B=1,...)
+     SETTRÀ†      E81E»†           SeÙ† tracÎ† addresÛ† giveÓ† b˘† ReÁ† √ 
+                                      (0...76)
+     SETSE√†      E821»†           SeÙ† sectoÚ† addresÛ giveÓ† b˘† ReÁ† √ 
+                                      (1...26)
+     SETDMA       E824H            Set subsequent DMA address (RP B&C)
+     READ         E827H            Read track/sector (block)
+     WRITE        E82AH            Write track/sector (block)
+     LISTST       E82DH            List Device Status
+                                    Reg A = 00 if no char ready
+                                    Reg A = FF if char ready
+     SECTRAŒ†     E830»            TranslatÂ  sectoÚ numbeÚ iÓ ReÁ √† usinÁ ç
+                                    tablÂ pointe‰ tÔ b˘ DEª physicaÏ sectoÚ ç
+                                    number returned in Reg L
+:I/O Status Byte Organization/Meaning
+	       Most Significant           Least Significant
+     Bits      Bits 6,7    Bits 4,5    Bits 2,3    Bits 0,1
+     Device    LIST        PUNCH       READER      CONSOLE
+
+     Value
+       00      TTY:        TTY:        TTY:        TTY:
+       01      CRT:        PTP:        PTR:        CRT:
+       10      LPT:        UP1:        UR1:        BAT:
+       11      UL1:        UP2:        UR2:        UC1:
+
+BAT = batch mode.  use the READER as the CONSOLE input, and the LIST
+      device as the CONSOLE output
+CRT = Console CRT device
+LPT = List is the printer device
+PTP = Punch is a high speed punch device
+PTR = Reader is the high speed reader device
+TTY = Printer teletype device
+UC1 = User defined console device
+UL1 = User defined list device
+UPn = User definced punch
+URn = User defined reader
+

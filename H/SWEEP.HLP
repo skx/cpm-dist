@@ -1,0 +1,360 @@
+Invoking Sweep
+Help
+Moving Forward and Backward
+Exiting
+Finding a File
+Veiwing and Printing a File
+Deleting a File
+Copying a File
+Renaming a File
+Space Command
+Log Command
+Tag Command
+Wildcard Tagging
+Untagging Files
+Mass Copy Command, 'V' Option (verify copy), Retag Command
+Erasing Files
+Squeezing and Unsqueezing Files
+Setting File Status 
+:Invoking SWEEP
+
+SWEEP
+     Thió formaô simplù loadó SWEEP¬  anä scanó thå defaulô drivå 
+anä  useò foò filenames®
+
+SWEEP *.COM
+     Thió formaô loadó SWEEĞ anä scanó thå currenô drivå anä useò 
+foò alì filenameó witè thå extensioî "COM"®  Notå thaô SWEEĞ  caî 
+finä  systeí fileó aó well¬  sï nï additionaì informatioî neeä bå 
+given.
+
+SWEEP B:*.COM *
+     Thå presencå oæ thå seconä asterisë indicateó tï SWEEĞ  thaô 
+yoõ  wisè tï scaî alì useò areaó oæ thå indicateä disë drive®  Iî 
+thió case¬ alì "COM¢ fileó oî alì useò areaó oî drivå B.
+
+     Combinationó  oæ thå abovå arå acceptable¬  anä yoõ maù eveî 
+loç tï alì useò areas¬  anä finä alì fileó witè thå specificatioî 
+"*.ª *".
+:Help
+
+     Aô anù point¬ yoõ maù requesô thå maiî helğ menõ bù pressinç 
+'?'.
+   1. B0: -WORK   .001    0K : ?
+:Moving Forward and Backward
+
+     Aó yoõ caî see¬  thå twï mosô commoî commandó wilì bå movinç 
+forwarä anä backwardó througè thå directory® Eitheò thå SPACÅ baò 
+(<SP>)¬  oò thå RETURÎ keù (<CR>© maù bå useä tï movå forward® Tï 
+movå backwards¬ simplù uså thå 'B§ key.
+
+     Notå  thaô  alì commandó iî SWEEĞ caî bå eitheò iî uppeò  oò Šlowercase.
+:Exiting
+
+     Tï exit¬  jusô uså thå 'X§ command®  Thió wilì returî yoõ tï 
+thå  samå  drivå  anä  useò areá thaô  yoõ  invokeä  SWEEĞ  from¬ 
+regardlesó oæ anythinç yoõ maù havå donå iî SWEEP.
+:Finding a File
+
+     Sincå yoõ maù havå manù hundredó oæ fileó selected¬  yoõ maù 
+wisè  tï  movå  rapidlù tï á particulaò file®  Yoõ  maù  dï  thió 
+througè thå 'F'¬ oò FINÄ command.
+
+   1. B0: -WORK   .001    0K : f  Which file? BASCOM
+   8. B0: BASCOM  .COM   32K : 
+
+     Thå  Finä  commanä alwayó startó lookinç froí  entrù  numbeò 
+one® Yoõ maù uså thå standarä CP/Í syntaø foò wildcardinç (egº tï 
+finä thå firsô .HEØ file¬  yoõ maù uså *.HEX)¬ anä alsï notå thaô 
+thå  Finä commanä wilì filì alì blanë spaceó witè questioî marks® 
+Thió  makeó thå searcè stringó "B*.*"¬  "B"¬  anä "B??????.¢  alì 
+finä thå firsô filå beginninç witè "B"®  Aó yoõ  experiment¬  yoõ 
+wilì finä otheò interestinç useó foò thió command.
+:Viewing and Printing a File
+
+     Thå Vie÷ command¬  invokeä witè á 'V'¬ wilì typå thå currenô 
+filå ontï thå screen¬  unsqueezinç thå filå iæ required®   Aô thå 
+enä oæ eacè pagå oî thå screen¬  vie÷ wilì stop¬ anä allo÷ yoõ tï 
+aborô  thå viewinç witè á ^Ã oò á ^X®  Tï geô onå morå linå  froí 
+thå file¬ hiô thå spacå bar® Tï geô anotheò page¬ hiô thå <CR¾ oò 
+RETURÎ key.
+
+     Notå thaô thió commanä wilì NOÔ prevenô yoõ froí listinç ANÙ 
+typå oæ file¬  sï yoõ musô uså youò owî judgemenô oî whaô caî anä 
+cannoô  bå listed®
+
+
+     Thå Prinô command¬ invokeä witè á 'P'¬ wilì senä thå currenô 
+file¬  witè  nï  modificationó  oò paging¬  tï thå  currenô  LSTº 
+device®  Yoõ  maù  aborô thå prinô witè á ^Ã  oò  ^X®  Alì  otheò 
+featureó oæ thå Vie÷ commanä apply.
+:Deleting a File
+
+     Yoõ caî deletå thå currenô filå jusô bù hittinç thå 'D§ key® 
+Beforå deletioî occurs¬ yoõ wilì bå prompted.
+  12. B0: CDP1    .      40K : d  Delete file? y
+  12. B0: DEAD    .DAT  100K :
+
+     Iæ  anù replù otheò thaî 'y§ oò 'Y§ ió giveî thå filå ió noô 
+deleted®  Iæ thå filå ió deleted¬ iô ió removeä froí thå lisô anä 
+thå nexô filå ió giveî thå currenô file'ó number® 
+Š     If the file is a Read Only file, you will be prompted again:
+  12. B0: CDP1    .      40K : d  Delete file? y  R/O. Delete? y
+  12. B0: DEAD    .DAT  100K :
+:Copying a File
+
+     While on any file, you may copy that file to:
+          A) Another name, on the same drive/user
+          B) Another name, on a different drive/user
+          C) The same name, on a different drive/user
+
+     SWEEĞ  wilì  prevenô  yoõ froí copyinç á filå  tï  thå  samå 
+drive/useò  thaô  thå sourcå filå resideó on®  Otheò  thaî  that¬ 
+therå arå nï restrictionó oî wherå yoõ wisè thå filå tï be®  Iæ á 
+filå  existó  oî thå samå drive/useò thaô yoõ wisè tï  placå  thå 
+destinatioî  file¬  thå  existinç filå ió deleteä  automatically¬ 
+eveî  iæ  iô ió Reaä Only®  Wheî SWEEĞ copieó  á  file¬  alì  thå 
+attributeó  oæ thå originaì filå arå passeä oî tï thå destinatioî 
+file®  Thus¬  iæ á filå ió á SYS¬  R/Ï file¬ SWEEĞ wilì causå thå 
+destinatioî  filå tï bå SYS¬  R/Ï afteò thå filå copù  haó  takeî 
+place.
+
+  12® B0º CDP±    ®      40Ë º ã  Copù tï (filespec)¿ C9:BACK.CDĞ
+~
+     Iæ  yoõ wisè tï preservå thå namå oæ thå file¬  yoõ maù jusô 
+enteò thå destinatioî drive/useò parô oæ thå filespeã (eg® C9º iî 
+thå precedinç examplå woulä havå copieä thå filå tï drivå Ã  useò 
+9¬  retaininç thå namå CDP1)® Jusô enterinç thå drivå parô oæ thå 
+filespeã  causeó  SWEEĞ tï retaiî thå useò numbeò oæ  thå  sourcå 
+file.
+
+     Iæ thå filenamå ió followeä bù á space¬ theî á "V"¬ thå filå 
+wilì bå verifù reaä afteò iô ió written® SWEEĞ maintainó á CRÃ oæ 
+thå filå aó iô ió writinç thå file¬ anä verifieó thió CRC.
+:Renaming Files
+
+     The Rename command ('R') may be used to:
+          A) Change the name of one file
+          B) Change the names of many files
+          C) Change the user number of one file
+          D) Change the user number of many files
+
+     To just change the name of one file, the syntax is simple:
+
+  12® B0º CDP±    ®      40Ë º r  New name, or *? CDP2
+  12. B0: CDP2    .      40K :
+
+     You may also change the user number of the file, as follows:
+
+  12® B0º CDP±    ®      40Ë º r  New name, or *? B1:CDP2
+  12. B1: CDP1    .      40K :
+ Š     Notå  thaô iæ alì useò areaó arå noô specifieä iî thå  logoî 
+oæ SWEEP¬ thå filå maù noô bå showî oî youò lisô wheî renaminç tï 
+anotheò useò area.
+~
+     Tï changå á grouğ oæ fileó froí onå namå tï another¬ yoõ maù 
+enteò thå followinç commanä aô anù file:
+
+   9. B0: BASIC   .COM   24K : r  New name, or *? *
+
+Old name? *.HEX
+New name? *.BAK
+
+     Aô  thió  poinô  alì fileó witè thå extensioî .HEØ  wilì  bå 
+renameä  tï thå samå filenamå buô witè thå  extensioî  .BAK®  Yoõ 
+wilì seå á runninç displaù oî thå screeî aó eacè filå ió renamed® 
+Anù  valiä wildcarä maù bå useä tï selecô thå sourcå  files¬  anä 
+thå destinatioî fileó wilì takå onå characteò froí thå sourcå foò 
+eacè  '?§  iî  thå name®  Aî asterisë qualifieó  aó  fillinç  thå 
+remaindeò oæ thå fielä witè '?'®  Iæ thå destinatioî filå exists¬ 
+thå renamå ió noô made.
+~
+     Yoõ  maù  alsï chooså tï renamå á grouğ oæ fileó tï  anotheò 
+useò area¬ optionallù changinç theiò nameó aó well:
+
+   9. B0: BASIC   .COM   24K : r  New name, or *? *
+
+Old name? *.HEX
+New name? B1:*.BAK
+
+     Thió commanä wilì renamå alì .HEØ fileó oî drivå Â useò ° tï 
+thå  samå filename¬  buô witè thå extensioî .BAK¬  anä placå  thå 
+resultanô filå iî useò 1®  Yoõ maù wanô tï trù thió commanä á fe÷ 
+timeó tï geô thå hanç oæ it¬ buô iô ió extremelù powerful.
+:Space Command
+
+     Thå  Spacå commanä ('S'© simplù askó yoõ foò á  drivå  code¬ 
+theî  telló  yoõ  thå remaininç spacå oî thå drivå  yoõ  specify® 
+
+     Beforå doinç thå spacå check¬ á drivå reseô ió performed¬ sï 
+feeì freå tï changå disks.
+:Log Command
+
+     Thå Loç commanä ('L'© allowó yoõ tï changå youò directorù tï 
+anotheò drivå oò user®  Additionally¬ iô allowó yoõ tï re-specifù 
+thå wildcarä masë jusô likå enterinç thå SWEEĞ prograí froí CP/M® 
+Aó well¬  thå drivå systeí ió reset¬  sï agaiî yoõ shoulä bå ablå 
+tï  changå  tï á differenô diskettå aô thió poinô oò  tï  anotheò 
+parô  oæ thå samå diskette®  Wheî thå Loç commanä  ió  used¬  thå 
+instructionó arå reprinteä foò review.
+
+  16. B0: DD      .COM    4K : l  New drive/user/mask? A14:*.HEXŠ:Tag Command
+
+     Tagginç  á file¬  iî itó simplesô form¬  caî bå accomplisheä 
+jusô  bù  depressinç  thå  'T§ keù wheî thå  filå  tï  bå  taggeä 
+appears®
+
+     Whaô exactlù ió á tag¿  Á taggeä filå ió á filå iî thå  lisô 
+oæ  filenameó  thaô haó aî asterisë nexô tï thå coloî  afteò  thå 
+namå oæ thå file¬ aó showî below.
+
+   9. B0: BASIC   .COM   24K :*
+
+     Á taggeä filå ió differenô froí aî untaggeä filå iî thaô yoõ 
+maù  no÷ requesô aî operatioî thaô dealó witè  severaì  unrelateä 
+fileó (eg®  Fileó thaô wilì noô matcè usinç onlù onå wildcard)® Á 
+samplå "tag¢ sessioî ió shown:
+
+   9. B0: BASIC   .COM   24K : t  Tagged files =   24K (  23K).
+  10. B0: BRUN    .COM   16K : t  Tagged files =   40K (  39K).
+
+     Notå  thaô  thå "T¢ commanä automaticallù performó  á  "movå 
+forward¢ operation.
+
+     Tï  thå righô oæ thå "Taggeä files¢ messagå twï numberó  arå 
+displayed® Thå numberó arå thå totaì size¬ iî K¬ oæ thå fileó yoõ 
+havå  taggeä  sï far®  Thió ió usefuì if¬  foò example¬  yoõ  arå 
+movinç fileó froí onå sizå oæ diskettå tï another¬  smaller¬ sizå 
+diskette®
+
+     Thå  seconä  number¬  iî  parenthisis¬  ió thå totaì  iî  1ë 
+blocks.
+:Wildcard Tagging
+
+     Anotheò waù tï taç fileó ió thå wildcarä taç function®  Thió 
+functioî acceptó á CP/Í typå wildcarä anä proceedó tï taç alì thå 
+fileó thaô matcè thå wildcard®  Tï invokå this¬  jusô hiô 'W§ anä 
+yoõ wilì bå prompteä witè thå messagå 'Whicè files¿  '® Enteò anù 
+CP/Í wildcard¬  righô dowî tï á uniquå filename¬ anä iæ thaô filå 
+existó iô wilì bå taggeä anä displayed.
+:Untagging Files
+
+     Iæ  yoõ caî taç á file¬  yoõ musô bå ablå tï Untaç á filå aó 
+well.
+
+   9. B0: BASIC   .COM   24K :* u  Tagged files =   16K (  16K).
+  10. B0: BRUN    .COM   16K :*
+
+     Aó  yoõ  caî see¬  thå untaç functioî subtractó thå  currenô 
+file'ó  sizå  froí  thå total¬  theî displayó thå  totaì  oæ  thå 
+remaininç files.
+:Mass Copy Command, 'V' Option (verify copy), Retag CommandŠ
+     No÷  thaô wå havå á numbeò oæ fileó "tagged"¬  whaô dï wå dï 
+witè them¿  Well¬ thå Masó copù functioî ió onå oæ thoså thaô acô 
+oî manù files® Itó purposå ió tï copù thå taggeä file(s© froí onå 
+drive/useò areá tï anotheò drive/user.
+
+  12. B0: CDP1    .      40K : m
+  Copy to drive/user? A14: V
+
+Copying   --> B0: BRUN    .COM  to A14:  with verify
+Verifying --> file ok.
+
+     Thå  Ö ió optional¬  anä iô indicateó thaô yoõ wisè tï  havå 
+thå filå verifieä afteò iô ió written.
+
+     Aó yoõ caî see¬  thå fileó havå beeî senô tï drivå  A¬  useò 
+14®  Iæ yoõ wisè thå taggeä fileó tï residå iî thå samå useò areá 
+aó thå sourcå fileó afteò thå copy¬ dï noô specifù á useò areá iî 
+thå  Masó command®  Thió wilì causå SWEEĞ tï puô thå filå iî  thå 
+samå useò areá aó thå sourcå file.
+~
+     SWEEĞ  wilì  noô allo÷ yoõ tï copù á filå tï thå samå  drivå 
+anä useò areá aó thå source® Thå copù ió simplù noô made.
+
+     Afteò anù masó filå operation¬  thå tagó arå "reset¢ aó eacè 
+filå ió copied®  Visually¬  theù changå froí á "*¢ tï á "#"®  Thå 
+fileó  arå logicallù untagged¬  anä wilì responä  aó  such®  But¬ 
+sincå  SWEEĞ  rememberó them¬  yoõ caî automaticallù retaç  theså 
+files®  Thió ió usefuì if¬ foò example¬ yoõ neeä tï copù thå samå 
+fileó  tï  á  numbeò oæ differenô disketteó oò useò  areaó  oî  á 
+drive® Tï invokå this¬ uså thå "A¢ command.
+
+  12. B0: CDP1    .      40K : a
+
+Retagging--> B0: BRUN    .COM   Tagged files =    16K (  16K)
+:Erasing Files
+
+     Yoõ maù wanô tï copù á grouğ oæ files¬ theî deletå theí froí 
+thå sourcå disë afteò thå copù haó beeî made® Tï dï this¬ yoõ caî 
+uså eitheò thå "C¢ commanä tï copy¬  followeä bù thå "D¢ command¬ 
+whicè ió tedious¬  oò á combinatioî oæ thå "T"¬ "M"¬ "A"¬ anä thå 
+"E¢ commands®  Thå Å commanä Eraseó taggeä oò untaggeä files¬  aô 
+youò option¬ oî á globaì scale.
+
+  12. B0: CDP1    .      40K : e
+Erase Tagged or Untagged files (T/U)? t
+Do you wish to be prompted (Y/N/A)? n
+
+Deleting  --> B0: BRUN    .COM
+
+     Iæ  yoõ specifù Untaggeä files¬  thå untaggeä fileó wilì  bå Šerased®  Yoõ  maù wisè tï bå prompteä beforå eacè filå ió  tï  bå 
+deleted¬ anä yoõ caî dï thió viá thå seconä question.
+:Squeezing and Unsqueezing Files
+
+     Thå  'Q§ commanä allowó yoõ tï Squeezå anä Unsqueezå  taggeä 
+files®  Thió filå squeezå prograí ió compatiblå witè thå originaì 
+squeeze/unsqueezå programó writteî iî thå 'C§ languagå bù Richarä 
+Greenlaw®  Afteò hittinç Q¬ yoõ wilì seå thå prompt:
+
+Squeeze, Unsqueeze or Reverse (S/U/R)? 
+
+     Afteò  answerinç thió skill-testinç question¬  yoõ  wilì  bå 
+askeä  whicè drive/useò yoõ wisè tï placå thå destinatioî  files® 
+Thå syntaø herå ió thå samå aó foò thå Movå command¬ excepô iô ió 
+permissiblå  tï  'Q§ thå fileó bacë tï thå samå  drive/useò  thaô 
+they originated.
+
+     Wheî  Ñ ió invoked¬  yoõ arå askeä iæ yoõ wisè  tï  Squeeze¬ 
+Unsqueezå  oò Reverse®  Á carriagå returî herå wilì returî yoõ tï 
+thå commanä linå oæ SWEEP®
+~
+     Iæ  yoõ  selecô  Ó foò Squeeze¬  alì taggeä  fileó  wilì  bå 
+examineä  tï  seå  iæ iô ió "worth¢ squeezinç  them®  Fileó  thaô 
+exibiô ANÙ spacå reduction¬  eveî iæ iô ió onlù onå sector¬  wilì 
+bå squeezed® Iæ thå fileó ió noô "worth¢ squeezing¬ thå filå wilì 
+simplù bå copieä tï thå destinatioî drive/user.
+
+     Iæ  yoõ  selecô Õ foò Unsqueeze¬  alì taggeä fileó  wilì  bå 
+examineä tï seå iæ theù arå squeezed®  Iæ theù are¬  theù wilì bå 
+unsqueezed¬  anä moveä tï thå destinatioî drive/user® Iæ theù arå 
+not squeezed, then they are simply copied.
+
+     Iæ  yoõ selecô Ò foò Reverse¬  alì fileó thaô  arå  squeezeä 
+wilì  bå  unsqueezed¬  anä alì fileó thaô arå unsqueezeä wilì  bå 
+squeezeä  (iæ  iô  ió wortè it)¬  anä moveä  tï  thå  destinatioî 
+drive/user.
+
+     Thå  mosô attractivå featurå oæ thå Ñ commanä iî generaì  ió 
+thå abilitù tï Squeezå fileó ONLÙ iæ iô ió "worth¢ it® Thió meanó 
+thaô  bù  usinç SWEEP¬  yoõ caî archivå datá  intï  thå  absolutå 
+minimuí amounô oæ spacå possible®
+:Setting File Status
+
+     Yoõ  maù seô thå attributeó oæ á grouğ oæ taggeä fileó  jusô 
+likå STAT¬ oò PROT® Tï dï this¬ taç thå files¬ anä selecô thå "Y¢ 
+command.
+
+  12. B0: CDP1    .      40K : y  Which flags (1-4,R,S,A)? r,s
+ŠSetting ---> B0: BRUN    .COM to R/O SYS
+
+     Thå  flagó yoõ maù seô arå thå F1-F´ flags¬  aó welì aó  thå 
+Reaä Only¬  System¬  anä Archivå (MP/M¬  CP/Í ³ only© flags®  Anù 
+flagó  yoõ dï noô specifù wilì bå reset®  Tï reseô alì thå  flagó 
+(IEº  Changå tï R/W¬ DIÒ anä nï "Sysoğ tag")¬ jusô enteò á singlå 
+commá oò spacå aô thå "Whicè flags¢ prompt®  Notå thaô thå  flagó 
+iî  thå  "Whicè flags¢ questioî dï noô havå tï bå entereä witè  á 
+commá betweeî them¬  aó anythinç (oò nothinç aô all!© wilì do® Aó 
+faò aó thå prograí ió concerneä  "RSA"¬  "Ò Ó A"¬ anä "R,Ó A¢ arå 
+alì valid.
+

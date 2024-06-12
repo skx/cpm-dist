@@ -1,0 +1,91 @@
+Introduction
+Command Line
+Submit File Conventions
+:Introduction
+EØ ió á niftù anä fasô waù oæ executinç .SUÂ files¬  (useó raí aó 
+thå  SUÂ filå buffeò ratheò thaî spreadinç iô ouô oî  disk)®   EØ 
+alsï  allowó batcè entrù oæ á serieó oæ commandó whicè iô  storeó 
+iî  memorù  foò subsequenô continuouó  execution®   EØ  relocateó 
+itselæ  anä itó buffeò tï higè memorù jusô belo÷ CCĞ anä  adjustó 
+thå CP/Í BDOÓ entrù tï protecô itself.
+
+EØ  replaceó  thå functionó oæ botè SUBMIT.COÍ anä XSUB.COÍ  froí 
+Digitaì Research¬ Inc. and is named "SUBMIT.COM" on this system.
+:Command Line
+EX may be invoked two ways:
+
+1. EX cr
+           Thió  forí wilì causå EØ tï prompô witè á linå  numbeò 
+           anä  `:§  foò  eacè commanä linå tï  bå  executed®   Á 
+           carriagå  returî  entereä  bù  itselæ  terminateó  thå 
+           promptinç  anä startó executioî oæ thå  commanä  lineó 
+           thaô havå beeî entered.
+
+2. EX <submit file> <parameters> cr
+
+	   Thió forí wilì causå EØ tï loaä thå <submiô file¾ intï 
+           memorù  anä perforí <parameters¾ substitutioî thå samå 
+           aó SUBMIT¬  witè thå additioî oæ thå `^$§ supporô  foò 
+           missinç  parameters®   Afteò alì parameteró havå  beeî 
+           substituteä  thå texô froí thå filå ió executeä aó  iæ 
+           waó entereä froí thå console.
+
+EX.COÍ  maù bå terminateä durinç executioî bù enterinç  control-Ã 
+froí thå console.
+:Submit File Conventions
+
+[noteº  unlesó  otherwiså stated¬  thå `<.......>§ sequenceó  arå 
+        useä  onlù  tï  indicatå characteò stringó thaô  musô  bå 
+        replaceä witè thå valueó described.]
+               
+^<á characterº Á thrõ underscore¾
+               generateó  thå correspondinç  controì  character®  
+               Lowercaså letteró á thrõ ú arå converteä tï upper
+               case.
+
+$<±  thrõ 9¾
+     generateó  parameteò  <± thrõ 9¾ substitutioî  thå  samå  aó 
+     SUBMIT¬ unlesó `^$§ ió beinç useä aó describeä below.
+
+^$<parm± parm2.....parm9¾
+     generateó  á lisô oæ parameteró thaô wilì bå useä iî thå $<± Š     thrõ 9¾ parameteò substitutioî iæ thå useò doeó noô  providå 
+     anù  parameteró  oò  onlù somå oæ thå parameteró oî  thå  EØ 
+     commanä line.
+~
+;;   generateó  aî EØ onlù commenô (thå ;»  anä thå remaindeò  oæ 
+     thå currenô linå arå noô moveä tï thå EØ commanä buffer.).
+
+|    generateó á Carriagå Return.
+
+^|   generateó á Carriagå Returî anä Linå Feed.
+
+|,cr,lf,1AH(EOF)
+     wilì  eliminatå  alì characteró froí thå lasô  ü  thrõ  thió 
+     sequence.
+
+^.   toggleó  prinô suppressioî foò characteró froí SUBMIÔ  file®  
+     (Exampleº  DIÒ ^.*.COM^® wilì executå DIÒ *.COÍ buô onlù DIÒ 
+     wilì bå echoeä tï thå console.)
+
+^#   Message suppression toggle.
+~
+^<   forceó  immediatå  displaù  oæ thå characteró  followinç  iô 
+     untiì ^¾ ió encountered®   ^<char¾ controì support¬ $<± thrõ 
+     9¾  parameteò  substitution¬   anä  $<char¾  escapå  supporô 
+     continueó durinç thió displaù mode®   (Exampleº ^<^[ETesô EØ 
+     1.4^|^¾  wilì generatå thå sequencå tï cleaò thå  screeî  oî 
+     thå  H/Z1¹ terminaì anä displaù `Tesô EØ 1.4§ aô thå  upper-
+     lefthanä  corneò oæ thå screeî anä thå cursoò wilì bå oî thå 
+     nexô line.)
+
+^:   causeó EØ tï re-executå thå .SUÂ filå froí thå beginning.
+
+^?   causeó  EØ tï waiô foò á carriagå returî responså  froí  thå 
+     console®  Control-Ã wilì terminatå EØ aô thió poinô also.
+
+$$   generateó thå ¤ (dollar-sign).
+
+$^   generateó thå Ş (careô oò up-arrow).
+
+$|   generateó thå ü (brokeî verticaì bar).
+
