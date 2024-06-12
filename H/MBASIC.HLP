@@ -16,23 +16,23 @@ Compiler Commands and Switches
 Compiler Error Messages
 :Introduction to the Microsoft BASIC Interpreter
 
-     Thió  HELĞ Filå ió deriveä froí thå "Microsofô BASIÃ Referencå  Book"¬ 
-anä  iô  ió divideä intï twï partó -- onå coverinç thå Interpreteò anä  thå 
-otheò  coverinç thå Compiler®   Theså programó procesó programó writteî  iî 
-almosô  exactlù  thå  samå languagå -- Microsofô  BASIC»  therå  arå  minoò 
-differenceó betweeî thå two¬  however¬  anä theså arå discusseä iî thå filå 
+     This  HELP File is derived from the "Microsoft BASIC Reference  Book", 
+and  it  is divided into two parts -- one covering the Interpreter and  the 
+other  covering the Compiler.   These programs process programs written  in 
+almost  exactly  the  same language -- Microsoft  BASIC;  there  are  minor 
+differences between the two,  however,  and these are discussed in the file 
 under the Compiler Introduction.
 
      The MBASIC (Microsoft BASIC) Interpreter is invoked as follows --
 
           MBASIC [<filename>][/F:<# files>][/M:<memory loc>]
 
-Iæ  <filename¾ ió present¬  MBASIÃ proceedó aó iæ á RUÎ <filename¾  commanä 
-werå typeä afteò initializatioî ió complete®   Á defaulô extensioî oæ  .BAÓ 
-ió  assumed®   Iæ /F:<£ files¾ ió present¬  iô setó thå numbeò oæ disë datá 
-fileó  thaô maù bå opeî aô anù onå timå durinç thå executioî oæ á  program®  
-Thå  defaulô  herå  ió 3®   Thå /M:<memorù loc¾  setó  thå  highesô  memorù 
-locationó thaô wilì bå useä bù MBASIC®   Alì memorù tï thå starô oæ FDOÓ ió 
+If  <filename> is present,  MBASIC proceeds as if a RUN <filename>  command 
+were typed after initialization is complete.   A default extension of  .BAS 
+is  assumed.   If /F:<# files> is present,  it sets the number of disk data 
+files  that may be open at any one time during the execution of a  program.  
+The  default  here  is 3.   The /M:<memory loc>  sets  the  highest  memory 
+locations that will be used by MBASIC.   All memory to the start of FDOS is 
 used by default.
 :Special Characters
 ^A        Enters Edit Mode on line being typed or last line typed
@@ -53,7 +53,8 @@ used by default.
 &O,&      Prefix for Octal Constant
 &H        Prefix for Hex Constant
  :        Separates statements typed on the same line
- ?        Equivalent to PRINT statementŠ:Variable Type Declaration Characters
+ ?        Equivalent to PRINT statement
+:Variable Type Declaration Characters
 
 $    String              0 to 255 chars
 
@@ -66,8 +67,8 @@ $    String              0 to 255 chars
 
 Command   Syntax                        Function
 AUTO      AUTO [line][,inc]             Generate line numbers
-CLEAÒ     CLEAÒ [,[exp1][,exp2]İ        Cleaò prograí variables»  Exp± setó 
-                                        enä  oæ memorù anä Exp² setó amounô 
+CLEAR     CLEAR [,[exp1][,exp2]]        Clear program variables;  Exp1 sets 
+                                        end  of memory and Exp2 sets amount 
                                         of stack space
 CONT      CONT                          Continue program execution
 DELETE    DELETE [[start][-[end]]]      Delete program lines
@@ -88,12 +89,12 @@ RESET     RESET                         Init CP/M; use after disk change
 Command   Syntax                        Function
 RUN       RUN [line number]             Run a prog (from a particular line)
           RUN filename[,R]              Run a prog on disk
-SAVÅ      SAVÅ filename[,Á oò ,Pİ       Savå proç ontï disk»  ,Á saveó proç 
+SAVE      SAVE filename[,A or ,P]       Save prog onto disk;  ,A saves prog 
                                         in ASCII and ,P protects file
 SYSTEM    SYSTEM                        Return to CP/M
 TROFF     TROFF                         Turn trace off
 TRON      TRON                          Turn trace on
-WIDTÈ     WIDTÈ [LPRINTİ exğ            Seô terí oò printeò carriagå width» 
+WIDTH     WIDTH [LPRINT] exp            Set term or printer carriage width; 
                                         default is 80 (term) and 132 (prin)
 :Edit Mode Subcommands
 A         Abort -- restore original line and restart Edit
@@ -113,9 +114,9 @@ Xstr<ESC> Goto the end of the line and insert string
 Statement Syntax                        Function
 CALL      CALL variable [(arg list)]    Call assembly or FORTRAN routine
 CHAIN     CHAIN [MERGE] filename [,[line exp][,ALL][,DELETE range]]
-               Calì  á prograí anä pasó variableó tï it»  MERGÅ witè  ASCIÉ 
-               fileó allowó overlays» starô aô linå exğ iæ given» ALÌ meanó 
-               alì variableó wilì bå passeä (otherwiså COMMOÎ only)» DELETÅ 
+               Call  a program and pass variables to it;  MERGE with  ASCII 
+               files allows overlays; start at line exp if given; ALL means 
+               all variables will be passed (otherwise COMMON only); DELETE 
                allows deletion of an overlay before CHAIN is executed
 COMMON    COMMON list of vars           Pass vars to a CHAINed prog
 DEF       DEF FNx[(arg list)]=exp       Arith or String Function
@@ -141,7 +142,7 @@ IF/THEN   IF exp THEN stmt[:stmt] [ELSE stmt ... ]
                                         IF exp <> 0 then ... else ...
 LET       [LET] var=exp                 Assignment
 
-MID¤      MID$(string,n[,m])=string²    Replacå  á  portioî oæ strinç  witè 
+MID$      MID$(string,n[,m])=string2    Replace  a  portion of string  with 
                                         string2; start at pos n for m chars
 NEXT      NEXT var[,var ... ]           End FOR
 ON ERROR  ON ERROR GOTO line            Error trap subroutine
@@ -164,7 +165,7 @@ RESUME    RESUME or RESUME 0            Return from ON ERROR GOTO
           RESUME line                   Return to specified line
 RETURN    RETURN                        Return from subroutine
 STOP      STOP                          Stop prog and print BREAK msg
-WAIÔ      WAIÔ prot,mask[,selectİ       Pauså untiì inpuô porô [XOÒ selectİ 
+WAIT      WAIT prot,mask[,select]       Pause until input port [XOR select] 
                                         AND mask <> 0
 
 WHILE/    WHILE exp stmts ... WEND      Execute stmts as long as exp is T
@@ -179,7 +180,7 @@ Specifier Digits    Chars     Definition
   -         0         1       Trailing sign (- if neg, <sp> otherwise)
   **        2         2       Leading asterisk
 
-  $¤        ±         ²       Floatinç  dollaò  sign»  placeä iî  fronô  oæ 
+  $$        1         2       Floating  dollar  sign;  placed in  front  of 
                               leading digit
   **$       2         3       Asterisk fill and floating dollar sign
   ,         1         1       Use comma every three digits
@@ -205,9 +206,9 @@ GET       GET [#]f[,record number]
            Read a record from a random disk file
 INPUT     INPUT [;] [prompt string;] var [,var ...]
           INPUT [;] [prompt string,] var [,var ...]
-           Reaä  datá froí thå terminal»  leadinç semicoloî suppresseó echï 
-           oæ  <CR>/<LF¾ anä semicoloî afteò prompô strinç causeó  questioî 
-           marë  afteò prompô whilå commá afteò prompô suppresseó  questioî 
+           Read  data from the terminal;  leading semicolon suppresses echo 
+           of  <CR>/<LF> and semicolon after prompt string causes  question 
+           mark  after prompt while comma after prompt suppresses  question 
            mark
 
 Statement Syntax/Function
@@ -215,12 +216,12 @@ INPUT     INPUT [;] [prompt string;] var [,var ...]
 KILL      KILL filename
            Delete a disk file
 LINE      LINE INPUT [;] [prompt string;] string var
-INPUÔ      Reaä aî entirå linå froí terminal»  leadinç semicoloî suppresseó 
+INPUT      Read an entire line from terminal;  leading semicolon suppresses 
            echo of <CR>/<LF>
           LINE INPUT #f,string var
            Read an entire line from a disk file
 LSET      LSET field var=string exp
-           Storå datá iî randoí filå buffeò left-justifieä oò  left-justifù 
+           Store data in random file buffer left-justified or  left-justify 
            a non-disk string in a given field
 OPEN      OPEN mode,[#] f,filename
            Open a disk file; mode must be one of --
@@ -240,7 +241,7 @@ PUT       PUT [#] f [,record number]
 READ      READ var [,var ...]
            Read data from a DATA statement into the specified vars
 RSET      RSET field var = string exp
-           Storå  datá  iî  á randoí filå buffeò righô justifieä  oò  righô 
+           Store  data  in  a random file buffer right justified  or  right 
            justify a non-disk string in a given field
 WRITE     WRITE [list of exps]
            Output data to the terminal
@@ -313,17 +314,17 @@ CHR$(exp)      Returns a 1-char string whose char has ASCII code of exp
 FRE(str)       Returns remaining memory free space
 HEX$(exp)      Converts a number to a hexadecimal string
 INPUT$(length [,[#]f])
-               Returnó á strinç oæ lengtè charó reaä froí consolå oò froí á 
+               Returns a string of length chars read from console or from a 
                disk file; characters are not echoed
 
 INSTR([exp,]str1,str2)
-               Returnó  thå firsô positioî oæ thå firsô occurrencå oæ  str² 
+               Returns  the first position of the first occurrence of  str2 
                in str1 starting at position exp
 LEFT$(str,len) Returns leftmost length chars of the string expression
 LEN(str)       Returns the length of a string
 MID$(string,start[,length])
-               Returnó charó froí thå middlå oæ thå strinç startinç aô  thå 
-               positioî  specifieä  tï thå enä oæ thå strinç oò foò  lengtè 
+               Returns chars from the middle of the string starting at  the 
+               position  specified  to the end of the string or for  length 
                characters
 
 Function       Action
@@ -334,12 +335,12 @@ RIGHT$(str,len)
 SPACE$(exp)    Returns a string of exp spaces
 STR$(exp)      Converts a numeric expression to a string
 STRING$(length,str)
-               Returnó  á strinç lengtè lonç containinç thå firsô  chaò  oæ 
+               Returns  a string length long containing the first  char  of 
                the str
 STRING$(length,exp)
-               Returnó  á strinç lengtè lonç containinç charó witè  numeriã 
+               Returns  a string length long containing chars with  numeric 
                value exp
-VAL(str©       Convertó  thå  strinç  representatioî oæ  á  numbeò  tï  itó 
+VAL(str)       Converts  the  string  representation of  a  number  to  its 
                numeric value
 :I/O and Special Functions
 
@@ -352,7 +353,7 @@ EOF(f)         Returns TRUE (-1) if file is positioned at its end
 ERL            Error Line Number
 ERR            Error Code Number
 INP(port)      Inputs a byte from an input port
-LOC(f©         Returnó nexô recorä numbeò tï reaä oò writå (randoí file© oò 
+LOC(f)         Returns next record number to read or write (random file) or 
                number of sectors read or written (sequential file)
 LPOS(n)        Returns carriage position of line printer (n is dummy)
 
@@ -371,9 +372,9 @@ TAB(exp)       Used in PRINT statements to tab to specified position
 
 USR[n](arg)    Calls the user's machine language subroutine with the arg
 
-VARPTR(var©    Returnó addresó oæ vaò iî memorù oò zerï iæ vaò haó noô beeî 
+VARPTR(var)    Returns address of var in memory or zero if var has not been 
                assigned a value
-VARPTR(#f©     Returnó thå addresó oæ thå disë I/Ï buffeò assigneä tï  filå 
+VARPTR(#f)     Returns the address of the disk I/O buffer assigned to  file 
                number
 :Interpreter Error Codes
 Code Error                         Code Error
@@ -404,7 +405,7 @@ Code Error                         Code Error
  57  Disk I/O error                 67  Too many files
 :Introduction to the Microsoft BASIC Compiler
 
-     Thå followinç direcô modå commandó arå NOÔ implementeä oî thå compileò 
+     The following direct mode commands are NOT implemented on the compiler 
 and will generate an error message --
 
           AUTO      CLEAR     CLOAD
@@ -414,7 +415,7 @@ and will generate an error message --
           LOAD      MERGE     NEW
           ERASE
 
-     Thå  followinç statementó arå useä differentlù witè thå compileò  thaî 
+     The  following statements are used differently with the compiler  than 
 with the interpreter (refer to the manual for details) --
 
           CALL      DEFINT    DEFSNG
@@ -434,14 +435,14 @@ where "command line" is --
 
 [dev:][obj file][,[dev:][lst file]]=[dev:]source file[/switch ...]
 
-     Iæ  jusô BASCOÍ ió used¬  thå useò wilì bå prompteä witè aî  asterisk¬ 
+     If  just BASCOM is used,  the user will be prompted with an  asterisk, 
 after which he should enter the command line.
 
 Switches --
 
 /E   Use this switch if ON ERROR GOTO with RESUME <line number> is used
 
-/Ø   Uså thió switcè iæ OÎ ERROÒ GOTÏ witè RESUME¬ RESUMÅ 0¬ oò RESUMÅ NEXÔ 
+/X   Use this switch if ON ERROR GOTO with RESUME, RESUME 0, or RESUME NEXT 
      is used
 
 /N   Do not list generated object code
@@ -452,7 +453,7 @@ Switches --
 
 /4   Recognize Microsoft 4.51 BASIC Interpreter conventions
 
-/Ã   Relaø  linå  numberinç   constraints»   lineó  neeä  noô  bå  numbereä 
+/C   Relax  line  numbering   constraints;   lines  need  not  be  numbered 
      sequentially; /4 and /C may not be used together
 
 /Z   Use Z80 opcodes

@@ -1,0 +1,39 @@
+                       VDE Version 2.1 Command Summary
+CURSOR MOVEMENT:       ^S cursor left   ^F fast right    |DELETION:          
+CPM arrow keys work    ^E cursor up     ^R scroll up     |<DEL> delete left  
+BUT up/down always     ^D cursor right  ^C scroll down   |^G delete at cursor
+does "fast left"       ^X cursor down   ESC-T top of file|^U undelete char   
+first                  ^Q to blk begin  ESC-E end of file|^Y del line left   
+ESC-<up> ESC-<dn> scroll up/down 4 lines                 |ESC-D delete block 
+ESC-<rt> ESC-<lt> horiz. scroll right/left 30 columns ========================
+======================================================|MISCELANEOUS:
+BLOCK COMMANDS:           |INSERTION:                 |^O toggle pagination
+^Q move to blk begin      |^N or <CR> new line        |^W toggle window
+ESC-B set block begin     |^V toggle insert           |^T toggle case
+(block end is cursor)     |<Tab> or ^I insert real tab|^B reformat para.
+ESC-D delete block        |ESC <TAB> insert space tab |^? help menu
+ESC-Y yank into buffer    |ESC-I insert disk file     |ESC-R set right margin
+ESC-G get text from buffer|===========================|ESC-H center "heading"
+ESC-W write buffer to disk|FILE COMMANDS:            ||ESC-ESC cancel ESC cmd
+==========================|ESC-V view disk dir       |=======================
+Find/Replace:             |ESC-L load new file       |MACRO COMMANDS:         
+^A repeat find            |ESC-N chg file name       |ESC-M define macro      
+^Z repeat replace         |ESC-S save/continue       |ESC-K store macro key   
+ESC-F find                |ESC-X save/exit           |ESC-n use stored macro
+ESC-C replace string      |ESC-Q quit/no save        |     (n=0...9)        
+      just found          |ESC-W write buffer to disk|^W pause (in macro only)
+==========================|ESC-I insert disk file    | command prompts:       
+PRINTER CONTROL:          |ESC-P print file          | * = execute 255 times  
+^P insert control code    ===========================| q = no update 'til done
+[Use twice in Macros]      ^D (toggle)               =========================
+(use these after ^P):      ^Y (toggle)                ^R (switch)
+^L insert formfeed         ^S (toggle)                ^E (switch)    
+^H overstrike              ^W (switch)                ^Q (switch)
+==============================================================================
+SPECIAL PRINTER FUNCTONS AND DEFINED MACROS:
+ESC-1                                 ESC-6
+ESC-2                                 ESC-7 
+ESC-3                                 ESC-8 
+ESC-4                                 ESC-9 
+ESC-5                                 ESC-0
+

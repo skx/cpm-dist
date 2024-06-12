@@ -1,0 +1,306 @@
+General Information
+Dectecting a 'Received Character Available'
+Detecting a 'Transmit Buffer Empty'
+Detecting a 'Clear To Send (CTS)'
+Detecting a 'Interupt Pending'
+Detecting a 'Break or Abort'
+Resetting the chip
+Selecting Data Bits, Stop bits, Parity status
+Using the interrupt abilities
+:General Information
+The Z80 SIO chip allows two serial type devices to be attached to it.
+It also has three interrupt lines on it that can be daisy chained.
+
+The Z80 SIO has three internal registers that can be read for status
+of the serial  device and seven registers for selecting options. For
+a  simplified  description  of this  chip, we  will assume  that the
+serial device we are working with  is RS232. We  will also not cover
+all of  the functions that  this chip offers, rather,  we will cover
+just what is needed to select data bits, stop  bits, parity, and the
+interupt request functions.
+:Dectecting a 'Received Character Available'
+   Read Register 0 (RR0)  is the internal  register  that is used to
+   get the  received character available flag. It  is located in the
+   least significant bit of the byte,  so, when you wish to look for
+   a received  character  available flag, the  following code can be
+   used: (Kaypro 10 example)
+
+   IN     A,(STATUS)            ;Read in  the status byte  into REGA
+   AND    01H                   ;And a with 1 to check for available
+   CP     01H                   ;Compare a with  the bit number need
+   JNZ    NOBYTE                ;If bit 1 not  set, no character now
+   IN     A,(DATA)              ;If character  available, into  REGA
+   RET                          ;Return  from  subroutine  to sender
+:Detecting a 'Transmit Buffer Empty'
+   Read Register 0  (RR0) is the  internal register that  is used to
+   get the  transmit  buffer empty flag.  It is  located in  the bit
+   location 2 (Starting with 0, counting left), so  when you wish to
+   see if the  transmit  buffer is empty, the  following code can be
+   used: (Kaypro 10 example)
+
+   PUSH   AF                    ;Store  the  byte  in 'A'  to  stack
+   TRANS:                       ;Place entry point for transmit here
+   IN     A,(STATUS)            ;Read in  the status  byte into REGA
+   AND    04H                   ;And a  with 4  to  check  for empty
+   CP     04H                   ;Compare a with  the bit number need
+   JNZ    TRANS                 ;Continue to loop to  transmit until
+   POP    AF                    ;Restore the byte to transmit into A
+   OUT    (DATA),A              ;Output the byte to transmit to port
+   RET                          ;Return  from  subroutine  to sender
+:Detecting a 'Clear To Send (CTS)'
+   Read register 0 (RR0)  is the internal register  that is  used to
+   get the clear to  send flag. It is located in the  bit location 5
+   (Starting with 0, counting  left), so when  you wish to  see if a
+   clear to send is being offered, you can use the following code:
+
+   CHECK:                       ;Set entry point to wait for CTS sig
+   IN     A,(STATUS)            ;Get  the  status  byte  into   REGA
+   AND    20H                   ;And a with  20H to check  for a CTS
+   CP     20H                   ;Compare a with  the bit number need
+   JNZ    CHECK                 ;If not set,  continue to loop until
+   RET                          ;Return  from  subroutine  to sender
+:Detecting a 'Interupt Pending'
+   Read register 0  (RR0) is the  internal register that  is used to
+   get the interupt pending flag. It is located  in the bit location
+   1, (Starting with 0, counting left),  so when you wish to  see if
+   interupt is awaiting service, the following code can be used:
+
+   IN     A,(STATUS)            ;Get the status byte into register A
+   AND    02H                   ;And  a  with  2  to  set  the  flag
+   CP     02H                   ;Compare a with  the bit number need
+   RET    NZ                    ;If no interupt is  awaiting, return
+   JP     SERVICE               ;If bit  set, service  the  interupt
+:Detecting a 'Break or Abort'
+   Read register 0  (RR0) is the  internal register that  is used to
+   get the break or abort flag. It is located in  the bit location 7
+   (Starting with 0, counting  left), so when  you wish to  see if a
+   break or an abort was requested, the following code can be used:
+
+   IN     A,(STATUS)            ;Get the status byte into register A
+   AND    80H                   ;And  a  with  80  to  set  the flag
+   CP     80H                   ;Compare a with  the bit number need
+   RET    NZ                    ;If   no   abort  or  break,  return
+   JP     ABORT                 ;If flag  was set,  go to  the abort
+:Resetting the chip
+The first operation of the chip  before requesting the parameters of
+the operations we will be doing is to reset  the chip. We do this by
+writing an 18H to Write Register 0 (WR0). Before we do that, we need
+to select Write register 0.
+
+   LD    A,00H                  ;Load a with a zero for the register
+   OUT   (STATUS),A             ;And  select Write  Register 0 (RR0)
+   LD    A,18H                  ;Load a with  00011000 to reset chip
+   OUT   (STATUS),A             :Output  byte to  the status/control
+:Selecting Data Bits, Stop bits, Parity status
+Receive and transmit can operate  at different parameters reguarding
+to data bits, stop bits, and the like. Here are examples:  (In these
+examples, the  receive enable, transmit enable, data  terminal ready
+get selected)
+
+Receive at 5 data bits a character:
+   LD    A,03H                  ;Load a with three for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 3 (WR3)
+   LD    A,01H                  ;Load a with 00000001 for 5 data bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+Receive at 6 data bits a character:
+   LD    A,03H                  ;Load a with three for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 3 (WR3)
+   LD    A,41H                  ;Load a with 01000001 for 6 data bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+~
+Receive at 7 data bits a character:
+   LD    A,03H                  ;Load a with three for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 3 (WR3)
+   LD    A,81H                  ;Load a with 10000001 for 7 data bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+Receive at 8 data bits a character:
+   LD    A,03H                  ;Load a with three for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 3 (WR3)
+   LD    A,C1H                  ;Load a with 11000001 for 8 data bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+~
+Transmit at 5 data bits a character:
+   LD    A,05H                  ;Load a with  five for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 5 (WR5)
+   LD    A,88H                  ;Load a with 10001000 for 5 data bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+Transmit at 6 data bits a character:
+   LD    A,05H                  ;Load a with  five for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 5 (WR5)
+   LD    A,0A8H                 ;Load a with 10101000 for 6 data bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+~
+Transmit at 7 data bits a character:
+   LD    A,05H                  ;Load a with  five for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 5 (WR5)
+   LD    A,0C8H                 ;Load a with 11001000 for 7 data bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+Transmit at 8 data bits a character:
+   LD    A,05H                  ;Load a with  five for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 5 (WR5)
+   LD    A,0E8H                 ;Load a with 11101000 for 8 data bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+~
+No parity, 1 stop bit, X16 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,44H                  ;Load a with 01000100 for 1 stop bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+No parity, 1.5 stop bit, X16 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,48H                  ;Load a with 01001000 for  1.5 stops
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+No parity, 2 stop bits, X16 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,4CH                  ;Load a with 01001100 for 2 stop bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+~
+Odd parity, 1 stop bit, X16 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,45H                  ;Load a with 01000101 for 1 stop bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+Odd parity, 1.5 stop bit, X16 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,49H                  ;Load a with 01001001 for  1.5 stops
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+Odd parity, 2 stop bits, X16 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,4DH                  ;Load a with 01001101 for 2 stop bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+~
+Even parity, 1 stop bit, X16 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,47H                  ;Load a with 01000111 for 1 stop bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+Even parity, 1.5 stop bit, X16 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,4BH                  ;Load a with 01001011 for  1.5 stops
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+Even parity, 2 stop bits, X16 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,4FH                  ;Load a with 01001111 for 2 stop bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+~
+No parity, 1 stop bit, X1 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,04H                  ;Load a with 00000100 for 1 stop bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+No parity, 1.5 stop bit, X1 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,08H                  ;Load a with 00001000 for  1.5 stops
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+No parity, 2 stop bits, X1 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,0CH                  ;Load a with 00001100 for 2 stop bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+~
+Odd parity, 1 stop bit, X1 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,05H                  ;Load a with 00000101 for 1 stop bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+Odd parity, 1.5 stop bit, X1 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,09H                  ;Load a with 00001001 for  1.5 stops
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+Odd parity, 2 stop bits, X1 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,0DH                  ;Load a with 00001101 for 2 stop bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+~
+Even parity, 1 stop bit, X1 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,07H                  ;Load a with 00000111 for 1 stop bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+Even parity, 1.5 stop bit, X1 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,0BH                  ;Load a with 00001011 for  1.5 stops
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+
+Even parity, 2 stop bits, X1 clock:
+   LD    A,04H                  ;Load a with  four for register sel.
+   OUT   (STATUS),A             ;And  select Write  Register 4 (WR4)
+   LD    A,0FH                  ;Load a with 00001111 for 2 stop bit
+   OUT   (STATUS),A             ;Output  byte to  the status/control
+:Using the interrupt abilities
+The chip has three  interupt enable  modes. They are an  interupt on
+first character,   interupt on  all characters  ignoring parity, and
+interupt on all  character using parity.  The parity may  or may not
+determine the address of where the interupt will jump to.
+
+You load your interupt register  (I) with the most  significant byte
+of where the interupt routine is going to reside in memory. You give
+the Z80SIO chip the least significant byte of the 16 bit address. On
+an interupt, the 8 bit  value in register I  and the  8 bit value in
+the Z80SIO are combined to give a 16 bit address to jump  to. In the
+examples  given,  the   Z80SIO  is  offered  a  zero  as  the  least
+significant byte (LSB), and A0  is offered  as the  most significant
+byte (MSB).  On interupts,  the program  counter will go  to address
+A000H.
+~
+Interupt on first character only:
+    IM    2                     ;Enable interupt  with external LSB
+    LD    A,01H                 ;Load a with  one for  register sel.
+    OUT   (STATUS),A            :And  select write  register 1 (WR1)
+    LD    A,08H                 ;Load  a  with  00001000  for  first
+    OUT   (STATUS),A            ;And select  interupt on first  byte
+    LD    A,02H                 ;Load a with  two for  register sel.
+    OUT   (STATUS),A            ;And select write  register 2 (WR2).
+    LD    A,00H                 ;Load a with LSB of interupt address
+    OUT   (STATUS),A            ;set the least significant byte zero
+    LD    I,0A0H                ;Load MSB with A  for address A000H.
+~
+Interupt on All characters don't Ignore the parity:
+    IM    2                     ;Enable interupt  with external LSB
+    LD    A,01H                 ;Load a with  one for  register sel.
+    OUT   (STATUS),A            :And  select write  register 1 (WR1)
+    LD    A,10H                 ;Load  a  with  00010000  for  first
+    OUT   (STATUS),A            ;And select  interupt on first  byte
+    LD    A,02H                 ;Load a with  two for  register sel.
+    OUT   (STATUS),A            ;And select write  register 2 (WR2).
+    LD    A,00H                 ;Load a with LSB of interupt address
+    OUT   (STATUS),A            ;set the least significant byte zero
+    LD    I,0A0H                ;Load MSB with A  for address A000H.
+~
+Interupt on All characters Ignore parity:
+    IM    2                     ;Enable interupt  with external LSB
+    LD    A,01H                 ;Load a with  one for  register sel.
+    OUT   (STATUS),A            :And  select write  register 1 (WR1)
+    LD    A,18H                 ;Load  a  with  00011000  for  first
+    OUT   (STATUS),A            ;And select  interupt on first  byte
+    LD    A,02H                 ;Load a with  two for  register sel.
+    OUT   (STATUS),A            ;And select write  register 2 (WR2).
+    LD    A,00H                 ;Load a with LSB of interupt address
+    OUT   (STATUS),A            ;set the least significant byte zero
+    LD    I,0A0H                ;Load MSB with A  for address A000H.
+

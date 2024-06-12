@@ -12,20 +12,20 @@ ARIES-1 C Library
 Special I/O using CIO
 :Invoking BDS C using C.SUB
 
-     BDÓ  Ã  maù  bå invokinç eitheò bù thå conventionaì meanó  oò  bù 
-usinç  thå  SUBMIÔ filå C.SUB®   Iæ thå SUBMIÔ filå  ió  used¬  iô  ió 
+     BDS  C  may  be invoking either by the conventional means  or  by 
+using  the  SUBMIT file C.SUB.   If the SUBMIT file  is  used,  it  is 
 engaged as follows --
 
           SUBMIT C filename
 
-wherå  'filename§  ió thå namå oæ 'filename.C'¬  thå filå tï  compile®  
-Notå thaô thå useò ió NOÔ tï tï typå filename.C¬  buô ió jusô tï  typå 
+where  'filename'  is the name of 'filename.C',  the file to  compile.  
+Note that the user is NOT to to type filename.C,  but is just to  type 
 filename.
 
-     Aó  executioî  oæ thå twï passeó oæ thå compileò anä  thå  linkeò 
-proceeds¬  thå  useò  wilì bå giveî thå chancå tï aborô processinç  aô 
-variouó  criticaì  pointó  iî  thå procesó bù  thå  executioî  oæ  thå 
-ABORTSUÂ  program®   Iæ  aî  erroò haó occurreä  durinç  thå  previouó 
+     As  execution  of the two passes of the compiler and  the  linker 
+proceeds,  the  user  will be given the chance to abort processing  at 
+various  critical  points  in  the process by  the  execution  of  the 
+ABORTSUB  program.   If  an  error has occurred  during  the  previous 
 processing, ABORT when this program is executed.
 
 
@@ -52,7 +52,8 @@ CC1:	Because C loads the entire source file into memory
 
 	The file extension ".C" is NOT assumed for the
 	input file, so saying "FOO" for "FOO.C" would not
-	work.Š
+	work.
+
 
 	If the source file name is preceded by a disk
 	designation, then the input is taken from the specified
@@ -360,7 +361,8 @@ C.CCC:	The run-time skeleton file, containing code for
 	variable accessing is done relative to a base-of-
 	stack-frame pointer, kept in the BC register pair
 	during execution. Note that it takes 8 bytes of code
-	to transfer a simple local variable whose address isŠ		(Base of stack pointer) + foo
+	to transfer a simple local variable whose address is
+		(Base of stack pointer) + foo
 	to the HL register pair; The code appears as:
 
 		lxi h,foo
@@ -376,8 +378,8 @@ C.CCC:	The run-time skeleton file, containing code for
 
 :ARIES-1 C Library
 
-     Thå  followinç  arå thå nameó oæ thå routineó availablå iî thå  Ã 
-Librarù DEFF.CRL®   Theù arå listeä herå aó á memorù convenience¬  anä 
+     The  following  are the names of the routines available in the  C 
+Library DEFF.CRL.   They are listed here as a memory convenience,  and 
 refer to the manual for further details.
 
 1.  General Purpose Functions
@@ -454,13 +456,13 @@ refer to the manual for further details.
 
      cio(fn) or cio(fn,arg)
 
-          CIÏ indexeó directlù intï thå BIOÓ Jumğ Table®   'fn§ ió thå 
-indeø offset¬  anä 'arg§ ió aî argumenô passeä (uğ tï 1¶  bits)®   Thå 
+          CIO indexes directly into the BIOS Jump Table.   'fn' is the 
+index offset,  and 'arg' is an argument passed (up to 16  bits).   The 
 offsets and functions permitted are --
 
      Offset    Function
 
-       °       CONSÔ -- Consolå status»  Returneä valuå ½ ° iæ nï chaò 
+       0       CONST -- Console status;  Returned value = 0 if no char 
                  ready, 255 if char ready
        1       CONIN -- Console input; Returned value = char typed
        2       CONOUT -- Console output; Input value = char to output
@@ -473,13 +475,13 @@ offsets and functions permitted are --
 
                cio(fn) or cio(fn,arg)
 
-     CIÏ indexeó directlù intï thå BIOÓ Jumğ Table®  'fn§ ió thå indeø 
-offset¬  anä 'arg§ ió aî argumenô passeä (uğ tï 1¶ bits)®  Thå offsetó 
-anä functionó permitteä arå --
+     CIO indexes directly into the BIOS Jump Table.  'fn' is the index 
+offset,  and 'arg' is an argument passed (up to 16 bits).  The offsets 
+and functions permitted are --
 
      Offset    Function
 
-       °       CONSÔ -- Consolå status»  Returneä valuå ½ ° iæ nï chaò 
+       0       CONST -- Console status;  Returned value = 0 if no char 
                  ready, 255 if char ready
        1       CONIN -- Console input; Returned value = char typed
        2       CONOUT -- Console output; Input value = char to output

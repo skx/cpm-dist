@@ -1,0 +1,202 @@
+BDOS - Basic I/O Operations/Functions
+BDOS - Basic Disk Operations/Functions
+Console Read Buffer Organization/Meaning (re: BDOS Function 10)
+File Control Block Organization/Meaning
+:BDOS - Basic I/O Operations
+     Function and Number      Input Parameters    Output Parameters
+
+     System Reset      0      None                None
+     Read Console      1      None                ASCII Char in A
+     Write Console     2      ASCII Char in E     None
+     Read Reader       3      None                ASCII Char in A
+     Write Punch       4      ASCII Char in E     None
+     Write List        5      ASCII Char in E     None
+     Direct Con I/O    6      ASCII Char in E     I/O Status in A if E=0FFH
+
+           *All function numbers are passed in Reg C.
+~
+     Function and Number      Input Parameters    Output Parameters
+
+     Get I/O Status    7      None                I/O Status in A
+     Put I/O Status    8      I/O Status in E     None
+     Print Buffer      9      Address of string   None
+                               terminated by $
+                               in DE
+     Read Buffer      10      Address of Read     Read Buffer is filled
+                               Buffer in DE       (See Section on Organization)
+     Console Ready    11      None                LSB of A is 1 if char
+                                                   ready
+     Return Version # 12      None                Version Info in HL
+                                                  H=0 CP/M, H=1 MP/M
+                                                  L=00 CP/M 1.x, 2x 2.x
+
+           *All function numbers are passed in Reg C.
+:BDOS - Basic Disk Operations
+     Function and Number      Input Parameters    Output Parameters
+
+     Init BDOS        13      None                None
+     Log-In Disk      14      Value in Reg E      None
+                               A=0, B=1, C=2,
+                               D=3
+     Open File        15      Address of FCB      Byte address of FCB
+                               in DE               if found or 0FFH if not
+     Close File       16      Address of FCB      Byte address of FCB
+                               in DE               if found or 0FFH if not
+     Search for File  17      Address of FCB      Byte address of FCB (0-3)
+                               in DE               if found or 0FFH if not
+     Search for Next  18      Address of FCB      Byte address of next FCB
+                               in DE               if found or 0FFH if not
+     Delete File      19      Address of FCB      Byte address of FCB (0-3)
+                               in DE               if found or 0FFH if not
+
+           *All function numbers are passed in Reg C.
+~
+     Function and Number      Input Parameters    Output Parameters
+
+     Read Next Record 20      Address of FCB      0=successful readä                               in DE              1=read past EOF
+                                                  2=reading random data
+     Write Next Rec   21      Address of FCB      0=successful write
+                               in DE              1=error in extending
+                                                  2=end of disk data
+                                                  255=no more dir space
+     Make File        22      Address of FCB      Byte address of FCB or
+                               in DE               255 if no more dir space
+     Rename FCB       23      Address of FCB      Byte Address of Dir entry
+                               in DE               or 255 if no match
+     Return Log Code  24      None                Login vector in HL
+     Read Drive No    25      None                Number of logged-in drive
+                                                   (A=0, B=1, C=2, D=3)
+     Set DMA Address  26      Address of 128      None
+                              byte buffer in DE
+
+           *All function numbers are passed in Reg C.
+~
+     Function and Number      Input Parameters    Output Parameters
+
+     GeÙ†Allo„ VecÙ   2∑      NonÂ                AllocatioÓ  VecÙ AddÚ† iÓ ç
+                                                   HL
+     Write Prot Disk  28      None                None
+     Get R/O Vect     29      None                HL=R/O Vect Val
+     Set File Attrib  30      Ptr to FCB in DE    Dir code in A
+     Get Disk Parms   31      None                HL=DPB Address
+     Set/Get Usr Code 32      E=0FFH (get)/Code   A=Current code (get)/no
+                               (set)               value (set)
+
+           *All function numbers are passed in Reg C.
+
+NOTE: Functions 28-32 should be avoided in application programs in order to
+      maintain upward compatibility with CP/M.
+~
+     Function and Number      Input Parameters    Output Parameters
+
+     Read Random      33      DE=FCB addr         A=return code
+                                                  1=reading unwritten data
+                                                  2=(not used)
+                                                  3=can't close curr ext
+                                                  4=seek to unwritten ext
+                                                  5=(not used)
+                                                  6=seek past end of disk
+     Write Random     34      DE=FCB addr         A=return code
+                                                  1=reading unwritten data
+                                                  2=(not used)
+                                                  3=can't close curr ext
+                                                  4=seek to unwritten ext
+                                                  5=dir overflow
+                                                  6=seek past end of disk
+
+           *All function numbers are passed in Reg C.
+
+NOTE: Functions 28-32 should be avoided in application programs in order to
+      maintain upward compatibility with CP/M.
+~
+     Function and Number      Input Parameters    Output Parameters
+
+     Compute File Siz 35      DE=FCB addr         Random Rec Field set
+                                                   to file size
+     Set Random Rec   36      DE=FCB addr         Random Rec Field set
+     Reset Drive      37      DE=Drive Vector     A=return code, Always 00h
+     Write Random     40      DE=FCB addr         A=return code
+     (w/zero fill)                                1=reading unwritten data
+                                                  2=(not used)
+                                                  3=can't close curr ext
+                                                  4=seek to unwritten ext
+                                                  5=dir overflow
+                                                  6=seek past end of disk
+
+            *All function numbers are passed in Reg C
+
+NOTE: Functions 28-32 should be avoided in application programs in order to
+      maintain upward compatibility with CP/M.
+:Console Read Buffer Organization/Meaning (re: BDOS Function 10)
+	Refer to BDOS function 10 'Read Console Buffer'
+
+     Byte      Function
+       1       Maximum Buffer Length (1 to 255)
+       2       Current Buffer Length (returned value)
+               No. of characters in the buffer
+     3-n       Data (returned values)
+               The actual characters read from the console and in the buffer.
+
+If the number of characters in the buffer is less than the length of the
+buffer, then uninitialized positions follow the last character.  Also note
+that certain functions that return the carriage return to the leftmost
+position (e.g., ctl-X), do so only to the column position where the prompt
+ended.
+:File Control Block Organization/Meaning
+	In file operations, starting with Function 15, Register DE usually
+addresses a file control block.  Transient programs often use the default
+file control block at location BOOT+005Ch (normally 005Ch), for simple file
+operations.
+	The basic unit of file information is a 128-byte record used for all
+file operations; thus, a default location for disk I/O is provided by CP/M at
+location BOOT+0080h (normally 0080h), which is the initial default DMA address
+(see function 26).  All directory operations take place in a reserved area that
+does not effect write buffers, with the exception of Search First and Search
+Next.
+	The FCB data area consists of a sequence of 33 bytes for sequential
+access and a series of 36 bytes in the case when the file is accessed randomly.
+The default FCB, normally located at 005Ch, can be used for random access
+files, since the three bytes starting at BOOT+007Dh are available for this
+purpose.
+~
+The FCB format is as follows:
+       dr f1 f2 / / f8 t1 t2 t3 ex s1 s2 rc d0 / / dn cr r0 r1 r2
+       00 01 02 ... 08 09 10 11 12 13 14 15 16 ... 31 32 33 34 35
+
+where	dr		drive code (0-16)
+			0  use default drive for file
+			1  auto disk select drive A
+			2  auto disk select drive B
+			....
+			16 auto disk select drive P
+
+	f1...f8		contain the file name in ASCII upper case,
+			with high bit = 0
+
+	t1,t2,t3	contain the file type in ASCII upper case, with high
+			bit = 0 t1, t2 and t3 denote the bit of these positions
+                         t1 Read Only file
+			 t2 Systom File, not Directory listing
+~
+       dr f1 f2 / / f8 t1 t2 t3 ex s1 s2 rc d0 / / dn cr r0 r1 r2
+       00 01 02 ... 08 09 10 11 12 13 14 15 16 ... 31 32 33 34 35
+
+where	ex		contains the current extent number, normally set to 00
+			by the user, but in the range of 0-31 during file I/O
+
+	s1		reserved for internal system use
+
+	s2		reserved for internal system use, set to zero on call
+			to OPEN, MAKE, SEARCH
+
+	rc		record count of extent 'ex'.  value from 0-127.
+
+	d0...dn		filled-in by CP/M, reserved for system use
+
+	cr		current record to read or write in a sequential file
+			operation.  normally set to zero by the user.
+
+	r0,r1,r2	optional random record number in the range 0-65535,
+			with overflow to r2,r0,r1 constitute a 16 bit value
+			with low byte r0, and high byte r1.
+

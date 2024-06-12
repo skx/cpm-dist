@@ -1,0 +1,615 @@
+Introduction
+Editing MAC Source Files
+Phased Code - General
+Phased Code - Label+OFFSET Method
+Invoking the Assembler
+Assembler Syntax - Fields
+Label Field
+Operation and Operand Fields
+Comment Field
+Numbers and Bases
+Operators - Arithmatic, Logical & Conditional
+Macros
+Pseudo-Ops
+Pseudo-Ops - Conditional Assembly
+Listing Options Pseudo-Ops (.PRN)
+Error Reporting
+:Introduction
+Z80MÒ  ió á Z8° macrï assembleò witè syntaø closelù followinç RMAÃ anä  MAC®  
+Iô assembleó standarä Z8° mnemonicó intï aî Inteì Heø format®  Thå resultinç 
+filå  (whicè  haó  á .HEØ extension© caî bå translateä tï á .COÍ  filå  witè 
+LOAD.COM.
+:Editing MAC Source Files
+Foò  thå mosô parô .MAÃ fileó caî easilù bå translateä tï .AZÍ witè verù fe÷ 
+changes®  Unfortunatelù  M8° ió aó extremelù versatilå assembleò whicè  wheî 
+useä  tï  itó fulì advantagå containó somå pseudo-opó  anä  directiveó  thaô 
+Z80MÒ  doeó  noô  understand®  É wilì reveaì thå mosô commoî  oæ  theså  anä 
+providå somå helğ oî gettinç arounä theí iî thió file.
+
+Renamå thå filå tï havå á .AZÍ extension®  Ediô thå file® Neaò thå beginninç 
+oæ  thå  filå yoõ wilì seå thå pseudï oğ thaô telló M8° whaô  mnemonicó  yoõ 
+wilì  bå  using®  M8° caî handlå botè Z8° anä 808° mnemonics®  Yoõ caî  eveî 
+switcè iî thå middlå oæ thå program®  Twï pseudo-opó .Z8° anä .808° telì thå 
+assembleò whicè mnemonicó tï recognize®  Iæ therå ió á .Z8° therå deletå it® 
+Iæ  therå ió á .808° therå yoõ wilì neeä tï ruî thå prograí througè aî  808° 
+tï Z8° translatoò (likå XLATE2.COÍ oî disë K17)® 
+~
+XLATE² ió á greaô translatoò oî 808° onlù files® Iô alsï wilì onlù translatå 
+thå 808° mnemonicó iî á filå thaô haó both® Unfortunatelù therå arå á couplå 
+oæ  Z8° mnemonicó thaô arå thå samå aó 808° mnemonicó anä wilì bå  dutifullù 
+translateä bù XLATE2® Thå probleí ió thaô thå mnemonicó arå thå samå buô thå 
+instructionó theù represenô arå not®  Sï thå filå wilì assemblå OË buô  wilì 
+ruî witè unpredictablå results® Aî example.
+
+	JP	is a valid Z80 mnemonic. It is also widely used since
+		it is an unconditional jump (JMP in 8080)
+
+	JP 	is also a valid 8080 mnemonic. It is the jump on parity
+		instruction.
+
+Sï  á Z8° JĞ ió translateä aó iæ iô waó thå 808° JĞ whicè wilì makå iô JĞ  Ğ 
+iî  thå  outpuô  file®  Baä news®  Thió iî itselæ ió enougè tï makå  iô  toï 
+undependablå  tï uså oî duaì mnemoniã files®  Tï avoiä thå grieæ yoõ caî  dï 
+onå oæ twï things:
+
+	Translate the 8080 sections by hand if they are small enough.
+~
+	Split the file into smaller files where the mnemonics change.
+	Run the 8080 sections through the translator. You can let the
+	assembler rejoin the files using the *INCLUDE statement or
+	use pip or your editor to rejoin and assemble the whole mess.
+
+Macroó gï througè Z80MÒ prettù welì foò thå mosô parô but¬  yoõ wilì neeä tï 
+precede the parameters with # signs (including locals).
+
+Alsï therå arå somå macrï pseudo-opó thaô arå noô supporteä (alsï noô widelù 
+used)®  Iæ  somå onå writeó Z80MÒ macroó tï substitutå foò theså (anä á  MOÄ 
+operator©  pleaså senä iô iî anä we'lì includå iô iî thå macrï librarù  thaô 
+wå arå developinç foò thió assembler.
+
+.phaså anä .dephaså arå useä tï makå thå assembleò generatå labeì  addresseó 
+foò  somå  otheò  parô oæ memorù thaî wherå thå filå wilì  bå  loaded®   Seå 
+Phaseä Codå foò details.
+:Phased Code - General
+Onå  oæ thå limitationó oæ thió assembleò ió thå lacë oæ á .PHASÅ directive®  
+Thió  directivå causeó thå assembleò tï generatå addresseó foò  á  differenô 
+sectioî oæ memorù foò labeló thaî thå actuaì placå thå codå ió tï bå loaded®  
+ORGinç  aô higheò locatioî lateò iî thå prograí anä jumpinç therå wilì causå 
+thå  entirå areá oæ memorù betweeî 100È anä thå enä poinô oæ thå prograí  tï 
+bå saveä resultinç iî á hugå .COÍ filå wheî loadeä witè LOAD.COM® 
+
+Therå  arå manù wayó tï phaså codå anä stilì enä uğ witè á reasonablå  sizeä 
+COÍ file® Herå É wilì presenô twï oæ thå mosô commoî methods.
+:Phased Code- Label+OFFSET Method
+Iî  ordeò foò codå tï bå assembleä iî onå areá tï ruî iî another¬  ouò  onlù 
+concerî ió ho÷ thå addresseó arå calculateä bù thå assembler®  Normally¬  aî 
+assembleò  setó  á locatioî counteò wheî iô seeó aî  ORÇ  pseudo-op®  Aó  iô 
+produceó  eacè  bytå oæ thå iô incrementó thå locatioî counteò tï  calculatå 
+thå nexô address® Iæ iô findó á label¬ iô setó thå label'ó addresó accordinç 
+tï thió locatioî counter®  Thå programmeò haó anotheò methoä oæ settinç  thå 
+addresó oæ labels¬ witè EQU® Iæ everù labeì iî thå prograí takeó thå forí oæ 
+Label+OFFSEÔ wherå thå offseô ió á constant¬ theî thå assembleò wilì producå 
+thå  codå tï ruî iî higè memorù whilå creatinç á filå thaô wilì loaä iî  lo÷ 
+memory.
+~
+Witè  thió  methoä  yoõ woulä spliô thå abovå prograí intï  twï  parts¬  thå 
+loadeò anä thå codå thaô ió tï bå relocated® Yoõ caî assemblå thå loadeò anä 
+picë  aî arbitrarù sourcå addresó foò thå codå tï bå relocateä  (saù  200h)®  
+Theî yoõ caî assemblå thå relocatablå portioî witè aî higè ORG® (8000È say)®  
+No÷ yoõ caî joiî thå twï HEØ fileó togetheò witè DDT.COÍ readinç iî thå higè 
+portioî  witè aî OFFSET®  Tï geô thå offseô uså DDT'ó Heø suí anä differencå 
+commanä iî thå forí of:
+
+                   H<desired load address>,<ORG address>
+
+Thå  seconä numbeò wilì bå thå OFFSET®   No÷ wå caî uså DDÔ tï joiî thå  twï 
+files.
+
+DDT LOADER.HEX
+H200,8000
+8200 8200		; in this case both numbers are the same (we want
+			; second
+IPHASE2.HEX		; prepare to load file
+R8200			; read in with offset
+^C			; exit to CPM
+SAVE 1 PHASE3.COM	; and the com file is created
+:Invoking the Assembler
+
+	Z80MR TEST <carriage return>
+
+Thå  assembleò  wilì  reaä iî thå filå TEST.AZÍ froí thå currenô  drivå  anä 
+creatå aî objecô filå TEST.HEØ anä á listinç filå TEST.PRN.
+
+Eitheò oæ thå outpuô fileó (oò both© maù bå omitted®  Iî addition¬ thå fileó 
+maù bå locateä oî differenô drives® Sincå thå sourcå filå musô alwayó havå á 
+.AZÍ extentioî wå maù uså thå extentioî tï controì thå output.
+
+	Z80MR TEST.sol
+
+Thå letteò iî thå 's§ positioî telló thå assembleò wherå tï finä thå  sourcå 
+filå  anä maù bå anù disë drivå letteò froí Á tï D®  Thå  letteò iî thå  'o§ 
+positioî  telló thå assembleò wherå tï locatå thå objecô filå anä maù bå A-Ä 
+aó  abovå oò Ú iæ thå filå ió noô desired®  Thå letteò iî thå  'l§  positioî 
+telló  thå assembleò whaô tï dï witè thå listinç file®  Iô caî bå anù  drivå 
+letteò  froí  A-Ä oò Ú iæ thå filå ió noô desired®  Iî additioî thå  listinç 
+filå maù bå senô tï thå consolå iæ aî Ø ió iî thaô position.
+:Assembler Syntax - Fields
+Assembleró  arå almosô alwayó fielä orienteä somå tï á greateò  degreå  thaî 
+others®  Á  fielä ió á flexiblå positioî iî thå linå oæ codå witè respecô tï 
+thå righô margin® Thió assembleò recognizeó ´ fieldó iî aî assemblù languagå 
+sourcå line:  Label, Operation, Operand and Comment
+
+Thå  assembleò knowó wheî iô haó reacheä thå enä oæ á fielä wheî iô  seeó  á 
+'fielä  delimiter'®  Thió caî bå á spacå oò á taâ foò thió assembleò  thougè 
+somå  requirå  tabó  sï iô ió á gooä habiô tï alwayó uså taâ  characteró  aó 
+delimiters.
+:Label Field
+Á  symboì  ió  á worä useä tï represenô á  number®  Symboló  thaô  refeò  tï 
+addresseó  arå  calleä  labels®  Thå assignmenô oæ á numbeò tï á  labeì  caî 
+eitheò bå defineä aó thå lineó below
+
+TEN	EQU	10
+START	EQU	100H
+
+or calculated by the assembler as an address for branching instructions:
+
+START:	JP	FINISH
+	NOP
+	NOP
+FINISH:	JP	START
+
+Also notice that the label is optional and is only for the programmers
+conveniance.
+~
+Labeló musô appeaò iî thå labeì field®  Somå assembleró allo÷ yoõ tï  indenô 
+labeló buô thió onå won't.
+
+	START	EQU	100H
+START:	JP	FINISH 
+ŠWilì  givå  yoõ á problem®  Thå EQÕ musô bå iî thå operatioî fielä  anä  thå 
+labeì iî thå labeì field.
+
+Mosô  assembleró requirå thaô thå undefineä labeló bå terminateä iî á  coloî 
+buô thió assembleò doeó noô requirå á coloî foò symboló iî columî 1.
+
+START	JP	FINISH
+
+wilì  noô generatå aî erroò buô colonó arå anotheò gooä habiô anä alsï  makå 
+youò codå morå readable.
+~
+Thió assembleò onlù examineó thå firsô siø characteró oæ anù labeì oò symboì 
+sï thaô iæ thå followinç labeló werå useä iî thå samå program
+
+FINISH1	EQU	1000H
+FINISH2	EQU	2000H
+
+A 'D' error (duplicate symbols) would be generated.
+:Operation and Operand Fields
+Thå  operatioî fielä followó thå labeì fielä anä maù eitheò contaiî á Z8° oğ 
+codå  mnemonic¬  aî  assembleò directivå (oò pseudï op)¬  oò á  macrï  call®  
+Assembleò directiveó anä macroó arå describeä lateò iî thió file® Thió fielä 
+wilì  usallù  contaiî  thå  mnemoniã  foò  á  Z8°  instruction®   Somå   Z8° 
+instructionó  onlù uså thió fielä whilå otheró contaiî aî operanä whicè wilì 
+bå locateä iî thå operanä field.
+
+GOBACK:	OR	A
+	RET	Z
+	LD	A,0FFH
+	RET
+
+Thå  waù  Z8°  mnemonicó  werå designed¬  thå numbeò  oæ  nmenonicó  iî  thå 
+operatioî  portioî oæ instructionó ió kepô tï á minimuí sincå  thå  operandó 
+reallù  distinguisè thå differenceó betweeî similaò instructions®  Thå firsô 
+linå abovå ió á gooä examplå oæ this®  Thå operatioî ió aî 'OR§ operatioî oî 
+thå  numbeò  iî thå accumulatoò (implied© witè anotheò  register®  Iô  makeó 
+senså thaô thå operanä shoulä bå thå registeò containinç thå otheò numbeò iî 
+thå  'OR§ operation®  Iî Z8° assemblù languagå thió ió thå case®  Thå  firsô 
+linå  OR'ó  thå  accumulatoò  witè thå accumualatoò  (useä  tï  seå  iæ  thå 
+accumulatoò  containó  á 0)®  Noticå thaô thå seconä linå useó  thå  operanä 
+fielä tï contaiî thå conditioî foò á conditionaì jumğ (iî thió caså thå zerï 
+flag)®  Thå  thirä  linå useó thå operanä fielä tï contaiî botè  thå  targeô 
+registeò  foò  á  loaä  anä  thå  numbeò  tï  load®  Thå  lasô  linå  ió  aî 
+unconditionaì  returî whicè useó thå samå operatoò (RET© aó thå  conditionaì 
+returî  buô doeó noô uså thå operanä fielä becauså therå arå nï conditonó tï 
+placå there®  Thió structurå makeó Z8° programó mucè morå readablå thaî 808° 
+programó  aó  welì  aó makinç thå  instructionó  easieò  tï  remember®   Thå 
+followinç ió thå samå codå writteî witè 808° mnemonics® Noticå thå differenô 
+philosophù oî thå uså oæ thå fields.
+
+GOBACK:	ORAŠ	RETZ
+	MVI	A,0FFH
+	RET
+
+Alsï  thå LÄ commanä iî thå Z8° ió useä foò alì datá moveó whilå 808°  useró 
+musô remembeò á differenô mnemoniã foò differenô typeó oæ moves.
+
+	8080			Z80
+	MOV	H,A		LD	H,A
+	MVI	H,00		LD	H,00
+	LXI	H,0000		LD	HL,0000
+:Comment Field
+Commentó arå noô limiteä tï thå commenô fielä anä caî actuallù bå thå entirå 
+line®  Alì  assembleró recognizå thå semicoloî aó thå beginninç oæ á commenô 
+anä mosô ignorå thå resô oæ thå line®  Foò compatabilitù betweeî  assembleró 
+iô ió á gooä tï begiî commentó witè á semicolon®  Buô foò thió assembleò thå 
+followinç methodó oæ insertinç commentó arå gooä syntax.
+
+1. Beginning a line with an '*' in column one causes the assembler to ignore
+therest of the line except if one of the assembler commands (described below)
+immediately follows the asterisk (no embedded spaces).
+
+2. A semicolon will cause the assembler to consider everything following it
+to be considered a comment.
+
+3. The first blank encountered following the beginning of the operand field
+wilì causå thå assembleò tï consideò thå resô oæ thå linå tï bå considereä á 
+comment.
+:Numbers and Bases
+Thå  assembleò  wilì  accepô  numberó iî HEØ (baså 16© BINARÙ  (baså  2©  oò 
+DECIMAL®  Heø numberó musô enä witè aî È anä binarù numberó musô enä iî á B® 
+Decimaì numberó shoulä havå nï suffiø letter® Wheî á HEØ digiô beginó witè á 
+letter¬ thå letteò shoulä bå precedeä witè á 0.
+
+	LD	A,0F3H
+	OR	01001000B
+	LD	HL,4000H+28
+:Operators
+Arithmetic Operators
+
+	+		arithmetic addition.
+	-		arithmetic subtraction
+	*		arithmetic multiplication
+	/		arithmetic division (truncating the result)
+
+Logical Operators (Bit Manipulation)
+
+	& (or .AND.)	logical AND operation
+	^ (or .OR.)	logical OR operation
+	.XOR.		logical exclusive OR operation
+	\ (or .NOT.)	logical inversion
+	.SHR.		shift left operand to right by right operand
+	.SHL.		shift left operand to left by right operand 
+	.HIGH.		byte value is assigned the high byte of a 16 bit value
+	.LOW.		byte value is assigned the low byte of a 16 bit value
+~
+Conditional Assembly Operators ( return	TRUE or FALSE to IF )
+
+	= (or .EQU.)	logical equivalence
+	> (or .GT.)	greater than
+	.UGT.		unsigned greater than
+	< (or .LT.)	less than
+	.ULT.		unsigned less than
+:Macros
+Macroó  havå á forí thaô ió uniquå anä musô bå followeä closelù foò  correcô 
+results® Thå generaì forí oæ á macrï is:
+
+name	MACRO	#parameter1,#parameter2,....
+	instruction
+	instruction
+	instruction
+	.
+	.
+	.
+	ENDM
+
+Thå  namå ió thå symboì thaô wilì bå useä tï invokå thå macro®  MACRÏ  ió  á 
+keyworä  thaô wilì indicatå tï thå assembleò thaô á macrï ió beinç  defined®  
+Thå  parameteró  alwayó  musô begiî witè á '#§ sigî iî macroó anä  theù  arå 
+seperateä bù commas®  Thå instructioî caî bå Z8° instructions¬ oò anù oæ thå 
+assembleò commandó listeä abovå incudinç conditionals®  Thå instructioî  caî 
+alsï  bå  anotheò macrï calì (calleä nesteä macros© buô onlù iæ  thå  nesteä Šmacrï haó beeî alreadù defined® Thå ENDÍ keyworä telló thå assembleò thaô iô 
+haó  reacheä  thå enä oæ thå codå thaô musô bå assembleä wheî thió macrï  ió 
+called® Dï noô uså á coloî behinä thå macrï name.
+
+Buô  whaô abouô usinç addresó symboló iî macros¿  Ho÷ caî wå avoiä  thå  'D§ 
+erroò  iæ  wå  calì thå macrï morå thaî once®  Thå otheò keyworä  uniquå  tï 
+macroó  ió  LOCAL®  Thió makeó thå assembleò generatå itó owî  uniquå  labeì 
+everù  timå  thå macrï ió expandeä iî á program®  Followinç thå  worä  LOCAÌ 
+(whicè musô bå oî thå seconä linå oæ thå macro© arå thå symboló wå wanô  thå 
+compileò tï generatå uniquå labeló for®  Theså symboló musô alsï bå procedeä 
+witè á '#§ sign.
+
+AJUMP	MACRO
+	LOCAL	#ADR_Z,#BACK
+	OR	A
+	JR	Z,#ADR_Z
+	LD	A,40H
+	JR	#BACK
+#ADR_Z:	LD	A,04H
+#BACK:	LD	DE,0
+	ENDM
+
+The macro itself is not really useful but it is correct and shows the use
+of local labels.
+:Pseudo-Ops
+ORG	<expr>	; Sets the origin of the code or section of code. Actually
+		» iô setó thå referencå numbeò thaô thå assembleò useó tï
+                : generatå addresseó foò labeló anä instructions.
+		; <expr> could be a number or a previously defined symbol.
+		; e.g.	ORG	0
+		;       ORG	START
+
+END	<symb>	; Determines the end of an assembly language program. <symb>
+		; if present describes the first executable instruction of
+		; the program.
+~
+DW	wordlist
+DEFW	wordlist
+		; Both of these have identical meanings. In assembly language
+		; programs, 8 bit values are called bytes and 16 bit
+		; values are called words. Addresses are assembled with the
+		; most significant byte (MSB) following the least significant
+		; byte (LSB) because this is how the microprocessor handles
+		; these values. The DW pseudo-op allows us to describe these
+		; values in the way we are used to (MSB first) and still
+		; assemble correctly for the processor.
+		;	DW	8000H
+		;			 will assemble the same as 
+		;	DB	00H
+		; 	DB	80H
+		;Š		; If more than one word is to follow a DW following values
+		; should be seperated by commas
+		; e.g.	DW	8000H,0F000H,0000H
+		; The wordlist can also be symbols
+		; e.g.	START:	JP	FINISH
+		;		DW	START,FINISH
+		;  	FINISH:	JP	START
+DDB	wordlist
+		; This pseudo-op is a way of assembling 16 bit values with
+		; the MSB first (opposite of DW).
+		;	DDB	8000H
+		;			will assemble the same as
+		;	DB	80H
+		;	DB	00H
+
+DB	bytelist
+DEFB	bytelist
+DEFM	bytelist
+DATA	bytelist
+		; These four pseudo-ops have identical meanings. The bytelist
+		; can be one byte or multiple bytes seperated with commas.
+		; The bytes can be any mix of symbols, ascii characters in
+		; quotes, or numbers on the same line. This is familiar
+		; code in Kaypro programs:
+		;
+		;ESC	EQU	1BH
+		;CLRSCR	EQU	1AH
+		;CRLF	DDB	0D0AH
+		;
+		;	ORG	100H	
+		;
+		;	LD	DE,MES
+		;	LD	C,9
+		;	CALL	5
+		;	RET
+		;
+		;MES:	DB	CLRSCR
+		;	DB   	ESC,'=',12+20H,12+20H
+		;	DB	'*Your Message Here *',CRLF
+		;	DB	'*Or Here*','$'
+		;
+		;	END
+		;
+		; If you've been waiting for an example to enter assemble
+		; and run, try this one out. Just enter it (with out the
+		; semicolons of course) assemble it and run it as described
+		; in AZM-COM.DOC.
+		;
+		; The program clears the screen, positions the cursor at
+		; row 12 column 12 and prints the message using the BDOSŠ		; function 9 (print string).   
+		;
+		; The symbol CLRSCR is defined by an EQU to the hex code to
+		; clear the screen on the Kaypro (^Z).
+		;
+		; The cursor positioning sequence on the Kaypro consists of
+		; the two lead-in characters (escape and an equals sign) and
+		; then the row+20H and the column+20H.
+		;
+		; Since the next bytes are just a carriage return, line feed
+		; pair the second part of the message will appear at the
+		; left side of the screen. We could include extra DB's to
+		; position the cursor anywhere on the screen if we like.
+		;
+		; BDOS function 9 (summoned by loading a 9 in the C register
+		; and calling 0005H) prints the characters it finds at the
+		; address in the DE registers until it sees a '$'.
+~	
+DS	n
+DEFS	n	; Reserve data space ( n bytes ). This is used to position
+		; allocate or label data storage space in a program. n is
+		; a number describing the number of bytes reserved.
+		;	DS	16
+		; Reserves 16 bytes. The next instruction will be located
+		; 16 bytes from the location counter when the DS was 
+		; encountered.
+~	
+label	EQU	<expr>
+		;
+		; The EQU sets the label equal to the expression. The
+		; label should not be terminated with a colon when used
+		; with an EQU pseudo-op. The label can be any symbol
+		; (byte or word) and the <expr> a number in any of the
+		; following forms:
+		;		SWEET	EQU	16	   ;decimal
+		;		SWEET	EQU	10H	   ;hex
+		;		SWEET	EQU	00010000B  ;binary
+		;
+		; With this assembler the EQU must be located in the
+		; operation field. 
+		; A label defined with an EQU cannot be redefined later
+		; in the program.
+~
+label	DEFL	<expr>
+		;
+		; This assigns the value of the <expr> to the label like
+		; the EQU pseudo-op but a label defined with a DEFL can
+		; be redefined later in the program.
+
+*INCLUDE	<filename>
+		; This pseudo-op causes the assembler to stop assemblingŠ		; lines in the file it is presently in and read in the
+		; file <filename>. It then begins assembling lines in this
+		; included file until it reaches the end of the file when
+		; it returns to the original file and resumes assembling
+		; lines in it once more. The <filename> can be any CPM
+		; filename.ext though if the extent is left off it looks
+		; for the given filename with an extent of .LIB. The asterisk
+		; must appear in column 1 with the word INCLUDE immediately
+		; following with no embedded spaces.
+		;
+		;*INCLUDE 	Z80MACRO	; will begin assembly on
+		; the file Z80MACRO.LIB	
+:Pseudo-Ops - Conditional Assembly
+IF	<expr>
+ELSE
+ENDIF
+	Conditional assembly is a way of writing a single program so that
+	it can be assembled different ways or with different options by
+	only changing a couple of lines of codes. When the assembler
+	encounters an IF pseudo-op it evaluates the symbol <expr>. IF
+	<expr> is non-zero it assembles the following lines until it reaches
+	an ELSE or an ENDIF. If <expr> is 0 the lines are ignored until
+	the assembler encounters an ELSE or an ENDIF. If the ELSE is
+	encounter the assembler begins assembling lines again. The ENDIF
+	pseudo-op causes the assembler to resume assembling all lines.
+	You can not have an IF without an ENDIF.
+~
+	Any of these pseudo-ops must appear in the operation field. 
+
+TRUE	EQU	0FFH
+FALSE	EQU	0
+KPRO2	EQU	TRUE
+KPRO10	EQU	FALSE
+	
+	IF	KPRO2
+	
+BITPRT	EQU	1CH
+
+	ELSE
+
+BITPRT	EQU	14H
+
+	ENDIF
+:Listing Options Pseudo-Ops (.PRN)
+There are a number of listing options. All of these options only effect
+the print file (.PRN). The options include some for debugging as well as
+some for the actual format of the file on the page. The .PRN file is the
+basic tool assembly language programmers have for examining the output ofŠthe assembler. The pseudo-ops beginning with an asterisk must begin in
+column 1.
+
+*EJECT
+( or EJEC )	; The next line of the listing should be placed at the top
+		; of the next page.
+
+*HEADING	; Place the text ( following this command ) on the top of
+		; each page. Usually used to date the listing file.
+
+TITLE 'text'	; Place the text in the quotation marks (either double or
+		; single on the top of each page in the listing file.
+
+SPAC n		; Leave n blank lines in the listing. Used to leave white
+		; space in the file with out using a page break.
+~
+*LIST ON
+*LIST OFF	; Turn the listing on or off. This is usually used to omit
+		; long comments or certain sections from the .PRN file.
+
+*MACLIST ON
+*MACLIST OFF	; Turn the expansion of macros on or off. Seeing how the
+		; macros are being expanded is handy for optimizing code
+		; but can waste paper when that is no longer the area of
+		; interest.
+~
+LIST options
+NLIST options	; These pseudo-ops allow you to turn any of the supported
+		; listing file options on (LIST) or off (NLIST) without
+		; changing the other options. Both of these pseudo-ops
+		; must be followed with one or more of the following option
+		; letters. If these pseudo-ops is used some options are
+		; on by default ( marked with (on) in the following list.
+		;
+		; A 	; List all bytes in DB, DW, DDB, etc. Otherwise
+		;	; only the bytes that can fit in one line are
+		;	; included in the listing ( others are implied ).
+		; B	; Place symbol table into object file.
+		; G	; Place system generated symbols into object files
+		; I (on); List lines of conditional code following a false
+		;	; conditional. If off only the code actually 
+		;       ; assembled is listed.
+		; M (on); Expand macros in listing files
+		; O (on); Produce an object module. That is show the bytes
+		;       ; being generated by the assembler otherwise just
+		;       ; the source and (optionally) macro expansions.
+		; R     ; use absolute displacement for JR and DJNZ
+		; S (on); List source code in listing file
+		; T (on); List symbol table in listing file
+		; X 	; Generate and list cross references in listing file
+		; Z	; Generate an error for Z80 only opcodes. Allows youŠ		;	; to write in Z80 mnemonics for an 8080 processor.
+:Error Reporting
+ 	D	; Duplicate symbol definition. You will see this error
+		; message if you do any of the following:
+		; 	Use the same symbol twice.
+		;		FORMATX
+		;		FORMATC
+		;		will generate an error (only 6 significant
+		;		characters).
+		;	Upper and lower case symbols with the same letters
+		;		FORMAT:
+		;		format:
+		;		are identical to the assembler.
+		;	Assigning a different value to a symbol that was
+		;		previously defined with a EQU pseudo-op.
+		;		If you are going to reassign use DEFL.
+
+	E	; Relocation error. I believe this occurs if the assembler
+		; cannot reassign an address as expected.
+
+	F	; Format Error. You will see this if you break any of the
+		; rules regarding field use and macro format.
+~
+	K	; Keyword error. This means you tried to use one of the
+		; assemblers reserved words or pseudo-ops as a symbol.
+		;	ORG:	JP	END
+		;		NOP
+		;	END:	JP	ORG
+		; 	is in very bad taste.
+
+	L	; Label error. The attempt to assign a value to a lable was
+		; unsuccessful. Also remember that labels do not end in a 
+		; colon when preceding EQU.
+		;	START:	EQU	100H	; is bad news
+		;	START	EQU	100H	; is perfect
+
+	M	; Missing label. The symbol you are using was never defined.
+
+	N	; Macro nesting error. Macros can be nested (that is a macro
+		; can call another macro) but if the nesting gets to deep
+		; the assembler will quit and give you one of these. Also,
+		; you can only call macros that were previously defined.
+~
+	O	; Op code error. If you see this, look in the operation and
+		; operand fields. Consult the mnemonic table. People 
+		; switching over from 8080 will see a few of these.
+
+	P	; Phase error. A 2 pass assembler builds a symbol table on
+		; the first pass and generates the object code on the second.
+		; If a number that it calculates for a symbol on the first
+		; pass does not agree with a number it generates in theŠ		; pass this error is shown check the symbols in the line
+		; the error appeared.
+
+	Q	; Questionable operand. Actually theres no question about it
+		; it is a bad operand. Typo's give you these as well as 
+		; blowing op code format. Usally easy to find your mistake.
+
+	S	; Syntax error. You broke one of the syntax rules described
+		; above.
+
+	T	; Symbol table full. Not much you can do with this except
+		; pare down the code.
+~
+	U	; Undefined symbol. You used a symbol but forgot to define
+		; it in with an EQU.
+
+	V	; Value error. Usually means you are trying to do a 16
+		; bit operation with an 8 bit number or the other way 
+		; around.
+

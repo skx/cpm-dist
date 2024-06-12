@@ -1,0 +1,160 @@
+Cursor Commands
+Scroll, Delete, & Other Commands
+Saves & Block Commands
+Text Markers, Find/Replace, & Add Files Commands
+Control Character Commands
+P Commands
+DOTs Commands
+Specials Command
+Help Commands
+:CURSOR:          ^S  Left CHARACTER       ^D  Right CHARACTER
+                  ^QS Left LINE            ^QD Right LINE
+                  ^A  Left WORD            ^F  Right WORD
+                  ^QE To Top of screen     ^QX To Bottom of screen     
+                  ^QR Beginning of file    ^QC To End of file
+                                
+                                 ---------
+                                 |   E    |
+                                 |   up   |
+                    _____________|________|_____________
+                    |   A    |   S    |   D    |   F    |
+CURSOR CONTROL      |  left  |  left  | right  | right  |
+                    |  word  |  char  | char   | word   |
+                    ------------------------------------
+                                 |   X    |
+                                 |  down  |
+                                 ----------
+------------------------------------------------------------------------
+
+:SCROLL:           ^Z Up one line           ^C Up one screen
+                   ^W Down one line         ^R Down one screen
+------------------------------------------------------------------------
+
+DELETE:            ^G Char left             ^RUB Char right
+                   ^Y Line                  ^T   Word right
+                   ^QY to end of line       ^Q-RUB to begin of line
+
+------------------------------------------------------------------------
+
+OTHER:             ^V insertion togle       ^I  Tab
+                   ^U restart command       ^VN Insert (with WW)
+                   ^B Reform to para.       ^P  Overprint
+
+                   ^J Menu      ^Q,J,K,O,P prefix menus
+
+--------------------------------------------------------------------------
+
+:SAVES: ^KD  Save      ^KX Save & get CP/M      ^KS Save & re-edit same
+                                                    [ in-progress save ]
+        ^KQ  Abort     ^KP Print toggle
+
+--------------------------------------------------------------------------
+
+BLOCKS:  ^KB mark block begin            ^KK mark block end
+         ^QB cursor to block start       ^QK cursor to block end
+
+                       ^KH Hide/restore marker
+       
+         ^KV move block                  ^KC recopy block
+         ^KY delete block                ^KW write block to file
+
+         ^R  repeat last command         ^KJV help!
+
+                       ^QV Return cursor to block start
+
+--------------------------------------------------------------------------- 
+
+:TEXT MARKERS:
+              ^K 0-9 Set/Hide text marker    ^Q 0-9  Cursor to marker
+
+---------------------------------------------------------------------------
+
+FIND/      ^QF Find    ^QA Replace     ^L Find/Replace next occurence
+REPLACE:
+             options: <n> the nth occurence
+                       G  global replace or find last
+                       N  replace without query
+                       B  search backward
+                       U  ignore case
+                       W  whole word only
+
+--------------------------------------------------------------------------
+
+ADDITIONAL      ^QH Block Write          ^QR Read additional file
+  FILES:        ^QJ Delete File          ^QP Print file
+
+--------------------------------------------------------------------------
+
+:CONTROL:   ^O  display current status
+            ^OC center this line
+            ^OL set left margin            ^OR set right margin
+            ^OI set tab here               ^ON clear tab here
+            
+            ^OF set margins & tabs to match current line
+
+ ^V..^P <return> <draw ruler with "-" for blank and "!" for tab> then ^O^F
+ to store reusable non-printing ruler.
+
+            ^OS set line spacing
+            ^B  reform to end of paragraph
+            ^OX margin release
+            ^OW word wrap
+            ^OJ justify
+            ^OT ruler
+            ^OP page ends
+            ^OD dot commands
+            ^PO non-break spaces
+            ^P<ret> overprint next line
+
+---------------------------------------------------------------------------
+:
+"P" Commands: Put a ^Char in the file
+
+            ^PS Underscore start/end       ^PV Subscript start/end
+            ^PB Boldface start/end         ^PT Superscript start/end
+            ^PC Printer pause              ^PA/^PN Toggle print pitch
+            ^PH Overprinting
+      
+           <space> Cancel prefix      <^P-ret> Overprint line follows
+
+--------------------------------------------------------------------------
+
+:DOTs       .PL paper length     defaults to 11 inches
+            .MT margin top           "        3 lines
+            .MB margin bottom        "        8 lines
+            .HM heading margin       "        2 lines
+            .FM footer margin        "        2 lines
+            .PC page # col.          "        1/2 right margin
+            .PO page offset          "        8 cols.
+            .PA new page
+            .CPn conditional page
+            .HE {or .HE #} header text
+            .FO  "     "   footer text
+            .OP omit page numbers
+            .PN start with page number
+            .IG non-printing comment
+
+-------------------------------------------------------------------------
+
+:SPECIALS: ^QCOP number of words in the text
+
+           ^QQn  Repeat:  eg. QQZn scroll line at speed n (0-9)
+                              QQCn scroll screens
+
+-------------------------------------------------------------------------
+:
+                  WORDSTAR HELP COMMANDS
+
+
+      ^O    Show me the current status
+
+      ^JH   Set level of prompts
+      ^JD   show dot commands and print controls
+      ^JI   command index
+      ^JS   status line
+      ^JF   flags info.
+      ^JB   paragraph commands
+      ^JP   place markers
+      ^JM   margins and tabs
+      ^JV   moving text
+

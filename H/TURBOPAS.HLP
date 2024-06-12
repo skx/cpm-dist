@@ -1,0 +1,113 @@
+Turbo Pascal Common Compiler Directives (standard?)
+B Directive for input/output mode selection
+C Directive for control character interpretation during console I/O
+I Directive for I/O error handling 
+R Directive for run-time index checks
+V Directive controls type checking on strings passed as var
+U Directive controls user interrupts
+X Directive controls array optimization
+A Directive controls generation of absolute non-recursive code
+W Directive controls level of nesting of With statements
+K Directive controls generation of stack check code
+:All compiler directives have default values.  These have been chosen
+to optimize execution speed and minimuze code size. This means that
+code generation for recursive procedures and index checking has been
+disabled.
+:
+B  defaults to B+
+
+It controls i/o mode selection.  When active, {$B+}, the CON: 
+device is assigned to the standard files Input and Output.  When
+passive, {$B-}, the TRm: device is used.  This directive is global 
+to an entire program block and cannot be redefined throughout
+the program.
+:
+C  defaults to C+
+
+It controls control character interpretation during console I/O.
+When active, {$C+}, a Ctl-C entered in response to a Read or Readln
+statement will interrupt program execution, and a Ctrl-S will 
+toggle screen output off and on.  When passive, etc., control 
+characters are not interpreted.  the active state slows screen 
+output somewhat, so if screen output speed is imperative, you 
+should switch off this directive.
+:
+I  defaults to I+
+
+This controls I/O error handling.  When active all I/O operations 
+are checked for errors.  When passive, it is the responsibility 
+of the programmer to check I/O errors throughout the standard function
+I/O result.  The I directive succeeded by a file name instructs 
+the compiler to include the file with the specified name in the 
+compilation.  Include files are discussed in (chapter 17).
+:
+R  defaults to R-
+
+It controls run-time index checks.  When active all array indexing 
+operations are checked to be within the defined bounds, and all 
+assignments to scalar and subrange variables are checked to be 
+within range.  When passive, no checks are performed, and index 
+errors may well cause a program to go haywire.  It is a good idea 
+to activate this directive while developing a program.  Once debugged,
+execution will be speeded up by setting it passive.
+:
+V  defaults to V+
+
+This directive controls type checking on strings passed as var-parameters.
+When active strict type checking is performed, i.e., the lengths of
+actual and formal parameters must match.  When passive the compiler
+allows passing of actual parameters which do not match the length
+of the formal parameter.
+:
+U  defaults to U-
+
+It controls user interrupts.  When active the user may interrupt 
+the program anytime during execution by entering a Ctrl-C.  When
+passive this has no effect.  Activating this directive will significantly
+slow down execution speed.
+:
+X  defaults to X+
+
+This directive controls array optimization.  When active code 
+generation for arrays is optimized for maximum speed.  When passive 
+the compiler minimizes the code size instead.
+:
+CP/M-80 Compiler Directives (as opposed to CP/M-86 or MSDOS)
+
+A  defaults to A+
+
+This controls generation of absolute, non-recursive code.  When 
+active, absolute code is generated.  When passive the compiler 
+generates code which allows recursive calls.  This code requires 
+more memory and executes slower.
+:
+W  defaults to W2
+
+This controls the level of nesting of With statements, i.e., the 
+number of records which may be "opened" within one block.  The 
+W must be immediately followed by a digit between 1 and 9.
+:
+CP/M-86 / MS-DOS directives
+
+K  defaults to K+
+
+It controls the generation of stack check code.  When active, 
+a check is made to insure that space is available for local variables 
+on the stack before each call to a subprogram.  When passive no 
+checks are made.
+:
+Other Turbo vs. Standard (Jensen & Wirth) PASCAL
+
+Extensions offered by TURBO Pascal are not discussed.
+
+Dynamic variables and pointers use the standard procedures, New, 
+Mark, and Release instead of the New and Dispose procedures.  
+Primarily this deviation from the standard is far more efficient 
+in terms of execution speed and required support code, and secondly 
+it offers compatibility with other popular Pascal compilers (UCSD).
+
+The procedure New will not accept variant record specifications. 
+This restriction, however, is easily circumvented by using the 
+standard procedure GetMem.
+
+

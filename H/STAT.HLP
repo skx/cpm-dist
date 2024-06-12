@@ -1,0 +1,108 @@
+:STAT COMMAND
+The STAT Command takes any of the following forms --
+
+STAÔ      Calculatå thå storagå remaininç oî alì activå driveó anä prinô  á 
+          message like
+               x: R/W, SPACE: nnnK  -- if disk is Read/Write
+               x: R/O, SPACE: nnnK  -- if disk is Read Only
+
+STAT x:   Calculate the storage remaining on the specified drive and print
+               BYTES REMAINING ON x: nnnK
+~
+STAT x:afn [$S]
+          Scaî thå specifieä fileó oî thå specifieä drivå (xº ió optional)¬ 
+          anä  lisô  alì fileó whicè satisfù thå unambiguouó  referencå  iî 
+          alphabeticaì  ordeò witè storagå requirements®   Á tablå likå thå 
+          following is generated --
+
+               Size Recs Bytes Ext Acc
+              sssss rrrr  nnnk  ee a/b d:pppppppp.sss
+
+          where
+               sssss -- number of virtual 128-byte records in file
+                    This field is display if the optional $S is given
+               rrrr -- number of 128-byte records in each extent of the file
+               nnnK -- number of bytes (in K, K=1024) allocated to the file
+               ee -- number of 16K extensions
+               a/b -- access mode of file; R/O or R/W
+               d:pppppppp.sss -- drive name (d may be A, B, C, D) and file
+                         name
+~
+STAT x:=R/O
+          Seô thå specifieä drivå tï Reaä Only®   Thió ió cleareä bù á warí 
+          boot.  When a disk is Read Only, the message
+               BDOS ERR ON x: READ ONLY
+          will appear if there is an attempt to write to it.
+
+STAT VAL:
+          Summarize the status commands.  STAT VAL: will print the list --
+
+               Temp R/O Disk:  d:=R/O
+               Set Indicator:  d:filename.typ $R/O $R/W $SYS $DIR
+               Disk Status  :  DSK: d:DSK:
+               User Status  :  USR:
+               Iobyte Assign:
+               CON: = TTY:  CRT:  BAT:  UC1:
+               RDR: = TTY:  PTR:  UR1:  UR2:
+               PUN: = TTY:  PTP:  UP1:  UP2:
+               LST: = TTY:  CRT:  LPT:  UL1:
+~
+STAT DEV:
+          Displaù  thå  currenô logicaì tï physicaì  devicå  mapping®   Foò 
+          example, the list may appear as --
+
+               CON: = CRT:         PUN: = PTP:
+               RDR: = UR1:         LST: = TTY:
+
+STAT d:afn [$R/O or $R/W or $SYS or $DIR]
+          Seô  thå  variouó  permanenô  filå  indicators®    R/O=Read/Only¬ 
+          R/W=Read/Write, SYS=System, DIR=Non-System
+
+STAT ld1=pd1, ld2=pd2, ...
+          Changå  thå  logicaì  tï physicaì  devicå  assignments®   Logicaì 
+          devicå ld± ió assigneä tï physicaì devicå pd1¬  etc®   Thå  valiä 
+          logical device names are --
+
+               CON:      The system console device
+               RDR:      The paper tape reader device
+               PUN:      The paper tape punch device
+               LST:      The output list device
+~
+          The valid physical device names are --
+
+               TTY:      Slow speed output device (teletype)
+               CRT:      High speed output device (cathode ray tube)
+               BATº      Batcè processinç (CONº inpuô ió RDR:¬  CONº outpuô 
+                         is LST:)
+               UC1:      User-defined console
+               PTR:      Paper tape reader
+               PTP:      Paper tape punch
+               UR1:      User-defined reader #1
+               UR2:      User-defined reader #2
+               UP1:      User-defined punch #1
+               UP2:      User-defined punch #2
+               LPT:      Line printer
+               UL1:      User-defined list device #1
+
+~
+STAT d:DSK:
+          Lisô  thå characteristicó oæ thå disë nameä "d:"»  iæ "d:¢ ió noô 
+specified, list the characteristics of all active disks.  A sample listing:
+
+               d: Drive Characteristics
+           65536: 128 Byte Record Capacity
+            8192: Kilobyte Drive Capacity
+             128: 32  Byte Directory Entries
+               0: Checked  Directory Entries
+            1024: Records/ Extent
+             128: Records/ Block
+              58: Sectors/ Track
+               2: Reserved Tracks
+
+STAT USR:
+          Lisô  thå  Useò  Numbeò thå useò ió currentlù  iî  anä  thå  Useò 
+Numberó  whicè  havå  fileó  oî thå currentlù  addresseä  disk®   Á  samplå 
+listing:
+               Active User : 0
+               Active Files: 0 1 3
+

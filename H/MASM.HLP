@@ -34,7 +34,7 @@ where
           Z    Assemble Zilog (Z80) mnemonics
           I    Assemble Intel (8080) mnemonics
 
-          Ğ     Eacè /Ğ allocateó aî extrá 25¶ byteó oæ stacë spacå foò uså 
+          P     Each /P allocates an extra 256 bytes of stack space for use 
 during assembly.  Use /P if stack overflow errors occur during assembly.
 :MACRO-80 Pseudo-Ops
 
@@ -52,7 +52,8 @@ during assembly.  Use /P if stack overflow errors occur during assembly.
           IRPC      EXITM     LOCAL     COND      ENDC
           *EJECT    DEFB      DEFS      DEFW      DEFM
           DEFL      GLOBAL    EXTERNAL  INCLUDE   MACLIB
-          ELSE      .LALL     .SALL     .XALLŠ:MACRO-80 In-Line Error Messages
+          ELSE      .LALL     .SALL     .XALL
+:MACRO-80 In-Line Error Messages
 
      A    Argument Error           O    Bad opcode or objectionable syntax
      C    Conditional nesting err  P    Phase error
@@ -79,46 +80,46 @@ during assembly.  Use /P if stack overflow errors occur during assembly.
 
           L80 obj1:filename.ext/sw1,obj2:filename.ext/sw2,...
 
-wherå  objn:filename.exô  denoteó á .REÌ filå tï bå linkeä anä swî  denoteó 
+where  objn:filename.ext  denotes a .REL file to be linked and swn  denotes 
 switches which control the linking process.
 :LINK-80 Switches
 
      /R        Reset -- put loader back in initial state
 
      /E or /E:Name
-               Exiô LINK-8° anä returî tï CP/M®   Searcè thå systeí librarù 
-foò anù undefineä references®   /E:Namå useó Namå foò thå starô addresó  oæ 
+               Exit LINK-80 and return to CP/M.   Search the system library 
+for any undefined references.   /E:Name uses Name for the start address  of 
 the program.
 
      /G or /G:Name
-               Starô  executioî  oæ  thå program®   Again¬  iæ  /G:Namå  ió 
+               Start  execution  of  the program.   Again,  if  /G:Name  is 
 specified, Name defines the start address of execution.
 
      <filename>/N
                Save the binary on disk under the name 'filename.COM'.
 
      /P:adr and /D:adr
-               Seô  thå Prograí anä Datá areá originó foò thå nexô  prograí 
+               Set  the Program and Data area origins for the next  program 
 to be loaded.
 
 
      /U
-               Lisô thå origiî anä enä oæ thå prograí anä datá areá aó welì 
+               List the origin and end of the program and data area as well 
 as all undefined globals.
 
      /M
-               Lisô  thå origiî anä enä oæ thå prograí anä datá  area¬  alì 
-defineä globaló anä theiò values¬  anä alì undefineä globaló followeä bù aî 
+               List  the origin and end of the program and data  area,  all 
+defined globals and their values,  and all undefined globals followed by an 
 asterisk.
 
      <filename>/S
                Search 'filename.REL' to satisfy references.
 
-     /Ø        Iæ á filename/Î waó specified¬  /Ø wilì causå thå filå tï bå 
+     /X        If a filename/N was specified,  /X will cause the file to be 
 saved in Intel HEX format with a extension of .HEX.
 
-     /Ù        Iæ á filename/Î waó specified¬ /Ù wilì creatå á filename.SYÍ 
-filå wheî /Å ió entered®  Thió filå containó thå nameó anä addresseó oæ alì 
+     /Y        If a filename/N was specified, /Y will create a filename.SYM 
+file when /E is entered.  This file contains the names and addresses of all 
 globals for use with SID or ZSID.
 :Invoking LIB-80
 
@@ -126,14 +127,14 @@ globals for use with SID or ZSID.
 
           LIB
 
-     Commandó  tï LIB-8° consisô oæ aî optionaì destinatioî filenamå  whicè 
-setó  thå  namå oæ thå librarù beinç created¬  followeä bù aî  equaì  sign¬ 
-followeä bù modulå nameó separateä bù commaó oò filenameó witè modulå nameó 
+     Commands  to LIB-80 consist of an optional destination filename  which 
+sets  the  name of the library being created,  followed by an  equal  sign, 
+followed by module names separated by commas or filenames with module names 
 enclosed in angle brackets separated by commas.
 
-     Tï  selecô  á  giveî modulå froí á file¬  uså thå  namå  oæ  thå  filå 
-followeä  bù  thå  module(s©  specifieä  encloseä  iî  anglå  bracketó  anä 
-separateä  bù  commas®   Iæ nï moduleó arå selecteä froí á file¬  theî  alì 
+     To  select  a  given module from a file,  use the  name  of  the  file 
+followed  by  the  module(s)  specified  enclosed  in  angle  brackets  and 
+separated  by  commas.   If no modules are selected from a file,  then  all 
 modules are selected.
 
 :LIB-80 Switches
@@ -151,23 +152,24 @@ modules are selected.
 
           CREF80 listing=source
 
-wherå  'listing§  ió  thå  namå oæ thå  filå  'listing.LST§  generateä  anä 
-'source§  ó  thå  namå  oæ thå filå  'source.CRF§  generateä  bù  MACRO-80®  
-'listing§ ió optional¬ and¬ iæ omitted¬ thå listinç filå generateä ió nameä 
+where  'listing'  is  the  name of the  file  'listing.LST'  generated  and 
+'source'  s  the  name  of the file  'source.CRF'  generated  by  MACRO-80.  
+'listing' is optional, and, if omitted, the listing file generated is named 
 'source.LST'.
-:Debugging MACRO-80 Programs Using DEBUG.MACŠ
-     DEBUG.MAÃ  ió  á  packagå oæ MACROó whicè thå useò maù emploù  tï  aiä 
-himselæ  iî debugginç MACRO-8° programs®   Thió packagå containó twï  prinô 
-MACROs¬  onå  registeò displaù MACRO¬  anä onå exiô MACRO®   Iî alì  cases¬ 
+:Debugging MACRO-80 Programs Using DEBUG.MAC
+
+     DEBUG.MAC  is  a  package of MACROs which the user may employ  to  aid 
+himself  in debugging MACRO-80 programs.   This package contains two  print 
+MACROs,  one  register display MACRO,  and one exit MACRO.   In all  cases, 
 these MACROs have no net affect on any register.
 
-     DEBUG.MAÃ ió useä bù firsô specifyinç iô aó á MACRÏ Librarù withiî thå 
+     DEBUG.MAC is used by first specifying it as a MACRO Library within the 
 user's program.  This is accomplished by the statement --
 
           MACLIB    DEBUG.MAC
 
-aó aî assembly-languagå instructioî aô thå beginninç oæ hió program®   Thió 
-statemenô  loadó thå librarù DEBUG.MAÃ anä makeó itó MACROó  availablå  foò 
+as an assembly-language instruction at the beginning of his program.   This 
+statement  loads the library DEBUG.MAC and makes its MACROs  available  for 
 use.  These MACROs are --
 
 
@@ -184,10 +186,10 @@ use.  These MACROs are --
  REGS      0   241            Print the contents of    REGS
                               all registers on CON:
 
-Noteº  Thå « afteò á sizå indicateó thaô onå musô adä tï thå indicateä sizå 
+Note:  The + after a size indicates that one must add to the indicated size 
 the number of characters specified in the parameter.
 
-Noteº   Messageó specifieä foò EXIÔ anä PRINÔ shoulä noô contaiî restricteä 
+Note:   Messages specified for EXIT and PRINT should not contain restricted 
 MACRO-80 symbols (such as !) or an error message will result.
 
      An example of the use of these MACROs follows --

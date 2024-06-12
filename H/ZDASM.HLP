@@ -1,0 +1,269 @@
+Introduction
+Command Format
+Operation
+Parameter File Input
+COM File Input
+Source File Output
+Usage Notes
+:Introduction
+ZDASM  is  a  CP/M-based  Z80 disassembler which takes a  COM  file  and  an 
+optional parameter file as input and produces an assembler-compatible source 
+code  file  as  output.   The  parameter file is  read  by  ZDASM  prior  to 
+processing the COM file.  Its format is given in a help message typed to the 
+user  console by ZDASM.   The help message is accessed by running ZDASM with 
+no command line parameters.   The format of the command line parameters used 
+to cause ZDASM to disassemble a COM file is also given in the help  message.  
+The COM file may be up to 64K in size.
+:Command Format
+The command format is:
+
+       ZDASM  fname1<.COM>  <fname2<.Z80>>
+
+where  fname2  defaults  to  fname1 if not given (both may  be  prefixed  by 
+'device:' if desired).
+
+A  parameter file will be produced automatically by ZDASM on the same  drive 
+as  the COM file if one does not exist when ZDASM is invoked.   The  entries 
+are  message data entries produced by scanning the COM file for  strings  of 
+printable characters, CR, LF, TAB, NULL, and 0FFH.  If a string 8 characters 
+or longer is found, it is flagged as a message.  The parameter file produced 
+is  a printable ASCII file and may thus be scanned by the user and  modified 
+for further disassembly passes using a text editor.
+:Operation
+ZDASM  makes  two passes through the COM file:  the first to set  up  label, 
+subroutine, and usage tables, and the second to produce the source code.  In 
+addition,  it  scans the parameter file to set up default table values prior 
+to processing the COM file.   The COM file may be up to 64K in size and  any 
+location  may  be labeled and/or set to indicate one of four types of  code: 
+instructions,  message  data,  byte data,  and word data.   The  default  is 
+instructions.   Message  data  indicates  that  DEFB directives  are  to  be 
+produced with multiple bytes on one line (as many as will fit),  produced as 
+either  quoted strings if printable or hexadecimal constants if  not.   Byte 
+data produces DEFB directives with 1 byte per line.  Word data produces DEFW 
+directives  with 1 word per line.   Instructions produce ZILOG-mnemonic  Z80 
+source  code  statements.   Instructions  which are unique to  the  Z80  are 
+generated with a comment flag ('tabtab;Z80') following the source code.
+
+When  processing  instructions  in  pass  1,   operands  are  examined   for 
+instruction  and data memory references.   For instruction references (calls 
+and  relative and absolute jumps) the label map is set  appropriately.
+~
+For calls, the subroutine map is set to the destination address.  For  data Šreferences,  the  label map is set and also the usage map is set  to  either 
+byte or word data, subject to the following rules:
+
+ * Only  forward  references are  allowed  to flag locations as byte data or
+   word  data  in  pass 1 so that locations already processed  will  not  be 
+   changed.
+
+ * Once a location is flagged as byte or word data by a memory reference, it
+   will not be changed by following code.
+
+ * If a location is flagged as byte, word, or message data by the  parameter
+   file, it will not be changed by memory references.
+
+For word constant register loads,  the label map is set.   The label may  be 
+erroneous,  but  ZDASM cannot tell whether constants are addresses or  data, 
+and  doing it this way allows the user to get a cross-referenced listing  of 
+the  source code produced and determine the difference manually.   For  byte 
+constant  register loads,  the constant is always treated as data;  the user 
+will  have to examine to determine whether the data is actually  an  address 
+LSB  or MSB.
+
+The  contents of word data in the COM file is also used to create label  map 
+entries during pass 1.
+
+If  the last byte of a message is printable but with its msb  set,  DEFM  is 
+produced instead of DEFB with the msb of the last character cleared.
+:Parameter File Input
+The PAR file must be on the same disk as the COM file;  this may be any disk 
+(specified via A:,  B:,  etc) or the default disk if no device is specified.  
+The Z80 file will be created on the same disk as the COM file (with the same 
+base  name  and a .Z80 extension) if no output specification is given or  on 
+any  disk if specified.   Extensions need not be specified on the  input  or 
+output filenames,  however,  they will be used if given.   The default input 
+file  extension  is COM and the default output file extension is  Z80.   The 
+extension used for the parameter file is always PAR (and the same base  name 
+as the input file).
+
+Each  line of the parameter file contains a usage specification for a  range 
+of addresses.  Later lines override earlier lines.  This fact may be used to 
+decrease the number of lines in the parameter file in some cases (by setting 
+a  block to one type,  then overwriting specific entries within  that  range 
+with another type).
+
+Leading  zeros are not required on hex addresses (trailing 'H' must  NOT  be 
+included) in the parameter file.   All PAR file input may be mixed upper and 
+lower case characters.   Many different characters may be used as delimiters 
+before the hex addresses (space,  comma,  colon,  dash,  and tab).   The 1st 
+character of each line must be a specification character, followed by either 
+one  or two hex addresses (all separated by at least one delimiter).
+
+If a pair of addresses are required, the 2nd need not be given if it is  theŠsame as the first (i.e., a 1-byte 'range' only requires one address).  Blank 
+lines are allowable in the parameter file;  they are ignored.   Comments may 
+be entered on any parameter file specification line following the  addresses 
+(separated by at least 1 delimiter).  For example:
+
+       M: 123-126      4-letter message: DEFB 'ABCD'
+       B: 223-225      Three DEFB directives
+       W: 103-106      Two DEFW directives
+       L: 105          Label the 2nd DEFW
+
+Word data specifications must indicate an even number of bytes.
+
+All  addresses  in the parameter file are absolute memory  addresses  (i.e., 
+where the file executes not where it loads).
+:COM File Input
+The  COM file is assumed to contain Z80 code/data ORGed to 100H.   If it  is 
+desired  to  disassemble  code ORGed at some other  location  in  memory,  a 
+parameter  file  may be created with an 'offset' entry giving  the  starting 
+address.   If the program ends prior to the last location of the saved file, 
+the end address may be given in the parameter file with an 'end' entry.  For 
+example:
+
+       O: 0            File is ORGed at absolute location 0
+       E: 7F           and ends at absolute location 7F
+
+The  offset given is used as the address following the END directive at  the 
+end of the source code file output (this will be 100H if none given).
+:Source File Output
+Status information and file error conditions (r/w,  open,  close, and create 
+errors) are reported to the user console.  Parameter file input is echoed to 
+the console as processed.   Errors on parameter file input lines are printed 
+following the line containing the error (before the CR/LF).
+
+Source file output may optionally be directed to the console (via 'CRT:'  or 
+'CON:') or to the printer (via 'LST:' or 'LPT:').  (Note, however, that tabs 
+are not converted to spaces on output to non-file-structured devices).   All
+output  from ZDASM is done through BDOS (no direct BIOS I/O),  so  control-P
+(toggle  console output to printer),  control-S (start/stop console output), 
+and control-C (return to CPM) are hooked up.   The present version of  ZDASM 
+does not check for control-C directly, so to get control-C to work, you must 
+stop console output via control-S, wait for it to stop, then type control-C.  
+Note that control-C typed while stopped via control-S is handled directly by 
+CPM;  thus  any output file opened by ZDASM will not be closed prior to  the 
+return to the CPM prompt.
+
+The user console need only handle CR,  LF, and upper/lower case (and tabs if 
+output is to the console as explained above).
+
+Byte data constants are output as operands in hex and are shown in quotes in 
+the comments field if printable.
+ŠAll  Z80-only  instructions are flagged with 'Z80' in  the  comments  field.  
+There  are  always exactly 2 tabs prior to the ';' on any commented line  so 
+that  the  Z80-only  flags may all be eliminated with a  text  editor  after 
+disassembly:
+
+       change "Z80 '"    to "'" in all
+   then change "^I^I;Z80" to ""  in all
+
+Labels  are  produced of the form 'Lnnnn:' where nnnn is the address of  the 
+label.   Label  map entries are produced in pass 1 and deleted in pass 2  as
+each  label  is  generated.   Any left over label map entries  are  used  to 
+produce 'Lnnnn EQU 0nnnnH' directives prior to the END directive produced at 
+the  end  of the source output.   Each EQU directive is commented  with  the 
+usage type at the location pointed to (I=instructions,  B=byte data,  W=word 
+data,  and  M=message data).   These will generally be pointers to byte  and 
+word data areas outside the bounds of the COM file (if they are addresses).
+
+Subroutines  (i.e.,  any  location  which  is  the  destination  of  a  CALL 
+instruction)  is flagged by a ';***' comment line prior to the start of  the 
+subroutine.
+:Usage Notes
+  -  Look in the Z80 output for labeled DEFB and DEFW directives followed by
+     unlabeled instructions to find missed messages and tables.
+
+  -  Uså  'L§ entrieó iî thå parameteò filå tï separatå messageó (esğ  DEFM© 
+     iæ thå messageó arå noô referenceä directlù bù thå code®   Labeló forcå 
+     thå starô oæ á ne÷ sourcå outpuô line.
+
+  -  The Z80 file size is generally 6-8 times as large as the COM file
+
+  -  If you don't wish ZDASM to create a parameter file (i.e., if you wish
+     to force the entire file to be interpreted as instructions), you can
+     'SAVE 0 fname.PAR' (prior to disassembly of fname.COM) which will take
+     up no disk space (1 directory entry).  This is an easier way to create
+     a null file than with a text editor.
+
+  -  Thå  directivå  messageó iî ZDASÍ ('DEFB'¬  'DEFW'¬  etc©  arå  locateä 
+     startinç  aô locatioî 103È oæ ZDASM.COÍ sï thå useò maù patcè tï  matcè 
+     hió  assembleò  (DÃ  insteaä  oæ DEFÍ foò M80© oò  hió  preferencå  (DÂ 
+     insteaä oæ DEFB)®   Theså messageó arå alì ´ characteró maø  terminateä 
+     witè á blanë iæ lesó thaî ´ characters.
+~
+  -  Followinç  thå  directivå messageó arå thå defaulô filå  extensionó  (³ 
+     letteró peò extensionº  parameteò file¬  inpuô file¬  theî outpuô file© 
+     anä  thå non-file-structureä devicå tablå whicè maù bå patcheä peò useò 
+     preference®   Thå  devicå tablå consistó oæ á serieó oæ entrieó oæ  thå 
+     forí § device:',devcode®  Devcodå musô bå onå oæ thå following:
+
+        255 - Bit bucket
+        254 - Console
+        253 - PrinterŠ        252 - Serial I/O (reader/punch)
+
+     Thå  devicå codå terminateó eacè entrù (msâ ió set)¬  ° terminateó  thå 
+     table®   Theså  deviceó maù currentlù onlù bå useä foò  output®   Zeroó 
+     followinç thå tablå arå provideä foò tablå expansion.
+
+  -  Onå difficultù iî workinç witè disassembleä sourcå fileó ió thaô iæ thå 
+     useò  makeó  lateò sourcå changeó whicè adä oò deletå  byteó  froí  thå 
+     resultinç COÍ file¬ iô musô stilì producå á workinç program®  Thå firsô 
+     thinç  tï dï abouô thió is¬  oæ course¬  tï separatå alì datá locationó 
+     froí instructioî locations.
+~
+     Once this is done however, one additional problem exists: word constant
+     register load instructions.  These constants may be data or  addresses.
+     ZDASM assumes they are addresses.  If they are  actually  data,  moving
+     the destination will change the value of the constant.   Therefore, the
+     user must examine all occurances of the following to  assure  that  the
+     label refers to the referenced address:
+
+                       LD      BC,Lnnnn
+                       LD      DE,Lnnnn
+                       LD      HL,Lnnnn
+                       LD      SP,Lnnnn
+                       LD      IX,Lnnnn
+                       LD      IY,Lnnnn
+
+     Thió ió easieò thaî iô sounds¬  sincå iæ thå labeì doeó noô falì withiî 
+     thå  boundó  oæ thå program¬  doeó noô falì withiî á datá areá  iî  thå 
+     program¬ oò falló iî thå middlå oæ aî instruction¬ iô wilì resulô iî aî 
+     EQÕ statemenô beinç generateä aô thå enä oæ thå source.
+
+     Lo÷  valueä  constantó  arå  generallù  noô  á  problem¬  sincå  sourcå 
+     modificatioî won'ô changå theiò values®   However¬  theså arå generallù 
+     easù  tï finä anä eliminatå mosô oæ thå worä constanô  registeò  loads®  
+     Thå  useò maù searcè foò 'L00§ tï finä them®   Theså wilì manù timeó bå 
+     looğ counts¬  sizeó oæ datá areas¬  etc.¬ sï arå verù instructivå abouô 
+     prograí  operation®   Thå  useò  maù searcè foò  LDIÒ  instructionó  iî 
+     particulaò  anä kno÷ thaô thå 'LÄ  BC,Lnnnn§ prioò ió á loaä oæ á  datá 
+     value®  Lo÷ valueä labeló maù alsï refeò tï fixeä CPÍ locationó sucè aó 
+     'CALÌ   L0005§ foò BDOÓ calló anä referenceó tï thå defaulô FCÂ aô  5CÈ 
+     anä TBUÆ aô 80H.
+
+  -  Á  mucè morå thornù probleí existó iî regarä tï bytå datá constantó  iæ 
+     thå COÍ filå waó produceä bù á PL/Í compileò (anä probablù otheò  high-
+     leveì  languagå compileró also)®   Thió ió thaô iæ twï memorù locationó 
+     arå  referenceä iî sequencå whoså addresseó havå thå samå  uppeò  byte¬ 
+     onlù thå loweò bytå ió reloaded:
+
+       0100  21 34 12          LD      HL,L1234
+       0103  7E                LD      A,(HL)
+       0104  2E 38             LD      L,LOW L1238Š       0106  77                LD      (HL),A
+        ...                    ...
+       1234  00        L1234:  DEFB    0
+        ...                    ...
+       1238  00        L1238:  DEFB    0
+
+     ZDASM assumes all byte values in instructions are data.  The user must
+     determine by examination of the code if this is actually the case.
+
+  -  Iî modifyinç thå resultinç sourcå followinç disassembly¬  thå useò musô 
+     generallù  determinå  aó  sooî aó possiblå whicè  addresseó  referenceä 
+     outsidå  thå boundó oæ thå prograí arå datá areaó useä bù  thå  prograí 
+     (i.e.¬  DEFÓ areaó immediatelù followinç thå prograí codå whicè musô bå 
+     moveä  iæ  thå enä oæ thå prograí moves)®   Thå commentó placeä oî  thå 
+     EQUó aô thå enä oæ thå sourcå bù ZDASÍ (generallù ';I'¬  ';B'¬ oò ';W'© 
+     arå verù helpfuì iî thió determination®  ';M§ ió generallù noô founä oî 
+     aî EQÕ unlesó thå parameteò filå ió incorrect.
+
+

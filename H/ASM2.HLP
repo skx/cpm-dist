@@ -17,7 +17,7 @@ where 'filename' is the name of the file 'filename.ASM' to be assembled.
           filename.PRN        - listing file
 
 
-     Iî  thå caså oæ thå seconä command¬  theså fileó arå createä accordinç 
+     In  the case of the second command,  these files are created according 
 to the parameters specified --
 
           ASM filename.pqr
@@ -43,23 +43,23 @@ where
      DS        Define data storage area
 :Assembler In-Line Error Messages
 
-     Ä    Datá errorº  elemenô iî datá statemenô cannoô bå  placeä  iî  thå 
+     D    Data error:  element in data statement cannot be  placed  in  the 
           specified data area
-     Å    Expressioî  errorº   expressioî   ió  ill-formeä  anä  cannoô  bå 
+     E    Expression  error:   expression   is  ill-formed  and  cannot  be 
           computed at assembly line
 
-     Ì    Labeì  errorº   labeì  cannoô  appeaò iî  thió  contexô  (maù  bå 
+     L    Label  error:   label  cannot  appear in  this  context  (may  be 
           duplicate label)
-     Î    Noô  implemented:   featureó  whicè  wilì appeaò  iî  futurå  ASÍ 
+     N    Not  implemented:   features  which  will appear  in  future  ASM 
           versions
 
      O    Overflow:  expression is too complicated to compute; simplify
-     Ğ    Phaså  errorº   labeì  doeó  noô  havå  thå  samå  valuå  oî  twï 
+     P    Phase  error:   label  does  not  have  the  same  value  on  two 
           subsequent passes through the program
 
-     Ò    Registeò  errorº   thå  valuå  specifieä aó  á  registeò  ió  noô 
+     R    Register  error:   the  value  specified as  a  register  is  not 
           compatible with the operation code
-     Ö    Valuå  errorº  operanä  encountereä iî expressioî  ió  improperlù 
+     V    Value  error:  operand  encountered in expression  is  improperly 
           formed
 :Assembler Console Error Messages
 
@@ -70,7 +70,8 @@ where
                                    which are not needed, and retry
 
      SOURCE FILE NAME ERROR        Improperly formed ASM file name
-Š     SOURCE FILE READ ERROR        Source file cannot be read properly by
+
+     SOURCE FILE READ ERROR        Source file cannot be read properly by
                                    the assembler, execute a TYPE to
                                    determine the point of error
 
@@ -78,6 +79,6 @@ where
                                    most likely cause is a full disk, erase
                                    and retry
 
-     CANNOÔ CLOSÅ FILÅ             Outpuô filå cannoô bå closed¬ checë tï
+     CANNOT CLOSE FILE             Output file cannot be closed, check to
                                    see if disk is write protected
 

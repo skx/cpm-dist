@@ -1,0 +1,682 @@
+-A Add Members
+-B Brief Toggle
+-C Close Library
+-D Delete Members
+-E Extract Members
+-F Filesweep Mode
+-G Get Filespec
+-H Help
+-K Krunch Library
+-L List Members
+-N Rename Members
+-O Open Library
+-P Print Members/Files
+-Q Unsqueeze Members
+-R Replace Members
+-S String Search
+-T Replace/Add Members
+-U Drive/User Change
+-V View Members
+-W Wildcard Open
+-X Exit Nulu
+-Y Disk Directory
+-Z Zap Disk Files
+-< Redirect Imput
+-> Redirect Output
+:-A	 ADD MEMBERS
+	 Syntax: -a filespec[ filespec...]
+
+Uså  thió commanä tï adä fileó froí disë tï thå currenô  library®
+NULÕ wilì makå á serieó oæ passeó througè thå  directory¬  addinç
+fileó aó iô goes¬  untiì thå lisô oæ matchinç fileó ió exhausted®
+Iæ  á matchinç filenamå alreadù existó aó aî activå membeò iî thå
+library¬  itó  namå  wilì bå displayeä anä thå filå wilì  noô  bå
+added.
+
+Iî  alì filå additioî anä replacemenô operations¬  iæ  á  deleteä
+entrù  oæ  identicaì  sizå caî bå located¬  thaô disë  spacå  anä
+directorù entrù wilì bå useä ratheò thaî allocatinç ne÷ spacå foò
+thå file®  Thió meanó thaô iô wilì bå necessarù tï reclaií wasteä
+disë spacå lesó often.
+
+Aî LÕ stylå CRÃ wilì bå generateä foò eacè filå added.
+:-B	 BRIEF TOGGLE
+	 Syntax: -b
+
+Thió toggleó thå promptinç mode®   Thå releaså versioî oæ NULÕ ió
+setuð tï prinô thå fulì namå oæ thå currenô modå foò á prompt¬ aó
+iî  "-Adä  memberó A0:>"®   Iæ BRIEÆ ió turneä oî thå  useò  wilì
+simplù seå "-Á A0:>"®  NULÕ maù bå permanentlù patcheä tï defaulô
+tï BRIEÆ OÎ oò OFF®  Seå NULÕ MODIFICATION file.
+:-C	 CLOSE THE LIBRARYŠ	 Syntax: -c
+
+Thió commanä closeó thå currenô library¬ writinç itó directorù tï
+disë iæ anù changeó havå beeî madå tï thå directory®  Thå librarù
+directorù ió NEVEÒ writteî excepô wheî thå librarù ió closed¬  sï
+bå  surå tï dï it®   Iæ yoõ forgeô tï dï sï anä removå thå  disk¬
+NULÕ  wilì  prompô  yoõ foò thå disë agaiî anä  wilì  attempô  tï 
+recover.
+
+Somå otheò operationó thaô causå thå currenô librarù tï bå closeä
+are: -k, -o, -w, -x
+:-D	 DELETE MEMBERS/FILES
+	 Syntax: -d filespec[ filespec (filespec)...]
+	 Syntax: -d du:filespec[ du:filespec...]
+
+Iæ thå drive/useò specificatioî ió included¬  thå DELETÅ functioî
+wilì  applù  tï fileó oî disk¬  otherwiså iô applieó  tï  librarù
+membeò files.
+
+Membeò  fileó  matchinç thå giveî filespeã wilì bå giveî  deleteä
+statuó  iî  thå librarù directory¬  excepô wheî thå  filespeã  ió
+encloseä iî parenthesis®   Iî thaô caså matchinç deleteä  memberó
+wilì  bå giveî activå status®   Thaô is¬  theù wilì bå undeleted®
+Iæ thå filenamå oæ á matchinç deleteä membeò filå alreadù  existó
+aó aî activå member¬  thå filenamå wilì bå displayeä anä thå filå
+wilì noô bå undeleted.
+
+Iæ thå membeò filå beinç deleteä haó á sizå oæ zerï sectors¬  itó
+entrù  wilì  bå  entirelù  REMOVEÄ froí  thå  librarù  directory¬
+therebù creatinç á new¬ freå entry.
+:-E	 EXTRACT MEMBERS
+	 Syntax: -e filespec[=newfilespec filespec du:filespec...]
+
+Uså  thió commanä tï extracô activå membeò files®   Iæ extractioî
+tï thå currenô drive/useò areá ió desired¬  nï furtheò syntaø  ió
+necessary®   Tï  indicatå anotheò drive¬  however¬  á destinatioî
+drive/useò  areá  maù bå includeä iî thå  sourcå  filespec®   Foò
+examplå  "-å a5:**¢ woulä extracô alì activå memberó tï drivå  A¬
+useò  areá  5®   Fileó maù bå renameä aó welì  aó  redirecteä  bù
+indicatinç  á filespeã alonç with¬  oò iî placå of¬  á drivå useò
+specificatioî followinç aî equaló sign.
+
+Examples: 1®  "-å *asm=*bak"
+          Extracô alì fileó witè á typå oæ .ASÍ tï thå default
+          drive/useò renaminç theí witè thå filetypå oæ .BAK.
+
+	  2.  "-e *asm=5:*.txt"
+          Extracô  alì fileó oæ typå .ASÍ tï useò areá µ  oæ  thå
+          defaulô drive¬ renaminç eacè witè thå .TXÔ filetype.
+~
+	  3.  "-e fred.txt=sam.txt jane.inf=c8:girls.dbf"Š          Extracô   thå  membeò  filå  FRED.TXÔ  tï  thå  defaulô
+          drive/useò undeò thå namå oæ SAM.TXT¬  anä extracô  thå
+          membeò  filå JANE.INÆ tï useò areá ¸ oæ drivå  Cº  witè
+          thå filenamå GIRLS.DBF.
+
+Thå twï redirectioî ruleó tï remembeò areº
+
+     1®   Iæ  á destinatioî filespeã ió entereä iô cannoô bå  anù
+     lesó ambiguouó thaî thå sourcå filespec¬  i.e.¬  "*asm=*bak¢
+     ió valiä whilå "**=*bak¢ ió noô valid.
+
+     2®   Anù filespeã followinç aî equaló sigî takeó  precedencå
+     oveò  anù  drive/useò specificatioî iî thå sourcå  filespec¬
+     i.e.¬  "-å   6:*asm=*bak¢ woulä extracô alì membeò fileó  tï
+     thå currenô drive/user¬  renaminç them¬ anä woulä ignorå thå
+     "6:¢ specification.
+~
+Durinç extraction¬  á CRÃ ió generateä foò eacè file®   Afteò thå
+destinatioî  filå  haó  beeî closed¬  thå  CRÃ  sï  generateä  ió
+compareä  tï  thå CRÃ foò thaô librarù membeò thaô waó storeä  iî
+thå  librarù  directory¬  iæ thaô valuå  waó  non-zero®   Iæ  thå
+resultó  arå  noô identical¬  aî erroò messagå wilì bå  displayeä
+beforå thå nexô membeò filå oò filespeã wilì bå  processed®   Thå
+erroneouó  destinatioî   filå  wilì noô bå deleteä froí  disë  bù
+NULÕ aó á resulô oæ thió error.
+:-F	 FILESWEEP MODE
+	 Syntax: -f
+
+Thió  commanä  placeó NULÕ iî itó seconä  operationaì  mode¬  thå
+filesweeð  mode®   Thió  allowó  thå  useò tï  movå  througè  thå
+directorù oæ activå membeò fileó aó iæ theù werå individuaì fileó
+beinç  examineä bù á prograí likå NSWEEP®   Thå filesweeð  mode'ó
+commanä lisô ió aó follows:
+
+	 A Next member		    B Previous member
+	 C Close library	    D Delete member
+	 E Extract member	    F Find member
+	 L Log new drive/user	    M Mass operations
+	 O Open new library	    P Print member
+	 Q Unsqueeze member	    R Rename member
+	 T Tag member		    U Untag member
+	 V View member		    W Wildcard rename
+	 X Exit NULU		    Y Disk directory
+	 Z NULU command mode	    ? Help!
+
+Becauså oæ thå extremå similaritù betweeî theså commandó anä  thå
+commandó oæ NULU'ó commanä mode¬ onlù á shorô descriptioî oæ eacè
+commanä wilì bå given.
+         A  --	Advance to next member
+		(spacebar, cr, or lf produces the same result)Š	 B  --	Back up to previous member
+	 C  --	Close the current library
+	 D  --	Delete current member file
+	 E  --	Extract current member file
+		(prompt allows redirection)
+	 F  --	Find first member matching input filespec
+	 L  --	Change drive/user defaults
+		(returns file pointer to the top of the file list
+		 and untags all member files)
+	 M  --	Mass operations on all tagged files
+		(allowó    Deletion¬     Extraction¬    Printing¬
+                 Unsqueezing¬ oò Viewing)
+	 O  --	Open new library (closes the current library)
+	 P  --	Dumps the current member file to LST:
+		(unsqueezes if needed)
+	 Q  --	Extract  current  member  file,   unsqueezing  if
+		necessary (prompt allows redirection)
+	 R  --	Rename current member file
+	 T  --	Tag current member
+	 U  --	Untag current member
+	 V  --	View current member file (unsqueezes if needed)
+	 W  --	Wildcard  rename (prompts for oldname & newname)
+	 X  --	Exit NULU (closes all files)
+	 Y  --	Get disk directory for default drive/user
+		(returns file pointer to the top of the file list
+		 and untags all member files)
+	 Z  --	Return	to NULU command  mode
+		(current library remains open)
+	 ?  --	Print the filesweep mode menu
+~
+If¬  wheî thå filesweeð modå ió entered¬  oò afteò á librarù  haó
+beeî closed¬ therå ió noô á librarù currentlù open¬ thå filesweeð
+modå  wilì prompô witè "Nï librarù open¢ anä wilì accepô onlù thå
+followinç commands: L,O,X,Y,Z,?
+
+Likewise¬  iæ á librarù ió opeî buô onlù haó á directorù witè  nï
+otheò  activå  members¬  thå  messagå "Nï membeò files¢  wilì  bå
+printeä anä onlù thå commandó listeä abovå wilì bå accepted.
+
+Durinç filesweeð operation¬ eacè filå wilì bå listeä iî thå ordeò
+iî whicè iô ió founä iî thå directory¬  alonç witè thå sizå iî  Ë
+thaô  thå  filå woulä occupù iæ iô werå extracteä tï thå  defaulô
+drive.
+
+Iæ  thå  filesweeð  modå ió terminateä bù á returî  tï  thå  NULÕ
+commanä mode¬  anù commandó thaô followeä thå "-F¢ commanä oî thå
+previouó NULÕ commanä linå wilì bå executed.
+:-G	 GET FILESPEC
+	 Syntax: -g filespec
+
+NULÕ  wilì  searcè foò thå filespeã indicated®   Iæ iô ió  found¬Šprocessinç continues®  Iæ not¬ thå useò ió prompteä tï inserô thå
+disë  containinç  thaô filespec®   Thå drivå ió  theî  reseô  anä
+searcè again®   Thå prograí wilì prompô foreveò untiì iô receiveó
+thå  propeò  filespeã oò untiì á ^Ã ió entered¬  forcinç NULÕ  tï
+continuå withouô thå filespeã beinç found.
+
+Thió  commanä  caî  bå  usefuì wheî attemptinç  tï  controì  NULÕ
+througè á submiô utilitù likå DRI'ó SUBMIT.COM®
+
+Foò  example¬  onå mighô typå "nulõ -ï a:así -ç  b5:-work.00µ  -å
+b10º  -ç a0:-5.00µ -x"®  Afteò loading¬ NULÕ woulä opeî á librarù
+calleä  ASM.LBÒ oî drivå Aº  iî thå currenô useò area®   Nexô, iô
+woulä searcè useò areá µ oæ drivå Bº foò filespeã -WORK.00µ untiì
+iô waó found®  Theî alì activå membeò fileó woulä bå extracteä tï
+useò areá 1° oæ drivå B:®  Finally¬ NULÕ woulä searcè useò areá °
+oæ drivå Aº foò á filespeã calleä -5.00µ untiì found®  Then¬ NULÕ
+woulä terminate®
+~
+Noticå  herå thaô thå ASM.LBÒ didn'ô havå tï bå closeä beforå thå
+searcè foò thå finaì filespeã becauså nï changå haä beeî madå  tï
+thå librarù directory®   Iæ á changå haä beeî made¬ afteò thå ne÷
+filespeã haä beeî loaded¬  NULÕ woulä havå demandeä thå disë witè
+ASM.LBÒ  bacë sï iô coulä updatå thå directory®   Therefore¬  thå
+GEÔ operatioî woulä bå effectivelù negated.
+:-H	 HELP
+	 Syntax: -h
+
+Print the command mode menu.
+:-K	 KRUNCH LIBRARY
+	 Syntax: -k[ <number of entries to allow]
+
+Eveî  thougè  alì memberó arå kepô iî alphabeticaì ordeò  aô  alì
+times¬ wheî á membeò ió deleteä thå disë spacå iô occupieó ió noô
+releaseä  tï  thå  operatinç systeí untiì thå KRUNCÈ  commanä  ió
+executed®
+
+KRUNCÈ consistó oæ thå followinç steps:
+     
+     1®  Iæ á filå oæ thå samå namå aó thå librarù alreadù existó
+     iî  thå  defaulô  drive/useò  areá  ANÄ  THÅ  LIBRARÙ   FILÅ
+     ORIGINATEÓ FROÍ Á DIFFERENÔ DRIVE/USER¬ á messagå indicatinç
+     thaô  thå  filå  existó  wilì bå displayeä  anä  thå  KRUNCÈ
+     commanä  wilì  bå skipped®   Yoõ musô deletå  thå  offendinç
+     filå  oò  changå drive/useò areá  beforå  thå KRUNCÈ caî  bå
+     effected.
+
+     2.  The library is closed.
+~
+     3®  Á  ne÷  librarù  calleä  WORK-LBR.$$¤ ió openeä  iî  thå
+     defaulô  drive/useò areá anä thå useò ió prompteä  tï  inpuô
+     thå  numbeò oæ fileó thaô thå ne÷ librarù shoulä bå ablå  tï
+     contain®   Iæ  thå useò wantó jusô enougè entrieó tï contaiî
+     thå  currentlù activå members¬  thå numbeò ± oò  anù  numbeòŠ     lesó  thaî oò equaì tï thå currenô numbeò oæ activå  entrieó
+     maù  bå entered®   Iæ thå optionaì parameteò listeä abovå ió
+     entered¬  iô  wilì bå useä aó thå numbeò oæ  entries®   (Thå
+     KRUNCÈ  procesó maù bå aborteä herå bù typinç RETURÎ  oò  0®
+     Pleaså  notå  thaô thå librarù directorù countó aó aî  entrù
+     anä wilì automaticallù bå accounteä foò bù NULU.)
+~
+     4®   Oncå  WORK-LBR.$$¤ ió opened¬  thå activå membeò  fileó
+     froí thå originaì librarù wilì bå copieä onå bù onå intï thå
+     ne÷ library®   Thå copù routinå useó á recursivå procesó  tï
+     copù  aó  manù  fileó aô onå timå aó  possible®   Á  CRÃ  ió
+     calculateä foò eacè membeò aó iô ió copied®   Iæ thió numbeò
+     doeó  noô  matcè  thå CRÃ recordeä iî thå  originaì  librarù
+     directory¬  thå  messagå "CRÃ  ERROR-Continue¿  (y/n)¢  wilì
+     appeaò afteò thå filenamå iî question®   Á replù oæ "N¢ wilì
+     resulô  iî  thå worë librarù beinç deleteä anä thå  originaì
+     librarù beinç re-opened®  Otherwise¬ thå newlù generateä CRÃ
+     foò  thå  filå wilì bå storeä iî thå directorù  oæ  thå  ne÷
+     library.
+
+     5®   Thå  olä librarù ió deleteä anä WORK-LBR.$$¤ ió renameä
+     witè thå olä librarù name.
+
+Examples: 1.  "-k"
+          Thå librarù woulä bå KRUNCHeä tï thå defaulô drive/useò
+          area®  Thå useò woulä bå prompteä tï npuô thå numbeò oæ
+          entrieó tï allow.
+~
+	  2®  "-ë <1"
+          Thå librarù woulä bå KRUNCHeä tï thå defaulô drive/useò
+          areá witè jusô enougè entrieó tï contaiî alì  currentlù
+          activå membeò files.
+
+          3®  "-õ b5º -ë <63"
+          Thå  defaulô  drive/useò areá woulä bå changeä  tï  B5º
+          beforå  thå KRUNCÈ begins®   Theî thå librarù woulä  bå
+          KRUNCHed¬ allowinç 6³ entries.
+
+          4®  "-õ b5º -ë <± -õ a0º -ë <63"
+          Thå  defaulô  drive/useò areá woulä bå changeä  tï  B5º
+          beforå  thå KRUNCÈ begins®   Thå KRUNCÈ woulä commence¬
+          allowinç  onlù  enougè entrieó tï  contaiî  alì  activå
+          members®   Thå drive/useò areá woulä bå changeä tï A0:®
+          Then¬  thå librarù woulä bå KRUNCHeä again¬ allowinç 6³
+          entries.
+:-L	 LIST MEMBERS
+	 Syntax: -l[ filespec]
+	 Syntax: -l[ (filespec)]
+
+Uså  thió commanä tï lisô thå contentó oæ thå librarù  directory®
+Eacè  membeò  filenamå  wilì  printeä followeä  bù  thå  startinçŠrelativå  sectoò  numbeò iî thå librarù file¬  thå  sizå  oæ  thå
+membeò iî sectors¬ thå sizå iî Ë thaô thå filå woulä occupù iæ iô
+werå tï bå extracteä tï thå defaulô drive/useò area¬  anä thå CRÃ
+foò thå file®   Finally¬  á recað oæ thå sizå oæ alì membeò fileó
+listeä  ió printed¬  alonç witè thå numbeò oæ sectoró occupieä bù
+deleteä files.
+
+Thå parameteró listeä abovå caî bå useä tï controì thå  selectioî
+oæ fileó foò display®
+
+Examples: 1®  "-l"
+          Alì activå membeò fileó listed.
+
+          2®  "-ì **"
+          Alì activå membeò fileó listed.
+	 
+          3®  "-ì (**)"
+          Alì deleteä membeò fileó listed.
+	 
+          4®  "-ì *asm"
+          Alì  activå  membeò  fileó  matchinç  thå  filespeã  oæ
+          ????????.ASÍ listed.
+	 
+          5®  "-ì (fred.txt)"
+          Alì deleteä membeò fileó calleä	FRED.TXÔ listed.
+          (Notå thaô ió IÓ possiblå tï havå morå thaî onå deleteä
+           filå witè thå samå name.)
+:-N	 RENAME MEMBERS
+	 Syntax: -n oldfilespec=newfilespec[...]
+	 Syntax: -n (oldfilespec)=newfilespec[...]
+
+Thió  commanä  ió useä tï renamå activå oò deleteä membeò  files®
+Wildcardó arå fullù supported¬ buô thå newfilespeã caî bå nï lesó
+ambiguouó thaî thå oldfilespec®   Deleteä memberó maù bå  renameä
+bù enclosinç thå oldfilespeã ONLÙ iî  parenthesis.
+
+Examples: 1®  "-î *asm=*bak"
+          Alì  activå memberó matchinç thå filespeã  ????????.ASÍ
+          woulä bå renameä witè á filetypå oæ .BAK.
+
+          2®  "-î (fred.txt)=sam.txt"
+          Thå  firsô deleteä membeò filå calleä FRED.TXÔ woulä bå
+          renameä  tï SAM.TXT®   Alì otheò memberó matchinç  thaô
+          filespeã   woulä  bå  listeä  alonç  witè   á   messagå
+          indicatinç thaô theù coulä noô bå renamed.
+~
+          3®  "-î **=**"
+          Alì  activå membeò fileó woulä bå listed¬  eacè witè  á
+          messagå  indicatinç  thaô  theù coulä  noô  bå  renameä
+          becauså thå namå alreadù exists.
+:-O	 OPEN A LIBRARYŠ	 Syntax: -o filename[ <number of entries to allow]
+
+Witè thå exceptioî oæ thå filesweeð Opeî Librarù command¬ thió ió
+thå  onlù methoä tï opeî oò creatå á library®   NULÕ wilì  searcè
+foò  thå filenamå indicated®   Iæ iô ió found¬  iô wilì bå openeä
+anä  á messagå wilì bå displayeä indicatinç thå sizå oæ thå  Datá
+Transfeò  Buffer®   Thió ió thå numbeò oæ sectoró iî memorù  thaô
+NULÕ  wilì havå tï uså iî extracting¬  addinç oò  copyinç  membeò
+files.
+
+Iæ  thå  filå  ió noô found¬  thå useò wilì bå prompteä  foò  thå
+numbeò oæ entrieó tï allo÷ iî thå ne÷ library®   Iæ thå  optionaì
+parameteò  abovå ió passed¬  thå numbeò wilì bå useä tï determinå
+thå directorù sizå oæ thå library®   Alì directorieó caî  contaiî
+somå multiplå oæ ´ entries®  Alì numberó inpuô wilì bå roundeä uð
+tï thå nearesô multiplå oæ 4®  Remembeò thaô thå directorù itselæ
+countó  aó onå entrù anä thaô NULÕ wilì automaticallù makå  spacå
+foò it.
+
+The filename passed must be unambiguous.
+~
+NOTE ON DIRECTORY SIZE:
+Dependinç  oî  availablå memory¬  librarieó witè aó manù  aó  80°
+entrieó  (theoretically©  caî  bå opened®   Buô  watcè  thå  Datá
+Buffeò Size¡   Iæ iô ió lesó thaî ¹ sectoró yoõ wilì noô bå  ablå
+tï unsqueezå anù files®  Witè á useò TPÁ oæ 58k¬ É havå beeî ablå
+tï  opeî librarieó witè nï morå thaî 58´ totaì memberó anä  stilì
+bå  lefô witè á buffeò oæ ¹ sectors®   (Seå -¼ commanä anä ho÷ iô
+affectó librarù memory.)
+:-P	 PRINT MEMBERS/FILES
+	 Syntax: -p filespec[ filespec (filespec)...]
+	 Syntax: -p du:filespec[ du:filespec...]
+
+Iæ  thå drive/useò specificatioî ió included¬  thå PRINÔ functioî
+wilì  applù  tï fileó oî disk¬  otherwiså iô applieó  tï  librarù
+membeò files.
+
+Witè  thió  command¬  thå ascié contentó oæ  fileó  matchinç  thå
+filespecó  giveî wilì bå dumpeä tï thå lisô device®   Iæ thå filå
+ió squeezed¬ NULÕ wilì unsqueezå it®  Deleteä librarù memberó maù
+bå listeä bù enclosinç thå appropriatå filespeã iî parenthesis.
+:-Q	 UNSQUEEZE MEMBERS
+	 Syntax: -q filespec[=newfilespec filespec...]
+
+Thió commanä ió identicaì iî operatioî anä syntaø tï thå  EXTRACÔ
+command¬  excepô thaô iæ thå matchinç memberó arå squeezed¬  theù
+wilì bå unsqueezed.
+:-R	 REPLACE MEMBERS
+	 Syntax: -r filespec[ filespec...]
+
+Thió  commanä  ió  identicaì iî operatioî anä syntaø tï  thå  ADÄŠcommand¬  excepô thaô matchinç fileó wilì bå addeä tï thå librarù
+ONLÙ iæ theù alreadù exisô iî thå library®  Theù wilì bå deleted¬
+theî thå ne÷ fileó wilì bå added.
+:-S	 STRING SEARCH
+	 Syntax: -s filespec "string to search for"
+	 Syntax: -s du:filespec "string to search for"
+
+Iæ thå drive/useò specificatioî ió included¬  thå SEARCÈ functioî
+wilì  applù  tï fileó oî disk¬  otherwiså iô applieó  tï  librarù
+membeò files.
+
+Thió  provideó  á  waù tï dï á SIMPLÅ searcè foò á  giveî  strinç
+amonç á grouð oæ files®   Iæ thå "strinç tï searcè for¢ ió  founä
+yoõ  wilì  bå  notified®   Alì fileó searcheä  arå  listed®   Thå
+individuaì  linå oî whicè thå iteí waó matcheä ió  noô  displayeä
+becauså thå matcè ió noô madå oî á linå basis®   Thaô is¬ yoõ maù
+searcè  .COÍ  fileó  oò  squeezeä .OVÒ fileó jusô  aó  easilù  aó
+searchinç texô files®   However¬ thå implementatioî ió admittedlù
+ratheò  weaë aô thió poinô aó thingó likå controì characteró  anä
+tabó  arå  rippeä  ouô  oæ thå commanä  linå  beforå  thå  searcè
+functioî  eveî seeó thå command®   Enjoù iô anä I'lì  improvå  iô
+later.
+:-T	 REPLACE/ADD MEMBERS
+	 Syntax: -t
+
+Thió  commanä  ió  á  combinatioî  oæ thå  ADÄ  anä  thå  REPLACÅ
+commands®  Iæ thå fileó dï noô exisô iî thå library¬ theù wilì bå
+added®  Iæ theù dï exist¬ theù wilì bå replaced.
+:-U	 DRIVE/USER CHANGE
+	 Syntax: -u new drive/user
+
+Uså thió commanä tï changå thå defaulô drive/useò area®   Á coloî
+":¢ musô follo÷ thå drive/useò spec®  Foò example¬ "-õ a5:¢ woulä
+switcè thå defaulô drive/useò areá tï A5:.
+:-V	 VIEW MEMBERS/FILES
+	 Syntax: -v filespec[ filespec (filespec)...]
+	 Syntax: -v du:filespec[ du:filespec...]
+
+Iæ  thå drive/useò specificatioî ió included¬  thå VIE×  functioî
+wilì  applù  tï fileó oî disk¬  otherwiså iô applieó  tï  librarù
+membeò files.
+
+Thió  commanä wilì lisô thå ascié contentó oæ alì fileó  matchinç
+thå  giveî  filespeã  tï thå  consolå  device®   Deleteä  librarù
+memberó   maù   bå  indicateä  bù  enclosinç  thå   filespeã   iî
+parenthesis®  Iæ thå fileó arå squeezed¬ theù wilì bå unsqueezed®
+
+Aô eacè page¬ NULÕ wilì accepô onå  oæ thå followinç commands:
+
+	 1.  ^X to skip to the next matching file
+	 2.  ^C to abort further listingŠ	 3.  L to list one line
+	 4.  CR, space, or LF to list another full page
+~
+Aô  thå  enä  oæ eacè filå thå messagå  "Presó  RETURN¢  wilì  bå
+displayeä anä NULÕ wilì waiô foò á keystrokå beforå movinç tï thå
+nexô matchinç file.
+:-W	 WILDCARD OPEN
+	 Syntax: -w filespec commands to process
+
+	 For advanced users only.
+
+Thió  caî  bå  onå oæ thå mosô powerful¬  anä possiblù  thå  mosô
+dangerous¬ oæ alì NULÕ commands®  Iô allowó thå useò tï specifù á
+grouð oæ librarieó oî whicè tï leô á seô oæ commandó operate.
+
+Foò example¬  "-÷ a5:*lbò -l¢ woulä opeî alì fileó founä oî drivå
+Á  iî  useò areá µ aó librarieó anä lisô thå  contentó  oæ  each®
+Thió woulä happeî iî sequencå foò alì matchinç fileó iî thå ordeò
+iî  whicè  theù  werå founä iî thå  directory®   Notå  thaô  thió
+commanä  haó  thå  samå effecô aó thå -Ï commanä excepô  thaô  iô
+processeó wildcarä librarù filespecó anä thaô thå user'ó  controì
+oveò  eacè  librarù  openeä ió limiteä tï thå  singlå  linå  thaô
+invokeó thå -× command®   Thaô is¬  alì commandó applyinç tï eacè
+librarù openeä musô bå containeä oî thå onå commanä line.
+
+Thå  advenô  oæ thió commanä ió thå reasoî thaô certaiî  commandó
+thaô  useä  tï bå restricteä tï NCÆ  redirectioî  fileó  arå  no÷
+availablå aô thå commanä level.
+
+This command:
+     "-w *lbr -k <5 -p ** -l -' "hit enter for next file " -:"
+would result in the following for each matching file:
+
+	 1)  The library would be KRUNCHed to 5 members.
+	 2)  All member files would be sent to LST:.
+	 3)  The library directory would be listed.
+	 4)  The prompt,  "PRESS ENTER FOR NEXT FILE "	would  be
+	     displayed to CON:
+	 5)  NULU would wait for the user to press RETURN  before
+	     passing control back to -W which would then  do  the
+             same thing for the next library.
+
+"-÷  *lbò  -f¢  allowó må tï looë aô á loô oæ  librarieó  througè
+filesweeð withouô havinç tï kno÷ theiò names.
+
+"-÷ *lbò -¼ command.ncf¢ DOESN'Ô WORK®   É wilì worë oî thaô  foò
+nexô time¬ iæ therå ió á nexô time.
+
+Uså á loô oæ cautioî wheî usinç thió command®   Iô ió ne÷ eveî tï
+me¬ buô É havå founä iô tï bå EXTREMELÙ useful.
+:-X	 EXIT NULUŠ	 Syntax: -x
+
+Thió  commanä  wilì seô á flaç indicatinç thaô wheî  thå  currenô
+NULÕ commanä linå ió exhausted¬  NULÕ shoulä terminate®   Buô thå
+commanä  ió actuallù á toggle®   Iæ iô ió entereä twicå oî á linå
+thå  effecô oæ thå seconä issuancå wilì bå tï negatå  thå  first®
+Notå thaô thå supporô foò commanä chaininç haó beeî removed.
+
+Examples: 1®  "-x"
+          Thå   terminatioî  flaç  wilì  bå  seô  anä  NULÕ  wilì
+          terminatå wheî thå currenô commanä linå ió exhausted.
+
+          2®  "-ø -x"
+          Thå terminatioî flaç ió seô anä theî reset®   NULÕ doeó
+          noô terminate.
+:-Y	 DISK DIRECTORY
+	 Syntax: -y[ filespec]
+
+Thió  commanä  wilì  prinô  aî unsorteä  directorù  oæ  thå  disë
+indicateä  bù  thå parameteò passed¬  oò á completå directorù  iæ
+nonå  ió passed®   Thå scopå oæ thå directorù maù bå  limiteä  bù
+indicatinç  thå  appropriatå ambiguouó filespec®   Iæ thå dií  oò
+reverså  videï  stringó havå beeî defined¬  NULÕ  wilì  uså  thaô
+characteristiã  tï indicatå thaô certaiî filå attributå bitó  arå
+seô iî eacè filename.
+:-Z	 ZAP DISK FILES
+	 Syntax: -z filespec
+
+Uså  thió commanä tï deletå disë fileó whilå stilì runninç  NULU®
+Eacè  filå  matchinç thå ambiguouó filespeã giveî wilì bå  listeä
+anä  deleted®   Librarieó  caî bå deleteä jusô aó easilù  aó  anù
+otheò typå oæ file¬  sï bå careful®  Thå onlù protectioî affordeä
+ió  thaô  thå  librarù currentlù open¬  iæ  any¬  wilì  neveò  bå
+deleted.
+:-<	 REDIRECT INPUT
+	 Syntax: -< filename
+
+Thió  commanä wilì causå NULÕ tï opeî thå filenamå indicateä  anä
+begiî  acceptinç commandó froí iô insteaä oæ receivinç theí  froí
+thå  console®   Thió typå oæ filå is¬  iî effect¬  á NULÕ Commanä
+File®   Thå  filetypå  wilì defaulô tï ".NCF¢ iæ nï  filetypå  ió
+specified®   Syntaø oæ thå commandó iî thió filå ió compatiblå iî
+everù   waù  tï  thå  syntaø  useä  iî  normaì  NULÕ   operation®
+Additionaì   functionó   havå  beeî  addeä  tï   facilitatå   thå
+developmenô oæ NCÆ files®  Eacè commanä linå iî thå filå musô  bå
+terminateä  bù á CR,LF¬  anä wilì bå converteä tï uppeò caså  anä
+echoeä  tï thå consolå beforå processing®   Thå lasô linå iî  thå
+filå shoulä enä witè aô leasô twï CR,LÆ combinations®   Afteò alì
+NCÆ commandó havå beeî processed¬ controì wilì bå returneä tï thå
+console®   Anù  commandó  appearinç afteò á "-<¢ commanä wilì  bå
+ignored.Š~
+Iæ anotheò "-<¢ commanä ió encountereä iî thå file¬  thå  currenô
+commanä filå wilì bå suspendeä anä thå ne÷ filå opened®  Wheî thå
+commandó  iî thaô ne÷ filå havå alì beeî processed¬  controì wilì
+"return¢  tï thå filå thaô "called¢ thå ne÷ file®   Thió  nestinç
+caî  continuå tï thå leveì alloweä bù thå numbeò oæ  inpuô  fileó
+patcè describeä iî NULÕ MODIFICATION®   (Iô caî actuallù continuå
+tï  á  mucè deepeò leveì iæ nï librarù ió open¬  buô  what'ó  thå
+point¿	Hmmm..® maybå á tutorial...)
+
+The filename passed must be unambiguous.
+
+Oæ  thå followinç commands¬  theså arå valiä onlù  wheî  receiveä
+froí aî NCÆ fileº  -j¬   -z¬  -"®   Thå otheró maù bå useä aô anù
+timå  buô arå includeä herå anä arå omitteä froí thå menõ becauså
+oæ theiò programmatiã nature.
+~
+     -J  JUMP TO LINE
+         Syntax: -j line number
+
+	 Uså  thió  commanä  tï havå NULÕ starô  readinç  commanä
+         lineó  froí  thå  currenô NCÆ filå aô  thå  linå  numbeò
+         indicated®   Foò  example¬  "-ê 1¢ woulä causå  NULÕ  tï
+         starô  readinç lineó froí thå currenô NCÆ filå beginninç
+         aô  linå numbeò 1®  Forwarä anä backwarä referenceó  arå
+         allowed®  Á referencå tï linå numbeò ° wilì bå  ignored®
+         Anù  referenceó tï non-existenô linå numberó wilì  causå
+         thå currenô NCÆ filå tï terminate¬  therebù returninç tï
+         thå  nexô  higheò NCÆ level¬  oò tï thå commanä modå  iæ
+         thió ió thå highesô NCÆ level.
+
+	 Note that if you add or delete any lines in an NCF file,
+	 that  will completely foul up any jump commands in  that
+	 file.	That's a bug, not a feature.
+~
+     -Z  TOGGLE CONSOLE
+	 Syntax: -z
+
+	 This  command toggles all output to the console  device.
+	 That  is,  if this command is issued once,  all  console
+	 output is shut down,  with the exception of the  special
+	 commands  listed  below.   Issue it again,  and  console
+	 output will be re-enabled.
+~
+     -'  PRINT TEXT
+	 Syntax: -' "text to print"
+
+	 Use this command to print text to the console, no matter
+	 what the condition of the console output toggle. Text to
+	 be  printed  must be enclosed in  quotes.   The  opening
+	 quote	MUST  be present,  but the closing quote is  onlyŠ	 necessary to delimit any following commands.
+~
+     -"  PROMPT AND CHAIN TO PREVIOUS MODE
+	 Syntax: -mode to chain to -" "prompt" -failure mode
+
+	 My  method of syntax diagramming falls utterly short  of
+	 describing this command, I know.  Let's take it one step
+	 at  a time.   This command allows the NULU programmer to
+	 specify the mode to which he wishes to pass a parameter,
+	 prompt the user for that parameter,  and to also specify
+	 actions to be taken if no response is received from  the
+	 user.
+~
+         Foò example:
+               "-ù *lbò -ï -¢ "opeî whicè library¿ ¢ -ê 65535"
+
+	       Would result in:
+	 1.  A directory listing of all files with a type of .LBR
+	 would	be  listed to the console device if  the  console
+	 were toggled on.
+	 2.  The OPEN LIBRARY mode would be transparently entered
+	 just long enough for NULU to take note of it.
+	 3.  The console would be prompted with the message:
+
+	 (CR, LF)
+	 OPEN WHICH LIBRARY?
+~
+	 and NULU would wait for the user to enter a line of text
+	 NOT EXCEEDING the length of the prompt(!).   If the user
+	 entered and RETURN by itself or a null line,  the prompt
+	 would reappear on the next line.   If the user entered a
+	 valid line,  the first word on that line (delimited by a
+	 space,  tab,  etc.)  would be passed to the OPEN LIBRARY
+	 mode and the balance of the line would be ignored.   If,
+	 on the other hand,  the user entered an ESCAPE  followed
+	 by  a	RETURN (1bh,  0dh) the commands after the  prompt
+	 would	be executed and control would be passed  to  line
+	 number 65535, almost surely a non-existent line, thereby
+	 terminating the current NCF file.
+
+	 Some  commands which normally accept  parameters  cannot
+	 receive  parameters  from  this mode  because	they  are
+	 decodeä differently®  Theså includeº
+         -:¬ -;¬ -l¬ -n¬ -x¬ -y¬ ->
+~
+     -:  WAIT FOR RETURN
+	 Syntax: -: -failure mode
+
+	 This  command	will  force NULU to wait for  the  RETURN
+	 (0dh) character to be input to the console device.  If a
+	 RETURN is received, the balance of the command line willŠ	 be ignored.   If a ^C is entered, the remaining commands
+	 on the line will be executed.
+~
+     -;  COMMENT
+	 Syntax: -; comment about this kludge of a JCL
+
+	 This  command	will  cause  NULU  to  ignore  all   text
+	 appearing after the command on the same physical command
+	 line.
+:-> REDIRECT OUTPUT
+	 Syntax: -> filename
+	 Syntax: ->
+
+Witè thå firsô forí oæ thió command¬  NULÕ outpuô wilì bå senô tï
+thå filenamå indicated®   Thå defaulô filetypå oæ ".NOF¢ wilì  bå
+useä iæ nï filetypå ió specified®  Iæ thå filå alreadù exists¬ iô
+wilì  bå deleted®   Alì speciaì characteró thaô thå useò maù havå
+patcheä intï NULÕ (seå below¬  NULÕ MODIFICATION© wilì bå senô tï
+thå  filå aó well¬  witè thå exceptioî oæ thå EOÆ  character¬  2¶
+(1ah)®   Thå  onlù outpuô noô echoeä tï thå filå wilì  bå  outpuô
+causeä bù viewinç oò printinç á membeò file®  Eveî iæ thå consolå
+haó  beeî  turneä  ofæ bù aî NCÆ file¬  alì consolå  outpuô  wilì
+continuå tï bå senô tï thió file.
+
+The filename passed must be unambiguous.
+
+Undeò  thå seconä forí oæ thió command¬  thå currenô outpuô file¬
+iæ  anù wilì bå closed®   Wheî NULÕ ió causeä tï  terminate¬  thå
+currenô outpuô filå ió closeä alonç witè thå currenô library¬  iæ
+any.
+
