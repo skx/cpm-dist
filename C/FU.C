@@ -14,6 +14,12 @@
  *
  * CHANGELOG / TODO LIST:
  *
+ * TODO before v4:
+ *  [X] - Share code to get filenames for view/delete.
+ *  [X] - Moved clear-screen routine into a function.
+ *  [X] - Shrink size, as much as we can. 14k -> 12k so far.
+ *  [X] - Show the current filter in the header.
+ *
  * TODO before v3:
  *  [X] - Allow reading text-files.
  *  [X] - Don't require newline for Y/N prompt (file delete)
@@ -42,7 +48,7 @@ char drive = 0;
  * Files contains the list of files we've found - max 150.
  * Extra byte for null-terminator.
  */
-char files[12 * 150] = { 0 };
+char *files;
 
 /*
  * Filter
@@ -87,6 +93,51 @@ char *haystack; char *needle;
         haystack++;
     }
     return NULL;
+}
+
+/*
+ * Return the name of the currently selected file.
+ */
+char *get_filename() {
+    static char name[14];
+    int i;
+    int n = 0;
+
+    /* empty the name buffer */
+    for( i = 0 ; i < sizeof(name); i++ ) {
+        name[i] = 0;
+    }
+
+    /* build up the name */
+    for( i = 0; i<8; i++ ) {
+        if (files[( (offset) * 12) + i] != ' ' ) {
+            name[n]=files[( (offset) * 12) + i];
+            n++;
+        }
+    }
+
+    /* if we have an extension append the dot */
+    if ( files[( (offset) * 12) + 8] != ' ' ) {
+        name[n] = '.';
+        n++;
+    }
+
+    /* add the  extension */
+    for( i = 8; i<11; i++ ) {
+        if (files[( (offset) * 12) + i] != ' ' ) {
+            name[n]=files[( (offset) * 12) + i];
+            n++;
+        }
+    }
+
+    return name;
+}
+
+/*
+ * clear screen
+ */
+void cls() {
+    printf("%c[2J%c[0;0H", 27, 27);
 }
 
 /*
@@ -149,26 +200,36 @@ void set_drive(d) int d; {
     offset = 0;
 }
 
+void fill_line() {
+    printf("+------------------------------------------------------------------------------+\n");
+}
+
 void draw_ui(all) int all; {
     int i;
     int j;
     int first = 1;
 
     if ( all > 0 ) {
-            /* clear screen and draw border */
-            printf("%c[2J%c[0;0H", 27, 27);
+        /* clear screen and draw border */
+        cls();
 
-            printf("+------------------------------------------------------------------------------+\n");
-            printf("| File Utility v0.3 - https://github.com/skx/cpm-dist                          |\n");
-            printf("| Current Drive <%c:> - Change Drive: Ctrl-A - Ctrl-P                           |\n", 'A' + drive);
-            printf("| J - Down, K -  Up, (D)elete, (E)execute, (F)ilter, (V)iew                    |\n");
-            printf("+------------------------------------------------------------------------------+\n");
+        fill_line();
+        printf("| File Utility v0.4 - https://github.com/skx/cpm-dist                          |\n");
+        printf("| Current Drive <%c:> Current Filter %11s - Change Drive: Ctrl-A - Ctrl-P|\n", 'A' + drive, filter);
+        printf("| J - Down, K -  Up, (D)elete, (E)execute, (F)ilter, (V)iew                    |\n");
+        fill_line();
 
-            for( i = 0; i < 20; i++) {
-                printf("|                                                                              |\n");
+
+        for( i = 0; i < 20; i++) {
+            printf("|");
+            for( j = 0; j < 78; j++) {
+                printf(" ");
             }
-            printf("+------------------------------------------------------------------------------+\n");
+            printf("|\n");
         }
+        fill_line();
+
+    }
 
 
     for( i = 0; i < 20 ; i++ ) {
@@ -203,6 +264,8 @@ int main(argc, argv) int argc, argv[]; {
     int i ;
     int refresh = 1;
 
+    files = malloc(12 * 150);
+
     /* get current drive and set it */
     i = getDR();
     set_drive( i+ 'A' );
@@ -232,10 +295,10 @@ int main(argc, argv) int argc, argv[]; {
             refresh = 1;
         } else if ( ch == 'q' || ch == 'Q' || ch == 27) {
             /* clear screen */
-            printf("%c[2J%c[0;0H", 27, 27);
+            cls();
             return 0;
         } else if ( ch == 'j' || ch == 'J') {
-            if (offset < files_count ) {
+            if (offset < files_count-1 ) {
                 offset++;
             } else {
                 offset = 0;
@@ -244,7 +307,7 @@ int main(argc, argv) int argc, argv[]; {
             if (offset > 0) {
                 offset--;
             } else {
-                offset = files_count;
+                offset = files_count-1;
             }
         } else if ( ch == 'e' || ch == 'E') {
             char n[12];
@@ -254,48 +317,25 @@ int main(argc, argv) int argc, argv[]; {
             n[12]=0;
             execl(n, 0);
         } else if ( ch == 'v' || ch == 'V') {
-            char name[14];
+            char *name;
             int i;
             int n = 0;
 
             /* clear the screen */
-            printf("%c[2J%c[0;0H", 27, 27);
+            cls();
 
-            /* empty the name buffer */
-            for( i = 0 ; i < 14; i++ ) {
-                name[i] = 0;
-            }
-
-            /* build up the name */
-            for( i = 0; i<8; i++ ) {
-                if (files[( (offset) * 12) + i] != ' ' ) {
-                    name[n]=files[( (offset) * 12) + i];
-                    n++;
-                }
-            }
-
-            /* if we have an extension append the dot */
-            if ( files[( (offset) * 12) + 8] != ' ' ) {
-                name[n] = '.';
-                n++;
-            }
-
-            /* add the  extension */
-            for( i = 8; i<11; i++ ) {
-                if (files[( (offset) * 12) + i] != ' ' ) {
-                    name[n]=files[( (offset) * 12) + i];
-                    n++;
-                }
-            }
+            /* Get the filename selected */
+            name = get_filename();
 
             printf("Reading '%s'\n", name);
             i = fopen( name, "r");
             if ( i ) {
-                int newline;
+                int newline= 0;
+
 
                 while(( n = getc(i)) != EOF) {
                      printf("%c", n & CHAR_MASK);
-                     if ( n == '\n' ) {
+                     if ( n == '\n' || n == '\r') {
                          newline++;
                      }
                      if( newline > 18 ) {
@@ -305,7 +345,9 @@ int main(argc, argv) int argc, argv[]; {
                          if ( n == 27 ) {
                              goto abort_page;
                          }
+                         cls();
                      }
+
                 }
             abort_page:
                 fclose(i);
@@ -343,27 +385,18 @@ int main(argc, argv) int argc, argv[]; {
             /* overwrite the text */
             refresh=1;
         } else if ( ch == 'd' || ch == 'D') {
-            char n[12];
-            char *fcb = FCB;
-            int i;
-            int c;
+            char c;
 
-            for( i = 0; i<11; i++ ) {
-                n[i] = files[( (offset) * 12) + i];
-            }
-            n[12]=0;
+            /* Get the filename selected */
+            char *name = get_filename();
 
-            /* copy the name into the fcb */
-            fcb[0] = 0;
-            strcpy (fcb + 1,n);
-
-            printf("   Really delete:%s?", files+offset*12);
+            printf("   Really delete:%s?", name);
             while ((c = keyPressed()) != EOF) {
-                if ( c == 'n' || c == 'N')  {
+                if ( c == 'n' || c == 'N' || c == 27)  {
                     break;
                 }
                 if ( c == 'y' || c == 'Y') {
-                    bdos(ERASE_FILE, FCB);
+                    unlink(name);
                     break;
                 }
             }
