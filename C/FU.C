@@ -14,6 +14,11 @@
  *
  * CHANGELOG / TODO LIST:
  *
+ * TODO before v5:
+ *  [X] - Key binding to show only (C)OM files.
+ *  [X] - Key binding to show (A)LL files.
+ *  [X] - File pager hides most non-printable characters.
+ *
  * TODO before v4:
  *  [X] - Share code to get filenames for view/delete.
  *  [X] - Moved clear-screen routine into a function.
@@ -30,6 +35,8 @@
  *  [X] - Determine drive on startup.
  */
 #include "STDIO.h"
+
+#define VERSION "0.5"
 
 #define BDOS_DFIRST 17
 #define BDOS_DNEXT 18
@@ -122,7 +129,7 @@ char *get_filename() {
         n++;
     }
 
-    /* add the  extension */
+    /* add the extension */
     for( i = 8; i<11; i++ ) {
         if (files[( (offset) * 12) + i] != ' ' ) {
             name[n]=files[( (offset) * 12) + i];
@@ -214,7 +221,7 @@ void draw_ui(all) int all; {
         cls();
 
         fill_line();
-        printf("| File Utility v0.4 - https://github.com/skx/cpm-dist                          |\n");
+        printf("| File Utility v%s - https://github.com/skx/cpm-dist                          |\n", VERSION);
         printf("| Current Drive <%c:> Current Filter %11s - Change Drive: Ctrl-A - Ctrl-P|\n", 'A' + drive, filter);
         printf("| J - Down, K -  Up, (D)elete, (E)execute, (F)ilter, (V)iew                    |\n");
         fill_line();
@@ -303,6 +310,12 @@ int main(argc, argv) int argc, argv[]; {
             } else {
                 offset = 0;
             }
+        } else if ( ch == 'a' || ch == 'a') {
+            filter[0] = 0;
+            refresh = 1;
+        } else if ( ch == 'c' || ch == 'C') {
+            strcpy(filter, "COM");
+            refresh = 1;
         } else if ( ch == 'k' || ch == 'K') {
             if (offset > 0) {
                 offset--;
@@ -334,20 +347,22 @@ int main(argc, argv) int argc, argv[]; {
 
 
                 while(( n = getc(i)) != EOF) {
-                     printf("%c", n & CHAR_MASK);
-                     if ( n == '\n' || n == '\r') {
-                         newline++;
-                     }
-                     if( newline > 18 ) {
-                         newline = 0;
-                         printf("Press any key for the next page, ESCAPE to abort.\n");
-                         n = keyPressed();
-                         if ( n == 27 ) {
-                             goto abort_page;
-                         }
-                         cls();
-                     }
-
+                    n &= CHAR_MASK;
+                    if (n == '\n' || n == '\t' || n == '\r' || n >= 32) {
+                        printf("%c", n);
+                    }
+                    if ( n == '\n' || n == '\r') {
+                        newline++;
+                    }
+                    if( newline > 20 ) {
+                        newline = 0;
+                        printf("Press any key for the next page, ESCAPE to abort.\n");
+                        n = keyPressed();
+                        if ( n == 27 ) {
+                            goto abort_page;
+                        }
+                        cls();
+                    }
                 }
             abort_page:
                 fclose(i);
