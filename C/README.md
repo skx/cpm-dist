@@ -9,5 +9,8 @@ You can see brief usage information, and demos, as:
   * Compiled code is present in [A:](../A/).
 * ECHO.C
   * Echo command-line arguments.
+* FU.C
+  * A file utility/manager, written by [me](https://github.com/skx).
+  * Compiled code is present in [A:](../A/).
 * HELLO.C
   * Print the traditional greeting.
