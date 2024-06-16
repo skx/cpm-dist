@@ -14,6 +14,9 @@ The A-drive contains some "standard" utilities that you might expect to find on 
   * Written using the Aztec C-compiler, you can find in [C:](../C/), along with source code.
 * ED.COM
   * A simple editor.
+* FU.COM
+  * A simple file utility/manager, written by me.
+  * Source is included as FU.C in [C:](../C/).
 * LOAD.COM
   * Loader for generated .hex files, produced by ASM.COM
 * PAUSE.COM
@@ -28,5 +31,3 @@ The A-drive contains some "standard" utilities that you might expect to find on 
   * Show file details; note that currently file-sizes are not correct.
 
 Note that the assembler presented here is pretty basic, and you should probably prefer the one included in the [C:](../C/), alongside the Aztec C-compiler.
-
-
