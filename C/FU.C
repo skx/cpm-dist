@@ -2,27 +2,33 @@
  * Simple file utility - allows listing files on drives, deleting and
  * executing files.
  *
- * TODO:
- *  [ ] - Allow reading text-files.
- *  [X] - Confirm for delete.
- *  [X] - Filter to limit to *.COM, or similar.
- *  [X] - Determine drive on startup.
- *
- * Quick-compile, assuming full cpm-dist:
+ * Quick-compile assuming you have full cpm-dist and you're on C:
  *
  *  A:SLASH ERA fu.com ; CC fu ; AS fu ; LN fu.o c.lib t.lib
  *
- * Compile/Link this via the Aztec C-compiler on C:
+ * Explicit instructions for doing it manually:
  *
  *   CC FU
  *   AS FU
  *   LN FU.O T.LIB C.LIB
+ *
+ * CHANGELOG / TODO LIST:
+ *
+ * TODO before v3:
+ *  [X] - Allow reading text-files.
+ *  [X] - Don't require newline for Y/N prompt (file delete)
+ *
+ * TODO: before v2:
+ *  [X] - Confirm for delete.
+ *  [X] - Filter to limit to *.COM, or similar.
+ *  [X] - Determine drive on startup.
  */
 #include "STDIO.h"
 
 #define BDOS_DFIRST 17
 #define BDOS_DNEXT 18
 #define ERASE_FILE 19
+#define SET_DMA    26
 #define FCB 0x005c
 #define DMABUF 0x0080
 #define CHAR_MASK 0x7F
@@ -57,6 +63,7 @@ int offset = 0;
 #ifndef NULL
 #define NULL 0
 #endif
+
 int compare(cx, cy)
 char *cx; char *cy;
 {
@@ -92,7 +99,16 @@ void find_files() {
     int n;
     int i;
 
+    /* Empty any past list */
+    for( i = 0 ; i < (150 * 12) ; i++ ) {
+        files[i] = 0;
+    }
+
+    /* We've found no files */
     files_count = 0;
+
+    /* Set our DMA address */
+    bdos(SET_DMA, DMABUF);
 
     fcb[0] = 0; /* default drive */
 
@@ -143,9 +159,9 @@ void draw_ui(all) int all; {
             printf("%c[2J%c[0;0H", 27, 27);
 
             printf("+------------------------------------------------------------------------------+\n");
-            printf("| File Utility v0.1 - https://github.com/skx/cpm-dist                          |\n");
+            printf("| File Utility v0.3 - https://github.com/skx/cpm-dist                          |\n");
             printf("| Current Drive <%c:> - Change Drive: Ctrl-A - Ctrl-P                           |\n", 'A' + drive);
-            printf("| J - Down, K -  Up, (D)elete, (E)execute, (F)ilter                            |\n");
+            printf("| J - Down, K -  Up, (D)elete, (E)execute, (F)ilter, (V)iew                    |\n");
             printf("+------------------------------------------------------------------------------+\n");
 
             for( i = 0; i < 20; i++) {
@@ -183,6 +199,7 @@ void draw_ui(all) int all; {
 }
 
 int main(argc, argv) int argc, argv[]; {
+
     int i ;
     int refresh = 1;
 
@@ -236,6 +253,75 @@ int main(argc, argv) int argc, argv[]; {
             }
             n[12]=0;
             execl(n, 0);
+        } else if ( ch == 'v' || ch == 'V') {
+            char name[14];
+            int i;
+            int n = 0;
+
+            /* clear the screen */
+            printf("%c[2J%c[0;0H", 27, 27);
+
+            /* empty the name buffer */
+            for( i = 0 ; i < 14; i++ ) {
+                name[i] = 0;
+            }
+
+            /* build up the name */
+            for( i = 0; i<8; i++ ) {
+                if (files[( (offset) * 12) + i] != ' ' ) {
+                    name[n]=files[( (offset) * 12) + i];
+                    n++;
+                }
+            }
+
+            /* if we have an extension append the dot */
+            if ( files[( (offset) * 12) + 8] != ' ' ) {
+                name[n] = '.';
+                n++;
+            }
+
+            /* add the  extension */
+            for( i = 8; i<11; i++ ) {
+                if (files[( (offset) * 12) + i] != ' ' ) {
+                    name[n]=files[( (offset) * 12) + i];
+                    n++;
+                }
+            }
+
+            printf("Reading '%s'\n", name);
+            i = fopen( name, "r");
+            if ( i ) {
+                int newline;
+
+                while(( n = getc(i)) != EOF) {
+                     printf("%c", n & CHAR_MASK);
+                     if ( n == '\n' ) {
+                         newline++;
+                     }
+                     if( newline > 18 ) {
+                         newline = 0;
+                         printf("Press any key for the next page, ESCAPE to abort.\n");
+                         n = keyPressed();
+                         if ( n == 27 ) {
+                             goto abort_page;
+                         }
+                     }
+                }
+            abort_page:
+                fclose(i);
+            }
+
+            printf("Press any key to return back to FU\n");
+            keyPressed();
+
+            /* Try to reset state */
+            i = getDR();
+            set_drive( i+ 'A' );
+
+            offset = 0;
+            files_count = 0;
+            refresh = 1;
+
         } else if ( ch == 'f' || ch == 'F') {
             int n = 0;
             int c = 0;
@@ -272,7 +358,7 @@ int main(argc, argv) int argc, argv[]; {
             strcpy (fcb + 1,n);
 
             printf("   Really delete:%s?", files+offset*12);
-            while ((c = getchar()) != EOF) {
+            while ((c = keyPressed()) != EOF) {
                 if ( c == 'n' || c == 'N')  {
                     break;
                 }
