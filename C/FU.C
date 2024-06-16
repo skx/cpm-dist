@@ -17,6 +17,8 @@
  * TODO before v6:
  *  [X] - Document 'A' and 'C'.
  *  [X] - gg and G move to start/end of list.  Since we're vi-like.
+ *  [X] - Hide cursor on startup, restore on exit.
+ *  [X] - Avoid borders down main display, and trailing line.
  *
  * TODO before v5:
  *  [X] - Key binding to show only (C)OM files.
@@ -230,7 +232,7 @@ void draw_ui(all) int all; {
         printf("| J=Down, K=Up, (A)ll, (C)om, (D)elete, (E)execute, (F)ilter, (V)iew           |\n");
         fill_line();
 
-
+#if 0
         for( i = 0; i < 20; i++) {
             printf("|");
             for( j = 0; j < 78; j++) {
@@ -239,7 +241,7 @@ void draw_ui(all) int all; {
             printf("|\n");
         }
         fill_line();
-
+#endif
     }
 
 
@@ -286,6 +288,9 @@ int main(argc, argv) int argc, argv[]; {
         filter[i] = 00;
     }
 
+    /* hide cursor */
+    printf("%c[?25l", 27);
+
     /*
      * Main loop
      */
@@ -307,6 +312,10 @@ int main(argc, argv) int argc, argv[]; {
         } else if ( ch == 'q' || ch == 'Q' || ch == 27) {
             /* clear screen */
             cls();
+
+            /* show cursor again */
+            printf("%c[?25h", 27);
+
             return 0;
         } else if ( ch == 'j' || ch == 'J') {
             if (offset < files_count-1 ) {
