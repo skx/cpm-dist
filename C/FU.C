@@ -14,6 +14,10 @@
  *
  * CHANGELOG / TODO LIST:
  *
+ * TODO before v6:
+ *  [X] - Document 'A' and 'C'.
+ *  [X] - gg and G move to start/end of list.  Since we're vi-like.
+ *
  * TODO before v5:
  *  [X] - Key binding to show only (C)OM files.
  *  [X] - Key binding to show (A)LL files.
@@ -36,7 +40,7 @@
  */
 #include "STDIO.h"
 
-#define VERSION "0.5"
+#define VERSION "0.6"
 
 #define BDOS_DFIRST 17
 #define BDOS_DNEXT 18
@@ -223,7 +227,7 @@ void draw_ui(all) int all; {
         fill_line();
         printf("| File Utility v%s - https://github.com/skx/cpm-dist                          |\n", VERSION);
         printf("| Current Drive <%c:> Current Filter %11s - Change Drive: Ctrl-A - Ctrl-P|\n", 'A' + drive, filter);
-        printf("| J - Down, K -  Up, (D)elete, (E)execute, (F)ilter, (V)iew                    |\n");
+        printf("| J=Down, K=Up, (A)ll, (C)om, (D)elete, (E)execute, (F)ilter, (V)iew           |\n");
         fill_line();
 
 
@@ -329,6 +333,19 @@ int main(argc, argv) int argc, argv[]; {
             }
             n[12]=0;
             execl(n, 0);
+        } else if ( ch == 'g' || ch == 'G') {
+            /* G goes to end of file. */
+            /* gg goes to start of file. */
+            if ( ch == 'g' ) {
+                ch = keyPressed();
+                if ( ch == 'g' ) {
+                    offset = 0;
+                }
+            }
+            if ( ch == 'G' ) {
+                offset = files_count - 1;
+            }
+
         } else if ( ch == 'v' || ch == 'V') {
             char *name;
             int i;
