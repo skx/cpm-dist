@@ -3,8 +3,10 @@
  * executing files.
  *
  * TODO:
- *  Allow reading text-files?
- *  Confirm for delete?
+ *  [ ] - Allow reading text-files.
+ *  [X] - Confirm for delete.
+ *  [X] - Filter to limit to *.COM, or similar.
+ *  [X] - Determine drive on startup.
  *
  * Quick-compile, assuming full cpm-dist:
  *
@@ -16,6 +18,7 @@
  *   AS FU
  *   LN FU.O T.LIB C.LIB
  */
+#include "STDIO.h"
 
 #define BDOS_DFIRST 17
 #define BDOS_DNEXT 18
@@ -33,7 +36,12 @@ char drive = 0;
  * Files contains the list of files we've found - max 150.
  * Extra byte for null-terminator.
  */
-char files[12 * 50] = { 0 };
+char files[12 * 150] = { 0 };
+
+/*
+ * Filter
+ */
+char filter[12];
 
 /*
  * Count of valid files.
@@ -44,6 +52,35 @@ char files_count = 0;
  * offset of the selected file
  */
 int offset = 0;
+
+
+#ifndef NULL
+#define NULL 0
+#endif
+int compare(cx, cy)
+char *cx; char *cy;
+{
+    while (*cx && *cy)
+    {
+        if (*cx != *cy)
+            return 0;
+        cx++;
+        cy++;
+    }
+    return (*cy == '\0');
+}
+
+char *strstr(haystack,needle)
+char *haystack; char *needle;
+{
+    while (*haystack != '\0')
+    {
+        if ((*haystack == *needle) && compare(haystack, needle))
+            return haystack;
+        haystack++;
+    }
+    return NULL;
+}
 
 /*
  * Find the files on the given drive, and update the global
@@ -65,20 +102,26 @@ void find_files() {
         do
         {
             char *fcbbuf = DMABUF + 32 * n;
+            int add = 1;
 
             /* copy the file into the next slot */
             for (i = 0; i < 11; i++)
             {
                 files[i + (files_count*12)] = fcbbuf[1 + i] & CHAR_MASK;
             }
-            files_count = files_count + 1;
+            files[11 + (files_count*12)] = 0;
 
-#if 0
-            a[0] = arg;
-            printf("EXEC\n");
+            /* if there is a filter in-place */
+            if (filter[0] != 0 ) {
 
-            execv("ECHO.COM",a);
-#endif
+                /* We'll not add this entry if the filename doesn't match that */
+                if ( (strstr(files + (files_count*12), filter)) == NULL ) {
+                    add = 0;
+                } else {
+                    add = 1;
+                }
+            }
+            files_count = files_count + add;
         } while ((n=bdos (BDOS_DNEXT, FCB)) != 255);
 }
 
@@ -102,7 +145,7 @@ void draw_ui(all) int all; {
             printf("+------------------------------------------------------------------------------+\n");
             printf("| File Utility v0.1 - https://github.com/skx/cpm-dist                          |\n");
             printf("| Current Drive <%c:> - Change Drive: Ctrl-A - Ctrl-P                           |\n", 'A' + drive);
-            printf("| J - Down, K -  Up, (E)execute,  (D)elete                                     |\n");
+            printf("| J - Down, K -  Up, (D)elete, (E)execute, (F)ilter                            |\n");
             printf("+------------------------------------------------------------------------------+\n");
 
             for( i = 0; i < 20; i++) {
@@ -143,8 +186,14 @@ int main(argc, argv) int argc, argv[]; {
     int i ;
     int refresh = 1;
 
-    set_drive( 'A' );
+    /* get current drive and set it */
+    i = getDR();
+    set_drive( i+ 'A' );
 
+    /* filter is unset, so we'll show all files */
+    for ( i = 0; i < 11; i++ ){
+        filter[i] = 00;
+    }
 
     /*
      * Main loop
@@ -187,10 +236,32 @@ int main(argc, argv) int argc, argv[]; {
             }
             n[12]=0;
             execl(n, 0);
+        } else if ( ch == 'f' || ch == 'F') {
+            int n = 0;
+            int c = 0;
+
+            /* remove old filter */
+            for ( i = 0; i < 11; i++ ){
+                filter[i] = 00;
+            }
+
+            printf("   Enter Filter:");
+            while ((c = getchar()) != EOF) {
+                if ( c == '\n')  {
+                    break;
+                }
+                filter[n] = toupper(c);
+                n++;
+            }
+
+            /* overwrite the text */
+            refresh=1;
         } else if ( ch == 'd' || ch == 'D') {
             char n[12];
             char *fcb = FCB;
             int i;
+            int c;
+
             for( i = 0; i<11; i++ ) {
                 n[i] = files[( (offset) * 12) + i];
             }
@@ -200,7 +271,17 @@ int main(argc, argv) int argc, argv[]; {
             fcb[0] = 0;
             strcpy (fcb + 1,n);
 
-            bdos(ERASE_FILE, FCB);
+            printf("   Really delete:%s?", files+offset*12);
+            while ((c = getchar()) != EOF) {
+                if ( c == 'n' || c == 'N')  {
+                    break;
+                }
+                if ( c == 'y' || c == 'Y') {
+                    bdos(ERASE_FILE, FCB);
+                    break;
+                }
+            }
+            refresh = 1;
         }
     }
 }
@@ -232,6 +313,18 @@ setDR_:
      mov e , m
      mvi c,14
      call 5
+     ret
+
+
+; int getDR();
+    public getDR_
+    public getDR
+getDR:
+getDR_:
+     mvi c,25
+     call 5
+     mvi h,0
+     mov l,a
      ret
 
 #endasm
