@@ -2,6 +2,10 @@
 
 The B-drive contains BASIC, in this case:
 
+* BBCBASIC.COM
+  * BBC BASIC, with integrated assembler.
+  * Enter "*CPM" to exit.
+  * Enter "*DIR", to list files, etc.
 * MBASIC.COM
   * Microsoft BASIC v5.29 [28-Jul-85]
   * Enter "SYSTEM" to exit.
@@ -18,6 +22,9 @@ The B-drive contains BASIC, in this case:
 
 * [STARS.BAS](STARS.BAS)
   * Show a sin-wave of stars.
+* [ASM.BBC](ASM.BBC)
+  * Simple assembly language demonstration program.
+  * Ouptuts `A*`.
 
 
 
