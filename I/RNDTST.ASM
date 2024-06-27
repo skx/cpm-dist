@@ -22,16 +22,13 @@ START:
 	JMP	DORND
 NOTZ80:	LXI	H,NM8080	;address 8080 string
 	CALL	STROUT
-	CALL	CRLF
-	RET
+	JMP	CRLF
 ;
 DORND:	CALL	TSTRND
 	CALL	TSTRND
 	CALL	TSTRND
 	CALL	TSTRND
-	CALL	TSTRND
-	
-	RET		;return to CCP
+	JMP	TSTRND	;return to CCP
 
 ;
 ; TSTRND - get random number and print it
@@ -40,8 +37,7 @@ TSTRND:	LXI	H,0
 	DB	0EDH, 5FH	; LD A,R in hex for 8080 ASM
 	MOV	L,A
 	CALL	DECPRT
-	CALL	CRLF
-	RET
+	JMP	CRLF
 
 ;
 ; DECPRT - print byte in M/HL as decimal number
@@ -88,12 +84,10 @@ SUBT2:	INR	C
 	ORA	A	;is set?
 	MOV	A,C	;restore count
 	RZ	 	;skip leading 0
-	CALL	CHROUT
-	RET
+	JMP	CHROUT
 ;set flag on non-zero chars
 NZERO:	MVI	B,0FFH
-	CALL	CHROUT
-	RET
+	JMP	CHROUT
 
 ;
 ; STROUT - print null terminated string
@@ -137,4 +131,3 @@ NMZ80:	DB	' Z80',0
 NM8080:	DB	'n 8080',0
 
 	END	START
-
