@@ -35,9 +35,3 @@ begin
   if AutoCalc then  Flash(65,'AutoCalc: ON ',false)
   else Flash(65,'AutoCalc: OFF',false);
 end;
-
-then  Flash(65,'AutoCalc: ON ',false)
-  else Flash(65,'AutoCalc: OFF',false);
-end;
-
-

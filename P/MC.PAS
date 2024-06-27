@@ -157,4 +157,3 @@ begin
     end;
   until true=false;          { (program stops in procedure Commands) }
 end.
-
