@@ -283,12 +283,3 @@ begin
   end;
   GotoCell(FX,FY);
 end;
-FW);
-          end;
-        end;
-      end;
-    end;
-  end;
-  GotoCell(FX,FY);
-end;
-

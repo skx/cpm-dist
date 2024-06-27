@@ -142,9 +142,3 @@ begin
   until (Screen[FX,FY].CellStatus*[OverWritten,Locked]=[]) or (FX=Start);
   if FX<>Start then GotoCell(FX,FY);
 end;
-
-ellStatus*[OverWritten,Locked]=[]) or (FX=Start);
-  if FX<>Start then GotoCell(FX,FY);
-end;
-
-
