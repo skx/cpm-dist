@@ -9,6 +9,8 @@ The G-drive contains games, in this case:
   * Hitchhiker's Guide To The Galaxy, Infocom
 * LEATHER.COM
   * Leather Goddesses of Phobos, Infocom
+* LIFE.COM
+  * Game of life.
 * LIHOUSE.COM
   * [Lighthouse of Doom](https://github.com/skx/lighthouse-of-doom/), by me.
 * LORDTIME.COM
