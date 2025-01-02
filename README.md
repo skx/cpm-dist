@@ -48,7 +48,7 @@ Currently the contents are in-flux, but when we have more this section will be e
 | [I:](I/) | Utility    | Instruction-tester for our Z80 emulator. |
 | J:       |            |                                          |
 | K:       |            |                                          |
-| L:       |            |                                          |
+| [L:](L/) | Lisp       | A simple lisp-interpreter.               |
 | [M:](M/) | C Compiler | Mike's Enhanced Small Compiler.          |
 | N:       |            |                                          |
 | O:       |            |                                          |
