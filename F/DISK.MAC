@@ -1,0 +1,1246 @@
+;
+;		DISK.MAC - File and Block Functions
+;
+; 97/12/28
+;
+; RESET-DISKS  +FILENAME  -FILENAME  PARSE-FILENAME  fd  buf  bufsiz
+; fcb  maxrec  bp  r/w  setusr  setusr1  rstusr  FILENAME  FILE-SIZE
+; SEEK-RECORD  READ-RECORD  WRITE-RECORD  refill  REPOSITION-FILE
+; FLUSH-FILE  READ-CHAR  WRITE-CHAR  READ-FILE  WRITE-FILE  READ-LINE
+; WRITE-LINE  OPEN-FILE  CREATE-FILE  CLOSE-FILE  DELETE-FILE
+; RENAME-FILE  FILE  scrfile  ?scr  EMPTY-BUFFERS  UPDATE  #SCREENS
+; ?blk  ?blkerr  SAVE-BUFFERS  FLUSH  BUFFER  BLOCK  LOAD  -->  THRU
+; NEWBLOCKS  CLOSE  ?fname  ?create  USING  SAVE  TURNKEY
+;
+
+;	RESET-DISKS  ( -- )
+
+	hdr	11,'RESET-DISKS'
+rstdsk:	ld	a,25
+	call	bdoss
+	push	af
+	ld	a,13
+	call	bdoss
+	pop	af
+	ld	e,a
+	ld	a,14
+	call	bdoss
+	jp	next
+
+;	+FILENAME  ( c-addr1 u1 c-addr2 u2 -- c-addr3 u3 )
+;				2over [char] . scan swap drop if 2drop exit
+;				then 3 min >r >r -trailing 12 min >r (sbuf+36)
+;				swap over r@ cmove r> 2dup + [char] . over c!
+;				1+ r> swap r@ cmove r> + 1+
+
+	hdr	9,'+FILENAME'	; uses SBUF
+pfnam:	call	docol
+	dw	tover
+	dw	clit
+	db	'.'
+	dw	scan,swap,drop
+	dw	zbran,pfnam1
+	dw	tdrop,exit
+pfnam1:	dw	three,min
+	dw	tor,tor
+	dw	dtrai		; trim trailing blanks
+	dw	clit
+	db	12
+	dw	min,tor
+	dw	lit,sbuf+36
+	dw	swap,over
+	dw	rat,cmove
+	dw	fromr,tdup,plus
+	dw	clit
+	db	'.'
+	dw	over,cstor
+	dw	onep,fromr
+	dw	swap,rat,cmove
+	dw	fromr,plus,onep
+	dw	exit
+
+;	-FILENAME  ( c-addr1 u1 -- c-addr2 u2 )  2dup [char] . scan swap drop -
+
+	hdr	9,'-FILENAME'
+dfnam:	call	docol
+	dw	tdup
+	dw	clit
+	db	'.'
+	dw	scan,swap,drop
+	dw	subb
+	dw	exit
+
+;	PARSE-FILENAME  ( c-addr u fcb-addr -- user )
+
+	hdr	14,'PARSE-FILENAME'
+psfn:	call	gusr		; current user
+	ld	(psfn10),a
+	call	gdrv		; current drive
+	inc	a
+	pop	de
+	ld	(de),a
+	ld	l,c
+	ld	h,b
+	pop	bc
+	ex	(sp),hl
+	ex	de,hl
+	jp	psfn2
+
+psfn1:	inc	de
+	dec	c
+psfn2:	call	psfn12		; skip blanks
+	cp	' '
+	jp	z,psfn1
+
+	push	de
+	push	bc
+	sub	'A'-1		; drive A-P
+	cp	16+1
+	jp	nc,psfn6
+	ld	(psfn5),a
+	call	psfn11
+	cp	':'
+	jp	z,psfn4
+
+	ld	b,0
+psfn3:	sub	'0'
+	jp	c,psfn6
+	cp	9+1
+	jp	nc,psfn6
+	push	bc
+	ld	c,a
+	ld	a,b
+	add	a,a
+	add	a,a
+	add	a,b
+	add	a,a
+	add	a,c
+	pop	bc
+	ld	b,a
+	call	psfn11
+	cp	':'
+	jp	nz,psfn3
+
+	ld	a,b
+	cp	31+1		; user 0-31
+	jp	nc,psfn6
+	ld	(psfn10),a
+
+psfn4:	ld	(hl),0		; modified
+psfn5	equ	$-1
+	call	psfn11
+	inc	sp
+	inc	sp
+	inc	sp
+	inc	sp
+	jp	psfn7
+
+psfn6:	pop	bc		; not du:
+	pop	de
+psfn7:	ld	b,8
+	call	psfn15
+
+	cp	'.'
+	jp	z,psfn8
+	ld	c,1
+psfn8:	inc	de
+	dec	c
+
+	ld	b,3
+	call	psfn15
+
+	ld	b,24
+psfn9:	inc	hl
+	ld	(hl),0
+	dec	b
+	jp	nz,psfn9
+
+	pop	bc
+	ld	a,0		; modified
+psfn10	equ	$-1
+	jp	apush
+
+psfn11:	inc	de		; get next
+	dec	c
+psfn12:	inc	c		; get char
+	dec	c
+	ld	a,c
+	ret	z
+	ld	a,(de)
+	call	upc
+	and	a
+	ret
+
+psfn13:	call	psfn12		; test delimiter
+	cp	' '+1
+	jp	c,psfn14
+	cp	','
+	ret	z
+	cp	'_'
+	ret	z
+	cp	'.'
+	ret	z
+	cp	':'
+	ret	c
+	cp	'>'
+	ret	nc
+psfn14:	cp	a
+	ret
+
+psfn15:	call	psfn13		; fill field
+	jp	z,psfn19
+	inc	hl
+	cp	'*'
+	jp	nz,psfn16
+	ld	(hl),'?'
+	jp	psfn17
+
+psfn16:	ld	(hl),a
+	inc	de
+	dec	c
+psfn17:	dec	b
+	jp	nz,psfn15
+
+psfn18:	call	psfn13		; scan delimiter
+	ret	z
+	inc	de
+	dec	c
+	jp	psfn18
+
+psfn19:	inc	hl
+	ld	(hl),' '
+	dec	b
+	jp	nz,psfn19
+	ret
+
+;	fd  ( -- addr )		cf @
+
+	hdr	0,'FD'
+fd:	ld	hl,(cf1)	; file descriptor block
+	jp	hpush
+
+;	buf	( -- addr )	limit fd 2+ @ -
+
+	hdr	0,'BUF'
+buf:	call	docol		; file buffer address
+	dw	limit
+	dw	fd,twop
+	dw	at,subb
+	dw	exit
+
+;	bufsiz  ( -- u )	fd 4 + @
+
+	hdr	0,'BUFSIZ'
+bsiz:	call	docol		; file buffer size (records)
+	dw	fd
+	dw	clit
+	db	4
+	dw	plus,at
+	dw	exit
+
+;	fcb  ( -- addr )	fd 6 + @
+
+	hdr	0,'FCB'
+fcb:	call	docol		; file fcb
+	dw	fd
+	dw	clit
+	db	6
+	dw	plus,at
+	dw	exit
+
+;	maxrec  ( -- addr )	fd 8 +
+
+	hdr	0,'MAXREC'
+mrec:	ld	de,8		; file size field
+mrec1:	ld	hl,(cf1)
+	add	hl,de
+	jp	hpush
+
+;	bp  ( -- addr )		fd 10 +
+
+	hdr	0,'BP'
+bp:	ld	de,10		; buffer pointer field
+	jp	mrec1
+
+; Disk read/write primitive.  Read (0) or write (1) u1 records from addr to
+; the open file specified by fcb-addr.  Return u2 records actually transferred
+; and the bdos return code ior.  Access past record 65535 returns error.
+
+;	r/w  ( addr u1 fcb-addr 0|1 -- u2 ior )
+
+	hdr	0,'R/W'
+rslw:	pop	de		; r/w flag
+	ld	a,33
+	add	a,e
+	ld	(rslw4),a
+	pop	de		; fcb
+	pop	hl		; # records to process
+	ld	(rslw5),hl
+	ld	a,l
+	or	h
+	ld	l,c
+	ld	h,b
+	ex	(sp),hl		; push BC, pop adr
+	ld	bc,0		; zero count
+	jp	z,rslw3
+rslw1:	push	hl		; check if record > 65535
+	ld	hl,35
+	add	hl,de
+	ld	a,(hl)
+	pop	hl
+	or	a
+	ld	a,6		; 'seek past end of disk'
+	jp	nz,rslw3
+	push	hl
+	push	de
+	ex	de,hl
+	ld	a,26		; setdma
+	call	bdoss
+	call	docol		; multitasking support
+	dw	pause		;
+	dw	exit1		;
+	pop	de
+	push	de
+	ld	a,(rslw4)	; random read or write
+	call	bdoss
+	pop	de
+	pop	hl
+	or	a		; return code
+	jp	nz,rslw3
+	push	bc
+	ld	bc,128		; bump adr
+	add	hl,bc
+	pop	bc
+	inc	bc		; inc success count
+	push	hl
+	ld	hl,33
+	add	hl,de
+	inc	(hl)		; inc random record field
+	jp	nz,rslw2
+	inc	hl
+	inc	(hl)
+	jp	nz,rslw2
+	inc	hl
+	inc	(hl)
+rslw2:	ld	hl,(rslw5)
+	dec	hl		; dec count
+	ld	(rslw5),hl
+	ld	a,l
+	or	h
+	pop	hl
+	jp	nz,rslw1
+rslw3:	ld	l,a
+	ld	h,0
+	ld	e,c
+	ld	d,b
+	pop	bc
+	jp	dpush
+
+rslw4:	ds	1
+rslw5:	ds	2
+
+;	setusr  ( -- )		set user from current file
+
+	cseg
+
+setusr:	ld	hl,(cf1)
+	inc	hl
+	ld	l,(hl)
+	push	hl
+
+;	setusr1  ( u -- )	set user from stack
+
+setusr1:call	gusr
+	ld	(setusr3),a	; save current user
+	pop	hl
+	ld	a,l
+setusr2:call	susr
+	jp	next
+
+setusr3:ds	1
+
+;	rstusr  ( -- )		restore current user
+
+	cseg
+
+rstusr:	ld	a,(setusr3)
+	jp	setusr2
+
+;	FILENAME  ( -- c-addr u )  fcb 11 <# begin ?dup while dup 8 = if
+;				   [char] . hold then 2dup + c@ dup bl - if
+;				   hold else drop then 1- repeat [char] : hold
+;				   fd 1+ c@ 0 #s rot c@ [char] @ + hold #>
+
+	hdr	8,'FILENAME'
+fname:	call	docol
+	dw	fcb
+	dw	clit
+	db	11
+	dw	bdigs
+fname1:	dw	qdup
+	dw	zbran,fname5
+	dw	dup
+	dw	clit
+	db	8
+	dw	equal
+	dw	zbran,fname2
+	dw	clit
+	db	'.'
+	dw	hold
+fname2:	dw	tdup,plus,cat
+	dw	dup,bl,subb
+	dw	zbran,fname3
+	dw	hold
+	dw	bran,fname4
+fname3:	dw	drop
+fname4:	dw	onem
+	dw	bran,fname1
+fname5:	dw	clit
+	db	':'
+	dw	hold
+	dw	fd,onep
+	dw	cat,zero
+	dw	digs
+	dw	rot,cat
+	dw	clit
+	db	'@'
+	dw	plus,hold
+	dw	edigs
+	dw	exit
+
+;	FILE-SIZE  ( -- ud )	maxrec @ 128 um*
+
+	hdr	9,'FILE-SIZE'
+fsiz:	call	docol
+	dw	mrec,at
+	dw	clit
+	db	128
+	dw	umstr
+	dw	exit
+
+;	SEEK-RECORD  ( u -- )	fcb 33 + dup >r ! 0 r> 2+ c!
+
+	hdr	11,'SEEK-RECORD'
+seekr:	call	docol
+	dw	fcb
+	dw	clit
+	db	33
+	dw	plus
+	dw	dup,tor
+	dw	store
+	dw	zero
+	dw	fromr,twop
+	dw	cstor
+	dw	exit
+
+;	READ-RECORD  ( addr u1 -- u2 ior )  setusr fcb 0 r/w over if dup 1 =
+;					    over 4 = or 0= and then rstusr
+
+	hdr	11,'READ-RECORD'	; non-zero ior = eof or error
+readr:	call	docol
+	dw	setusr
+	dw	fcb,zero,rslw
+	dw	over
+	dw	zbran,readr1
+	dw	dup,one,equal,over
+	dw	clit
+	db	4
+	dw	equal,orr
+	dw	zequ,andd
+readr1:	dw	rstusr
+	dw	exit
+
+;	WRITE-RECORD  ( addr u -- ior )  setusr fcb 1 r/w swap drop rstusr
+
+	hdr	12,'WRITE-RECORD'
+wrtrec:	call	docol
+	dw	setusr
+	dw	fcb,one,rslw
+	dw	swap,drop
+	dw	rstusr
+	dw	exit
+
+;	refill  ( -- ior )	buf bufsiz read-record swap 128 * buf + buf
+;				bp 2!
+
+	hdr	0,'REFILL'	; refill file buffer
+refill:	call	docol
+	dw	buf,bsiz
+	dw	readr,swap
+	dw	clit
+	db	128
+	dw	star,buf,plus
+	dw	buf,bp,tstor
+	dw	exit
+
+;	REPOSITION-FILE  ( ud -- ior )  128 um/mod seek-record refill swap buf
+;					+ bp !
+
+	hdr	15,'REPOSITION-FILE'
+reposf:	call	docol
+	dw	clit
+	db	128
+	dw	umslm
+	dw	seekr
+	dw	refill
+	dw	swap,buf,plus
+	dw	bp,store
+	dw	exit
+
+;	FLUSH-FILE  ( -- ior )	buf bp @ over - 128 /mod swap if 1+ then
+;				write-record buf bufsiz 128 * 2dup 26 fill
+;				over + swap bp 2!
+
+	hdr	10,'FLUSH-FILE'
+flusf:	call	docol
+	dw	buf,bp,at
+	dw	over,subb
+	dw	clit
+	db	128
+	dw	slmod,swap
+	dw	zbran,flusf1
+	dw	onep
+flusf1:	dw	wrtrec
+	dw	buf,bsiz
+	dw	clit
+	db	128
+	dw	star,tdup
+	dw	clit
+	db	sub		; pad with cpm EOF char
+	dw	fill
+	dw	over,plus,swap
+	dw	bp,tstor
+	dw	exit
+
+;	Read a byte from file
+;
+;	entry:	none
+;	exit:	a = byte, hl = ior (Z if hl=0)
+
+	cseg
+
+rdbyt:	ld	hl,(cf1)
+	ld	de,12+1		; offset to buffer end + 1
+	add	hl,de
+	ld	d,(hl)
+	dec	hl
+	ld	e,(hl)
+	dec	hl
+	ld	a,(hl)
+	dec	hl
+	push	hl
+	cp	d
+	jp	c,rdbyt2
+	jp	nz,rdbyt1
+	ld	a,(hl)
+	cp	e
+	jp	c,rdbyt2
+rdbyt1:	call	docol
+	dw	refill
+	dw	exit1
+	pop	hl
+	jp	rdbyt3
+
+rdbyt2:	ld	hl,0
+rdbyt3:	ld	a,l
+	or	h
+	ex	(sp),hl
+	jp	nz,rdbyt4
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	ld	a,(de)
+	inc	de
+	ld	(hl),d
+	dec	hl
+	ld	(hl),e
+rdbyt4:	pop	hl
+	ret
+
+;	Write a byte to file
+;
+;	entry:	l = byte
+;	exit:	hl = ior (Z if hl=0)
+
+	cseg
+
+wrbyt:	push	hl
+	ld	hl,(cf1)
+	ld	de,12+1		; offset to buffer end + 1
+	add	hl,de
+	ld	d,(hl)
+	dec	hl
+	ld	e,(hl)
+	dec	hl
+	ld	a,(hl)
+	dec	hl
+	push	hl
+	cp	d
+	jp	c,wrbyt2
+	jp	nz,wrbyt1
+	ld	a,(hl)
+	cp	e
+	jp	c,wrbyt2
+wrbyt1:	call	docol
+	dw	flusf
+	dw	exit1
+	pop	hl
+	jp	wrbyt3
+
+wrbyt2:	ld	hl,0
+wrbyt3:	pop	de
+	ld	a,l
+	or	h
+	ex	(sp),hl
+	jp	nz,wrbyt4
+	ex	de,hl
+	ld	a,e
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	ld	(de),a
+	inc	de
+	ld	(hl),d
+	dec	hl
+	ld	(hl),e
+wrbyt4:	pop	hl
+	ret
+
+;	READ-CHAR  ( -- char ior )
+
+	hdr	9,'READ-CHAR'	; non-zero ior = eof or error
+readc:	call	rdbyt
+	ld	e,a
+	ld	d,0
+	jp	dpush
+
+;	WRITE-CHAR  ( char -- ior )
+
+	hdr	10,'WRITE-CHAR'
+writc:	pop	hl
+	call	wrbyt
+	jp	hpush
+
+;	READ-FILE  ( addr u1 -- u2 ior )
+
+	hdr	9,'READ-FILE'
+readf:	pop	de
+	pop	hl
+	push	bc
+	ld	c,e
+	ld	b,d
+	ld	de,0
+readf1:	ld	a,c
+	or	b
+	jp	z,readf3
+	push	hl
+	push	de
+	push	bc
+	call	rdbyt
+	pop	bc
+	pop	de
+	pop	hl
+	jp	nz,readf2
+	ld	(hl),a
+	inc	hl
+	inc	de
+	dec	bc
+	jp	readf1
+
+readf2:	ld	hl,-1
+	ld	a,e
+	or	d
+	jp	z,readf4
+readf3:	ld	hl,0
+readf4:	pop	bc
+	jp	dpush
+
+;	WRITE-FILE  ( addr u -- ior )
+
+	hdr	10,'WRITE-FILE'
+writf:	pop	de
+	pop	hl
+writf1:	ld	a,e
+	or	d
+	jp	z,false
+	push	hl
+	push	de
+	ld	l,(hl)
+	call	wrbyt
+	pop	de
+	pop	hl
+	jp	nz,true
+	inc	hl
+	dec	de
+	jp	writf1
+
+;	READ-LINE  ( c-addr u1 -- u2 ior )
+
+	hdr	9,'READ-LINE'	; non-zero ior = eof or error
+readl:	pop	de		; max length = 255
+	pop	hl
+	ld	d,0
+	inc	e
+	dec	e
+	jp	z,readl3
+	call	readl6
+	jp	nz,readl5
+	cp	sub		; cpm EOF
+	jp	z,readl5
+readl1:	cp	sub		; cpm EOF
+	jp	z,readl3
+	cp	lf
+	jp	z,readl3
+	cp	cr		; ignore CR
+	jp	z,readl2
+	ld	(hl),a
+	inc	hl
+	inc	d
+	dec	e
+	jp	z,readl3
+readl2:	call	readl6
+	jp	z,readl1
+readl3:	ld	hl,0
+readl4:	ld	e,d
+	ld	d,0
+	jp	dpush
+
+readl5:	ld	hl,-1		; error
+	jp	readl4
+
+readl6:	push	hl
+	push	de
+	call	rdbyt
+	pop	de
+	pop	hl
+	ret
+
+;	WRITE-LINE  ( c-addr u -- ior )
+
+	hdr	10,'WRITE-LINE'
+writl:	pop	de		; max length = 255
+	pop	hl
+writl1:	ld	a,e
+	or	a
+	jp	z,writl2
+	ld	a,(hl)
+	inc	hl
+	dec	e
+	push	hl
+	push	de
+	ld	l,a
+	call	wrbyt
+	pop	de
+	pop	hl
+	jp	nz,true
+	jp	writl1
+
+writl2:	ld	l,cr		; append CR, LF
+	call	wrbyt
+	ld	l,lf
+	call	z,wrbyt
+	jp	nz,true
+	jp	false
+
+;	OPEN-FILE  ( c-addr u -- ior )  fcb parse-filename fd 1+ c! setuser
+;					fcb 15 bdos 255 = dup 1+ fd c! fcb 35
+;					bdos drop fcb 33 + @ maxrec ! 0
+;					seek-record buf dup bp 2! rstusr
+
+	hdr	9,'OPEN-FILE'
+openf:	call	docol
+	dw	fcb,psfn
+	dw	fd,onep,cstor
+	dw	setusr
+	dw	fcb
+	dw	clit
+	db	15
+openf1:	dw	bdos		; open/create
+	dw	clit
+	db	255
+	dw	equal
+	dw	dup,onep	; set status flag
+	dw	fd,cstor
+	dw	fcb
+	dw	clit		; get filesize
+	db	35
+	dw	bdos,drop
+	dw	fcb
+	dw	clit
+	db	33
+	dw	plus
+	dw	at
+	dw	mrec,store
+	dw	zero,seekr	; reset random rec# and
+	dw	buf,dup		; buffer pointers
+	dw	bp,tstor
+	dw	rstusr
+	dw	exit
+
+;	CREATE-FILE  ( c-addr u -- ior )  fcb parse-filename fd 1+ c! setusr
+;					  fcb 19 bdos drop fcb 22 (openf1)
+
+	hdr	11,'CREATE-FILE'
+creatf:	call	docol
+	dw	fcb,psfn
+	dw	fd,onep,cstor
+	dw	setusr
+	dw	fcb
+	dw	clit
+	db	19
+	dw	bdos,drop
+	dw	fcb
+	dw	clit
+	db	22
+	dw	bran,openf1
+
+;	CLOSE-FILE  ( -- ior )		0 fd c@ if fd c! setusr fcb 16 bdos
+;					255 = rstusr then
+
+	hdr	10,'CLOSE-FILE'
+closf:	call	docol
+	dw	zero
+	dw	fd,cat
+	dw	zbran,closf3
+	dw	fd,cstor
+	dw	setusr
+	dw	fcb
+	dw	clit
+	db	16
+closf1:	dw	bdos
+	dw	clit
+	db	255
+	dw	equal
+closf2:	dw	rstusr
+closf3:	dw	exit
+
+;	DELETE-FILE  ( c-addr u -- ior )  (sbuf) parse-filename setusr1
+;					  (sbuf) 19 bdos 255 = rstusr
+
+	hdr	11,'DELETE-FILE'	; uses SBUF
+delf:	call	docol
+	dw	lit,sbuf
+	dw	psfn
+	dw	setusr1
+	dw	lit,sbuf
+	dw	clit
+	db	19
+	dw	bran,closf1
+
+;	RENAME-FILE  ( c-addr1 u1 c-addr2 u2 -- ior )
+;				2swap (sbuf) parse-filename setusr1 (sbuf+16)
+;				parse-filename drop -1 (sbuf+16) (sbuf) c@
+;				over c! 15 bdos 255 = if drop (sbuf) 23 bdos
+;				255 = then rstusr
+
+	hdr	11,'RENAME-FILE'	; uses SBUF
+renf:	call	docol
+	dw	tswap
+	dw	lit,sbuf
+	dw	psfn,setusr1
+	dw	lit,sbuf+16
+	dw	psfn,drop
+	dw	true
+	dw	lit,sbuf+16
+	dw	lit,sbuf
+	dw	cat,over,cstor
+	dw	clit
+	db	15
+	dw	bdos
+	dw	clit
+	db	255
+	dw	equal
+	dw	zbran,closf2
+	dw	drop
+	dw	lit,sbuf
+	dw	clit
+	db	23
+	dw	bran,closf1
+
+	cseg
+
+dofil:	pop	hl		; cf !
+	ld	(cf1),hl
+	jp	next
+
+;	FILE  ( u -- )		dup #buffers > abort" no buffer" (dofil)
+;				header 0 , 1024 * , (1024/128) , here 8 + ,
+;				42 allot
+
+	hdr	4,'FILE',,1
+file:	call	docol
+	dw	dup
+	dw	nbuf,great
+	dw	pabq
+	db	9
+	db	'no buffer'
+	dw	lit,dofil
+	dw	headr
+	dw	zero		; status, cpm user
+	dw	comma
+	dw	lit,1024	; buffer address relative to LIMIT
+	dw	star
+	dw	comma
+	dw	clit
+	db	8		; buffer size (records)
+	dw	comma
+	dw	here
+	dw	clit
+	db	8
+	dw	plus		; pointer to fcb address
+	dw	comma
+	dw	clit
+	db	2+2+2+36	; filesize, bufptr, bufend, fcb
+	dw	allot
+	dw	exit
+
+;	scrfile  ( -- )		screen file-handle
+
+	hdr	0,'SCRFILE',,1
+scrf:	call	dofil
+	db	0		; 0 open
+	db	0		; 1 cp/m user
+	dw	0		; 2 buffer address (relative to sm)
+	dw	8		; 4 buffer size (1024 bytes)
+	dw	scrf1		; 6 fcb address ptr
+	ds	2		; 8 file size
+	ds	2		;10 buffer pointer
+	ds	2		;12 buffer end
+scrf1:	ds	36		;14 fcb
+
+;	?scr  ( -- )		scrfile fd c@ 0= abort" no file open"
+
+	hdr	0,'?SCR',,1
+qscr:	call	docol
+	dw	scrf
+	dw	fd,cat
+	dw	zequ
+	dw	pabq
+	db	12
+	db	'no file open'
+	dw	exit
+
+;	EMPTY-BUFFERS  ( -- )	7fffh blk# !
+
+	hdr	13,'EMPTY-BUFFERS',,1
+mtbuf:	ld	hl,07fffh
+	ld	(bnum1),hl
+	jp	next
+
+;	UPDATE  ( -- )		?scr blk# dup @ 8000h or swap !
+
+	hdr	6,'UPDATE',,1
+update:	call	docol
+	dw	qscr		; open?
+	dw	bnum
+	dw	dup,at
+	dw	lit,8000h
+	dw	orr
+	dw	swap,store
+	dw	exit
+
+;	#SCREENS  ( -- +n )	?scr maxrec @ 3 rshift
+
+	hdr	8,'#SCREENS',,1
+nscr:	call	docol
+	dw	qscr		; open?
+	dw	mrec,at
+	dw	three,rsh
+	dw	exit
+
+;	?blk  ( +n -- +n )	dup 0 #screens within 0=
+;				abort" block out of range"
+
+	hdr	0,'?BLK',,1
+qblk:	call	docol
+	dw	dup
+	dw	zero,nscr
+	dw	within,zequ	; block in range?
+	dw	pabq
+	db	18
+	db	'block out of range'
+	dw	exit
+
+;	?blkerr  ( ior -- )	abort" block r/w error"
+
+	hdr	0,'?BLKERR',,1
+blkerr:	call	docol
+	dw	pabq
+	db	15
+	db	'block r/w error'
+	dw	exit
+
+;	SAVE-BUFFERS  ( -- )	?scr blk# @ 0< if blk# dup @ 7fff and ?blk
+;				dup rot ! 8 * seek-record buf 8 write-record
+;				?blkerr then
+
+	hdr	12,'SAVE-BUFFERS',,1
+savbuf:	call	docol
+	dw	qscr		; open?
+	dw	bnum,at
+	dw	zless
+	dw	zbran,savbu1
+	dw	bnum
+	dw	dup,at
+	dw	lit,7fffh
+	dw	andd
+	dw	qblk		; block in range?
+	dw	dup,rot,store
+	dw	clit
+	db	8
+	dw	star
+	dw	seekr
+	dw	buf
+	dw	clit
+	db	8
+	dw	wrtrec
+	dw	blkerr
+savbu1:	dw	exit
+
+;	FLUSH  ( -- )		save-buffers empty-buffers
+
+	hdr	5,'FLUSH',,1
+flush:	call	docol
+	dw	savbuf,mtbuf
+	dw	exit
+
+;	BUFFER  ( +n -- addr )	save-buffers ?blk blk# ! buf
+
+	hdr	6,'BUFFER',,1
+buffer:	call	docol
+	dw	savbuf
+	dw	qblk
+	dw	bnum,store
+	dw	buf
+	dw	exit
+
+;	BLOCK  ( +n -- addr )	?scr blk# @ 7fff and over - if dup buffer
+;				swap 8 * seek-record 8 read-record drop 8 <
+;				?blkerr else drop then buf
+
+	hdr	5,'BLOCK',,1
+block:	call	docol
+	dw	qscr		; open?
+	dw	bnum,at
+	dw	lit,7fffh
+	dw	andd,over,subb
+	dw	zbran,block1
+	dw	dup,buffer
+	dw	swap
+	dw	clit
+	db	8
+	dw	star
+	dw	seekr
+	dw	clit
+	db	8
+	dw	readr,drop
+	dw	clit
+	db	8
+	dw	less
+	dw	blkerr
+	dw	bran,block2
+block1:	dw	drop
+block2:	dw	buf
+	dw	exit
+
+;	LOAD  ( +n -- )		dup block 1024 rot (eval) blk @ block drop
+
+	hdr	4,'LOAD',,1
+load:	call	docol
+	dw	dup,block
+	dw	lit,1024
+	dw	rot,peval
+	dw	blk,at
+	dw	block,drop
+	dw	exit
+
+;	-->  ( -- )		blk @ dup 0= abort" loading only" 1+ 0 over
+;				blk 2! block 1024 #tib 2! ;immediate
+
+	hdr	3,'-->',1,1
+arrow:	call	docol
+	dw	blk,at
+	dw	dup,zequ
+	dw	pabq
+	db	12
+	db	'loading only'
+	dw	onep,zero
+	dw	over,blk,tstor
+	dw	block
+	dw	lit,1024
+	dw	ntib,tstor
+	dw	exit
+
+;	THRU  ( +n1 +n2 -- )	1+ swap ?do i load loop
+
+	hdr	4,'THRU',,1
+thru:	call	docol
+	dw	onep,swap
+	dw	xqdo,thru2
+thru1:	dw	ido,load
+	dw	xloop,thru1
+thru2:	dw	exit
+
+;	NEWBLOCKS  ( +n -- )	cpmbuf 128 blank #screens 3 lshift dup
+;				maxrec ! seek-record 3 lshift 0 ?do cpmbuf
+;				1 write-record abort" can't extend file"
+;				1 maxrec +! loop
+
+	hdr	9,'NEWBLOCKS',,1	; uses CPMBUF
+nbloc:	call	docol
+	dw	clit
+	db	cpmbuf
+	dw	clit
+	db	128
+	dw	blank
+	dw	nscr		; open?
+	dw	three,lsh	; start on 1k boundary
+	dw	dup,mrec,store
+	dw	seekr
+	dw	three,lsh
+	dw	zero
+	dw	xqdo,nbloc2
+nbloc1:	dw	clit
+	db	cpmbuf
+	dw	one
+	dw	wrtrec
+	dw	pabq
+	db	17
+	db	'can''t extend file'
+	dw	one
+	dw	mrec,pstor	; update max record
+	dw	xloop,nbloc1
+nbloc2:	dw	exit
+
+;	CLOSE  ( -- )		scrfile close-file drop empty-buffers
+;
+; NOTE: errors are NOT reported with this function
+
+	hdr	5,'CLOSE',,1	; close screen file
+close:	call	docol
+	dw	scrf
+	dw	closf,drop
+	dw	mtbuf
+	dw	exit
+
+;	?fname  ( -- c-addr u )  bl word count dup 0= abort" specify filename"
+
+	hdr	0,'?FNAME',,1
+qfnam:	call	docol
+	dw	bl,word,count
+	dw	dup,zequ
+	dw	pabq
+	db	16
+	db	'specify filename'
+	dw	exit
+
+;	?create  ( c-addr u -- )  2dup open-file close-file drop 0= if cr
+;				  filename type ." (bel) exists - delete it? "
+;				  y/n 0= if abort then then create-file
+;				  abort" can't create file"
+
+	hdr	0,'?CREATE',,1
+qcreat:	call	docol
+	dw	tdup
+	dw	openf
+	dw	closf,drop
+	dw	zequ
+	dw	zbran,qcrea1
+	dw	crr,fname,type
+	dw	pdotq
+	db	22
+	db	bel,' exists - delete it? '
+	dw	yn,zequ
+	dw	zbran,qcrea1
+	dw	abort
+qcrea1:	dw	creatf
+	dw	pabq
+	db	17
+	db	'can''t create file'
+	dw	exit
+
+;	USING  filename		?fname s" SCR" +filename close 2dup
+;				open-file if cr filename type
+;				." (bel) not found - create it? " y/n 0=
+;				if abort then ?create exit then 2drop
+
+	hdr	5,'USING',,1	; open screen file
+using:	call	docol
+	dw	qfnam
+	dw	slit
+	db	3
+	db	'SCR'
+	dw	pfnam
+	dw	close		; select scrfile and close
+	dw	tdup,openf
+	dw	zbran,usin2
+	dw	crr,fname,type
+	dw	pdotq
+	db	25
+	db	bel,' not found - create it? '
+	dw	yn,zequ
+	dw	zbran,usin1
+	dw	abort
+usin1:	dw	qcreat
+	dw	exit
+usin2:	dw	tdrop
+	dw	exit
+
+;	sysfile  ( -- )		temporary system file-handle
+
+	hdr	0,'SYSFILE',,1	; uses CPMBUF and CPMFCB
+sysf:	call	dofil
+	db	0
+	db	0
+	dw	sm-cpmbuf
+	dw	1		; buffer = 128 bytes
+	dw	cpmfcb
+	ds	6
+
+;	SAVE  filename[.COM]	0 fd swap dup boot ! ?fname s" COM" +filename
+;				sysfile ?create freeze 256 dp @ over -
+;				write-file swap 0= if limit dph @ over -
+;				write-file or then flush-file or close-file or
+;				abort" can't save file" cf !
+
+	hdr	4,'SAVE',,1
+save:	call	docol
+	dw	zero
+save1:	dw	fd,swap		; current file
+	dw	dup
+	dw	boot,store
+	dw	qfnam
+	dw	slit
+	db	3
+	db	'COM'
+	dw	pfnam
+	dw	sysf
+	dw	qcreat
+	dw	freez
+	dw	lit,256
+	dw	dp,at
+	dw	over,subb
+	dw	writf		; save application
+	dw	swap,zequ
+	dw	zbran,save2
+	dw	limit
+	dw	dph,at
+	dw	over,subb
+	dw	writf,orr	; save system
+save2:	dw	flusf,orr
+	dw	closf,orr
+	dw	pabq
+	db	15
+	db	'can''t save file'
+	dw	cf,store	; restore current
+	dw	exit
+
+;	TURNKEY  bootword filename[.COM]  ' (save)
+
+	hdr	7,'TURNKEY',,1
+turnk:	call	docol
+	dw	tick
+	dw	bran,save1
+
+;	end
+

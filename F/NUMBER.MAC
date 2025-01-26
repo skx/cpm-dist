@@ -1,0 +1,201 @@
+;
+;		NUMBER.MAC - Numeric Conversion
+;
+; 97/12/28
+;
+; DECIMAL  HEX  digit  CONVERT  (number?)  NUMBER?  HOLD  <#  #>  SIGN
+; #  #S
+;
+
+;	DECIMAL  ( -- )		10 base !
+
+	hdr	7,'DECIMAL'
+dec:	call	docol
+	dw	clit
+	db	10
+	dw	base,store
+	dw	exit
+
+;	HEX  ( -- )		16 base !
+
+	hdr	3,'HEX'
+hex:	call	docol
+	dw	clit
+	db	16
+	dw	base,store
+	dw	exit
+
+;	digit  ( char base -- u -1 | 0 )
+
+	hdr	0,'DIGIT'
+digit:	pop	hl
+	pop	de
+	ld	a,e
+	call	upc		; make uppercase
+	sub	'0'
+	jp	m,false
+	cp	10
+	jp	m,digit1
+	sub	7
+	cp	10
+	jp	m,false
+digit1:	cp	l
+	jp	p,false
+	ld	e,a
+	push	de
+	jp	true
+
+;	CONVERT  ( d1 addr1 -- d2 addr2 )  begin 1+ dup >r c@ base @ digit
+;					   while swap base @ um* drop rot base
+;					   @ um* d+ r> repeat r>
+
+	hdr	7,'CONVERT'
+conv:	call	docol
+conv1:	dw	onep
+	dw	dup,tor
+	dw	cat
+	dw	base,at
+	dw	digit
+	dw	zbran,conv2
+	dw	swap
+	dw	base,at
+	dw	umstr,drop
+	dw	rot
+	dw	base,at
+	dw	umstr
+	dw	dplus
+	dw	fromr
+	dw	bran,conv1
+conv2:	dw	fromr
+	dw	exit
+
+;	(number?)  ( addr -- d -1 | 0 )  0 0 rot dup 1+ c@ [char] - = dup >r -
+;					 convert dup c@ [char] . = dup not dpl
+;					 ! - c@ bl - if r> drop 2drop 0 exit
+;					 then r> if dnegate then -1
+
+	hdr	0,'(NUMBER?)'
+pnumq:	call	docol		; convert counted string to double number
+	dw	zero,zero
+	dw	rot
+	dw	dup,onep,cat
+	dw	clit
+	db	'-'
+	dw	equal
+	dw	dup,tor
+	dw	subb
+	dw	conv
+	dw	dup,cat
+	dw	clit
+	db	'.'		; trailing '.' for double number (ANS)
+	dw	equal
+	dw	dup,nott
+	dw	dpl,store
+	dw	subb
+	dw	cat,bl,subb
+	dw	zbran,pnumq1
+	dw	fromr,drop
+	dw	tdrop,zero
+	dw	exit
+pnumq1:	dw	fromr
+	dw	zbran,pnumq2
+	dw	dnegat
+pnumq2:	dw	true
+	dw	exit
+
+;	NUMBER?  ( c-addr u -- d -1 | 0 )  31 min (sbuf) swap 2dup 1+ blank
+;					   cmove (sbuf-1) (number?)
+
+	hdr	7,'NUMBER?'	; uses SBUF
+numq:	call	docol
+	dw	clit
+	db	31
+	dw	min
+	dw	lit,sbuf
+	dw	swap
+	dw	tdup		; add trailing blank
+	dw	onep,blank
+	dw	cmove
+	dw	lit,sbuf-1
+	dw	pnumq
+	dw	exit
+
+;	HOLD  ( char -- )	-1 hld +! hld @ c!
+
+	hdr	4,'HOLD'
+hold:	call	docol
+	dw	true
+	dw	hld,pstor
+	dw	hld,at
+	dw	cstor
+	dw	exit
+
+;	<#  ( -- )		pad hld !
+
+	hdr	2,'<#'
+bdigs:	call	docol
+	dw	pad
+	dw	hld,store
+	dw	exit
+
+;	#>  ( d -- c-addr u )	2drop hld @ pad over -
+
+	hdr	2,'#>'
+edigs:	call	docol
+	dw	tdrop
+	dw	hld,at
+	dw	pad
+	dw	over
+	dw	subb
+	dw	exit
+
+;	SIGN  ( n -- )		0< if [char] - hold then
+
+	hdr	4,'SIGN'
+sign:	call	docol
+	dw	zless
+	dw	zbran,sign1
+	dw	clit
+	db	'-'
+	dw	hold
+sign1:	dw	exit
+
+;	#  ( +d1 -- +d2 )	base @ >r 0 r@ um/mod r> swap >r um/mod
+;				r> rot 9 over < if 7 + then [char] 0 + hold
+
+	hdr	1,'#'
+dig:	call	docol
+	dw	base,at,tor
+	dw	zero
+	dw	rat,umslm
+	dw	fromr
+	dw	swap,tor
+	dw	umslm
+	dw	fromr
+	dw	rot
+	dw	clit
+	db	9
+	dw	over,less
+	dw	zbran,dig1
+	dw	clit
+	db	7
+	dw	plus
+dig1:	dw	clit
+	db	'0'
+	dw	plus
+	dw	hold
+	dw	exit
+
+;	#S  ( +d -- 0 0 )	begin # 2dup or 0= until
+
+	hdr	2,'#S'
+digs:	call	docol
+digs1:	dw	dig
+	dw	tdup
+	dw	orr,zequ
+	dw	zbran,digs1
+	dw	exit
+
+;	end
+
+

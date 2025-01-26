@@ -1,0 +1,158 @@
+
+Line Editor						97-12-28
+-----------
+
+EDLIN is a simple line-oriented screen editor.
+
+Iô useó thå samå commandó aó thå editoò iî 'Startinç Forth§ anä 
+ió á slightlù modifieä versioî oæ thå editoò thaô appeareä iî 
+Forth Dimensions III/3.
+
+Editinç oæ screenó witè á linå editoò ió ratheò tediouó anä ió 
+besô avoideä (seå EDITOR.SCÒ foò á full-screeî editor)®  Howeveò 
+iô doeó havå thå advantagå thaô iô doeó noô neeä tï bå installeä 
+anä workó witè anù videï terminal.
+
+
+General screen commands:
+------------------------
+
+ EDIT  ( -- u )
+
+     Enteò thå EDITOÒ vocabularù anä selecô screeî õ foò editing®  
+     Thå cursoò ió positioneä aô thå starô oæ linå 0®  Alì editoò 
+     commandó (see below) are then available for use.
+
+ WHERE  ( -- )                                         S
+
+     Useä afteò á LOAÄ error¬ WHERÅ performó thå samå functioî aó 
+     EDIÔ buô thå screeî anä thå cursoò positioî arå 
+     automaticallù seô tï thå locatioî wherå thå erroò occured.
+
+ L  ( -- )          List                               S
+
+     Listó thå currenô screen®  Thå screeî numbeò ió obtaineä 
+     froí thå variablå SCÒ anä ió seô bù LIST¬ EDIÔ oò wheî á 
+     LOAÄ erroò occurs.
+
+ N  ( -- )          Next                               S
+
+     Incrementó thå screeî numbeò bù one®  Typicallù useä 
+     immediatelù before the L command.
+
+ B  ( -- )          Back                               S
+
+     Decrementó thå screeî numbeò bù one®  Typicallù useä 
+     immediatelù before the L command.
+
+ COPY  ( u1 u2 -- )                                    S
+
+     Copù thå contentó oæ screeî u± tï screeî u2.
+
+ COPIES  ( u1 u2 u3 -- )                               S
+
+     Copù á rangå oæ screenó - u± ió thå firsô sourcå screen¬ u² 
+     ió thå firsô destinatioî screen¬ u³ ió thå numbeò oæ screenó Š     tï bå copied®  Thå useò ió prompteä beforå copyinç begins®  
+     Pressinç anù keù durinç copù abortó thå process®  Overlağ oæ 
+     sourcå anä destinatioî screenó ió automaticallù handled.
+
+
+Editor commands:
+----------------
+(these commands are available only from the EDITOR vocabulary)
+
+Noteº foò commandó thaô allo÷ it¬ texô inpuô ió noô mandatory®  
+Iæ nï texô followó thå commanä theî thå currenô contentó oæ 
+eitheò thå FINÄ oò INSERÔ buffeò (accordinç tï thå command© wilì 
+bå useä instead.
+
+
+ ?  ( -- )                                             S
+
+     Displaù thå currenô linå anä cursoò position.
+
+ ^  ( -- )                                             S
+
+     Useä aó terminatoò foò alì commandó allowinç texô input®  
+     Allowó morå thaî onå commanä tï bå useä oî á line.
+
+ T  ( u -- )        Type                               S
+
+     Typå linå õ froí thå currenô screeî anä selecô iô aó thå 
+     currenô line.
+
+ P text  ( -- )     Put                                S
+
+     Copieó anù followinç texô intï thå INSERÔ buffeò anä thå 
+     strinç ió puô intï thå currenô linå replacinç itó previouó 
+     contents®  Iæ Ğ ió followeä bù twï oò morå blankó theî thå 
+     entirå linå wilì bå erased.
+
+ X  ( -- )          Extract                            S
+
+     Copieó thå currenô linå intï thå INSERÔ buffeò anä theî 
+     extractó iô froí thå block®  Alì followinç lineó arå moveä 
+     up.
+
+ TILL text  ( -- )                                     S
+
+     Copieó anù followinç texô intï thå FINÄ buffeò anä deleteó 
+     alì characteró froí thå currenô cursoò positioî uğ tilì anä 
+     includinç the string.
+
+ I text  ( -- )     Insert                             S
+
+     Copieó anù followinç texô intï thå INSERÔ buffeò anä insertó 
+     thå strinç jusô behinä thå cursor®  Anù texô pusheä ofæ thå 
+     enä oæ thå linå will be lost.
+
+ F text  ( -- )     Find                               SŠ
+     Copieó anù followinç texô intï thå FINÄ buffeò anä findó thå 
+     strinç iî thå remaindeò oæ thå block®  Thå Æ commanä witè nï 
+     followinç text behaves as the N command.
+
+ E  ( -- )          Erase                              S
+
+     Eraseó backwardó froí thå cursoò aó manù characteró aó arå 
+     currentlù iî thå FINÄ buffer®  Tï bå useä afteò thå Æ 
+     command.
+
+ D text  ( -- )     Delete                             S
+
+     Copieó anù followinç texô intï thå FINÄ buffeò theî findó 
+     thå nexô occurrencå oæ thå strinç withiî thå linå anä 
+     deleteó it®  Thå Ä commanä ió á combinatioî oæ thå Æ anä Å 
+     commands.
+
+ R text  ( -- )     Replace                            S
+
+     Copieó anù followinç texô intï thå INSERÔ buffer®  Combineó 
+     thå Å anä É commandó tï replacå á founä strinç witè á giveî 
+     strinç oò thå contents of the INSERT buffer.
+
+ U text  ( -- )     Under                              S
+
+     Copieó anù followinç texô intï thå INSERÔ buffeò anä putó 
+     thå strinç intï thå linå undeò thå currenô line®  Alì 
+     followinç lineó arå pushed down and line 15 is lost.
+
+ S text  ( u -- )   Search                             S
+
+     Copieó anù followinç texô intï thå FINÄ buffeò theî searcheó 
+     froí thå toğ oæ currenô blocë tï thå enä oæ blocë u-± foò 
+     thå string¬ displayinç thå lineó anä locatioî wherå á matcè 
+     occurs.
+
+ M  ( u1 u2 -- )    Move                               S
+
+     Copieó thå currenô linå intï thå INSERÔ buffeò anä moveó á 
+     copù oæ thå INSERÔ buffeò intï thå linå UNDEÒ thå linå u² oæ 
+     blocë u1®  Thå currenô linå ió incrementeä bù one®  Thió 
+     allowó sequentiaì lineó tï bå moveä witè á minimuí oæ 
+     keystrokes.
+
+ WIPE  ( -- )                                          S
+
+     Wipeó thå currenô screeî bù settinç itó contentó tï blanks.
+
+

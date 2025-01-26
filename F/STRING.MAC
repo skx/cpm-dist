@@ -1,0 +1,236 @@
+;
+;		STRING.MAC - String Functions
+;
+; 97/12/28
+;
+; CMOVE  CMOVE>  BLANK  COUNT  PLACE  SCAN  SKIP  -TRAILING  /STRING
+; COMPARE  SEARCH
+;
+
+;	CMOVE  ( c-addr1 c-addr2 u -- )
+
+	hdr	5,'CMOVE'
+cmove:	ld	l,c
+	ld	h,b
+	pop	bc
+	pop	de
+	ex	(sp),hl
+cmove1:	call	movd
+	pop	bc
+	jp	next
+
+;	CMOVE>  ( c-addr1 c-addr2 u -- )
+
+	hdr	6,'CMOVE>'
+cmovu:	ld	l,c
+	ld	h,b
+	pop	bc
+	pop	de
+	ex	(sp),hl
+cmovu1:	call	movu
+	pop	bc
+	jp	next
+
+;	BLANK  ( c-addr u -- )	bl fill
+
+	hdr	5,'BLANK'
+blank:	ld	e,' '
+	jp	fill1
+
+;	COUNT  ( c-addr1 -- c-addr2 u )  dup 1+ swap c@
+
+	hdr	5,'COUNT'
+count:	pop	de
+	ld	a,(de)
+	inc	de
+	push	de
+	jp	apush
+
+;	PLACE  ( c-addr1 u c-addr2 -- )  2dup 2>r 1+ swap move 2r> c!
+
+	hdr	5,'PLACE'
+place:	call	docol
+	dw	tdup
+	dw	ttor
+	dw	onep,swap
+	dw	move
+	dw	tfrom
+	dw	cstor
+	dw	exit
+
+;	SCAN  ( c-addr1 u1 char -- c-addr2 u2 )
+
+	hdr	4,'SCAN'
+scan:	pop	de
+	ld	l,c
+	ld	h,b
+	pop	bc
+	ex	(sp),hl
+scan1:	ld	a,c
+	or	b
+	jp	z,scan2
+	ld	a,e
+	cp	(hl)
+	jp	z,scan2
+	inc	hl
+	dec	bc
+	jp	scan1
+
+scan2:	ex	(sp),hl
+scan3:	push	bc
+	ld	c,l
+	ld	b,h
+	jp	next
+
+;	SKIP  ( c-addr1 u1 char -- c-addr2 u2 )
+
+	hdr	4,'SKIP'
+skip:	pop	de
+	ld	l,c
+	ld	h,b
+	pop	bc
+	ex	(sp),hl
+skip1:	ld	a,c
+	or	b
+	jp	z,scan2
+	ld	a,e
+	cp	(hl)
+	jp	nz,scan2
+	inc	hl
+	dec	bc
+	jp	skip1
+
+;	-TRAILING  ( c-addr u1 -- c-addr u2 )
+
+	hdr	9,'-TRAILING'
+dtrai:	pop	de
+	pop	hl
+	push	hl
+	add	hl,de
+	ex	de,hl
+dtrai1:	dec	de
+	ld	a,l
+	or	h
+	jp	z,hpush
+	ld	a,(de)
+	cp	' '
+	jp	nz,hpush
+	dec	hl
+	jp	dtrai1
+
+;	/STRING  ( c-addr1 u1 n -- c-addr2 u2 )  over dup 0< if drop else min
+;						 then rot over + rot rot -
+
+	hdr	7,'/STRING'	; ANS
+sstr:	pop	de
+	pop	hl
+	ld	a,h
+	or	a
+	jp	m,sstr1
+	call	cmps
+	jp	nc,sstr1
+	ld	d,h
+	ld	e,l
+sstr1:	call	ssub
+	ex	(sp),hl
+	add	hl,de
+	ex	(sp),hl
+	jp	hpush
+	
+;	COMPARE  ( c-addr1 u1 c-addr2 u2 -- -1 | 0 | 1 )
+
+	hdr	7,'COMPARE'	; ANS
+cmp:	pop	de
+	pop	hl
+	ex	(sp),hl
+	ld	a,d
+	cp	h
+	jp	nz,cmp1
+	ld	a,e
+	cp	l
+cmp1:	jp	c,cmp2
+	ex	de,hl
+cmp2:	ld	l,c
+	ld	h,b
+	pop	bc
+	ex	(sp),hl
+	push	af
+	call	cmp5
+	jp	z,cmp4
+	pop	bc
+cmp3:	pop	bc
+	jp	c,one
+	jp	z,false
+	jp	true
+
+cmp4:	pop	af
+	jp	cmp3
+
+;	string match subroutine  HL = a1  BC = a2  DE = len  Z if match
+
+cmp5:	ld	a,e
+	or	d
+	ret	z
+	ld	a,(bc)
+	cp	(hl)
+	ret	nz
+	inc	hl
+	inc	bc
+	dec	de
+	jp	cmp5
+
+;	SEARCH  ( c-addr1 u1 c-addr2 u2 -- c-addr3 u3 -1 | c-addr1 u1 0 )
+
+	hdr	6,'SEARCH'	; ANS
+sear:	pop	hl
+	ld	(sear7),hl
+	ld	a,l
+	or	h
+	ld	l,c
+	ld	h,b
+	pop	bc
+	ex	(sp),hl
+	ld	(sear6),hl
+	ex	de,hl
+	pop	hl
+	ex	(sp),hl
+	ld	(sear5),hl
+	jp	z,sear2
+	dec	hl
+	inc	de
+sear1:	inc	hl
+	dec	de
+	ld	a,e
+	or	d
+	jp	nz,sear4
+sear2:	ld	bc,0
+	ld	hl,(sear6)
+	ex	de,hl
+	ld	hl,(sear5)
+sear3:	ex	(sp),hl
+	push	de
+	jp	scan3
+
+sear4:	ld	a,(bc)
+	cp	(hl)
+	jp	nz,sear1
+	push	de
+	push	bc
+	push	hl
+	ex	de,hl
+	ld	hl,(sear7)
+	ex	de,hl
+	call	cmp5
+	pop	hl
+	pop	bc
+	pop	de
+	jp	nz,sear1
+	ld	bc,-1
+	jp	sear3
+
+sear5:	ds	2
+sear6:	ds	2
+sear7:	ds	2
+
+;	end
+

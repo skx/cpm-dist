@@ -42,7 +42,7 @@ Currently the contents are in-flux, but when we have more this section will be e
 | [C:](C/) | C compiler | The Aztec C Compiler.                    |
 | D:       |            |                                          |
 | [E:](E/) | Editor     | The Wordstar Editor, v3.3.               |
-| F:       |            |                                          |
+| [F:](F/) | FORTH      | An installation of Dx-FORTH.             |
 | [G:](G/) | Games      | Text-based adventure-games.              |
 | [H:](H/) | Help       | Help files for various tools & systems.  |
 | [I:](I/) | Utility    | Instruction-tester for our Z80 emulator. |
