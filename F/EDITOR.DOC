@@ -1,0 +1,122 @@
+
+Screen Editor                                          97-12-28
+-------------
+
+Thió ió thå documentatioî foò EDITOR.SCÒ - thå full-screeî 
+editor.
+
+
+General screen commands:
+------------------------
+
+ EDIT  ( -- u )                                        S
+
+     Enteò thå fulì screeî editor¬ selectinç screeî õ foò 
+     editing.
+
+ WHERE  ( -- )                                         S
+
+     Useä afteò á LOAÄ error¬ WHERÅ performó thå samå functioî aó 
+     EDIÔ buô thå screeî anä thå cursoò positioî arå 
+     automaticallù seô tï thå locatioî wherå thå erroò occured.
+
+ L  ( -- )          List                               S
+
+     Listó thå currenô screen®  Thå screeî numbeò ió obtaineä 
+     froí thå variablå SCÒ anä ió seô bù LIST¬ EDIÔ oò wheî á 
+     LOAÄ erroò occurs.
+
+ N  ( -- )          Next                               S
+
+     Incrementó thå screeî numbeò bù one®  Typicallù useä 
+     immediatelù beforå thå Ì command.
+
+ B  ( -- )          Back                               S
+
+     Decrementó thå screeî numbeò bù one®  Typicallù useä 
+     immediatelù beforå thå Ì command.
+
+ COPY  ( u1 u2 -- )                                    S
+
+     Copù thå contentó oæ screeî u± tï screeî u2.
+
+ COPIES  ( u1 u2 u3 -- )                               S
+
+     Copù á rangå oæ screenó - u± ió thå firsô sourcå screen¬ u² 
+     ió thå firsô destinatioî screen¬ u³ ió thå numbeò oæ screenó 
+     tï bå copied® Thå useò ió prompteä beforå copyinç begins®  
+     Pressinç anù keù durinç copù abortó thå process®  Overlağ oæ 
+     sourcå anä destinatioî screenó ió automaticallù handled.
+
+
+Editor commands:
+----------------
+
+NOTEº Afteò editinç á sourcå screen¬ ensurå thå changeó arå madå Špermanenô bù enterinç thå updatå commanä (ctrl-K© beforå movinç 
+to another screen or exiting the editor.
+
+
+1. Cursor movement
+
+Ctrl-E    Move cursor up.
+
+Ctrl-X    Move cursor down.
+
+Ctrl-D    Move cursor right.
+
+Ctrl-S    Move cursor left.
+
+Ctrl-I    Move cursor 4 places to the right (HTAB).
+
+Ctrl-Q    Move cursor to the upper left of the screen.
+
+
+2. Editing
+
+Ctrl-G    Delete the character to the right of the cursor.
+
+Ctrl-H    Deletå thå characteò tï thå lefô oæ thå cursor.
+
+Ctrl-T    Erase all characters to the right of the cursor.
+
+Ctrl-O    Insert a space at the current cursor position.
+
+Ctrl-Y    Deletå thå currenô line®  Lineó belo÷ thå cursoò arå 
+          moveä uğ onå position®  Poğ á linå froí thå circulaò 
+          buffeò intï thå bottoí line.
+
+Ctrl-N    Inserô á blanë line®  Lineó belo÷ thå cursoò arå moveä 
+          dowî onå position®  Pusè thå bottoí linå tï thå 
+          circulaò buffer.
+
+Ctrl-W    Split the current line at the cursor position.
+
+Ctrl-F    Join the next line at the cursor position
+
+Ctrl-A    Copù thå contentó oæ thå currenô linå tï thå one-linå 
+          buffer.
+
+Ctrl-P    Copù thå contentó oæ thå one-linå buffeò tï thå currenô 
+          line.
+
+Ctrl-K    Update all changes made to the screen.
+
+
+3. Miscellaneous
+
+Ctrl-C    Move to the next screen.
+
+Ctrl-R    Move to the previous screen.Š
+Ctrl-J    Jump to another screen.
+
+Ctrl-Z    Clear the screen or circular buffer.
+
+Ctrl-B    Redraw the screen.
+
+Ctrl-L    Reload the current file block.
+
+Ctrl-V    Toggle between insert or overwrite mode.
+
+Ctrl-U    Exit the editor.
+
+

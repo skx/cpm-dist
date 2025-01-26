@@ -1,0 +1,123 @@
+;
+;		MEMORY.MAC - Memory Operations
+;
+; 97/12/28
+;
+; @  !  C@  C!  2@  2!  +!  MOVE  FILL  ERASE
+;
+
+;	@  ( a-addr -- x )
+
+	hdr	1,'@'
+at:	pop	hl
+at1:	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	push	de
+	jp	next
+
+;	!  ( x a-addr -- )
+
+	hdr	1,'!'
+store:	pop	hl
+store1:	pop	de
+	ld	(hl),e
+	inc	hl
+	ld	(hl),d
+	jp	next
+
+;	C@  ( c-addr -- char )
+
+	hdr	2,'C@'
+cat:	pop	hl
+	ld	l,(hl)
+	ld	h,0
+	jp	hpush
+
+;	C!  ( char c-addr -- )
+
+	hdr	2,'C!'
+cstor:	pop	hl
+	pop	de
+	ld	(hl),e
+	jp	next
+
+;	2@  ( a-addr -- x1 x2 )
+
+	hdr	2,'2@'
+tat:	pop	hl
+tat1:	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	inc	hl
+	ld	a,(hl)
+	inc	hl
+	ld	h,(hl)
+	ld	l,a
+	ex	de,hl
+	jp	dpush
+
+;	2!  ( x1 x2 a-addr -- )
+
+	hdr	2,'2!'
+tstor:	pop	hl
+tstor1:	pop	de
+	ld	(hl),e
+	inc	hl
+	ld	(hl),d
+	inc	hl
+	jp	store1
+
+;	+!  ( x a-addr -- )
+
+	hdr	2,'+!'
+pstor:	pop	hl
+	pop	de
+	ld	a,(hl)
+	add	a,e
+	ld	(hl),a
+	inc	hl
+	ld	a,(hl)
+	adc	a,d
+	ld	(hl),a
+	jp	next
+
+;	MOVE  ( addr1 addr2 u -- )
+
+	hdr	4,'MOVE'	; ANS
+move:	ld	l,c
+	ld	h,b
+	pop	bc
+	pop	de
+	ex	(sp),hl
+	call	cmpu
+	jp	c,cmovu1
+	jp	cmove1
+
+;	FILL  ( c-addr u char -- )
+
+	hdr	4,'FILL'
+fill:	pop	de
+fill1:	ld	l,c
+	ld	h,b
+	pop	bc
+	ex	(sp),hl
+	jp	fill3
+
+fill2:	ld	(hl),e
+	inc	hl
+	dec	bc
+fill3:	ld	a,c
+	or	b
+	jp	nz,fill2
+	pop	bc
+	jp	next
+
+;	ERASE  ( addr u -- )
+
+	hdr	5,'ERASE'
+erase:	ld	e,0
+	jp	fill1
+
+;	end
+

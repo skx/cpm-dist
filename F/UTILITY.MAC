@@ -1,0 +1,514 @@
+;
+;		UTILITY.MAC - Utility Routines
+;
+; 97/12/28
+;
+; .S  .line  INDEX  LIST  SHOW  WORDS  DUMP  MAP  DIR  DELETE  RENAME
+;
+
+;	.S  ( -- )		depth ?dup if 0 do cr i pick base @ swap dup
+;				6 .r ."  (" hex 0 <# # # # # #> type ." h)"
+;				base ! key? if key drop leave then loop else
+;				."  Empty" then space
+
+	hdr	2,'.S',,1
+dots:	call	docol
+	dw	depth,qdup
+	dw	zbran,dots4
+	dw	zero
+	dw	xdo,dots3
+dots1:	dw	crr
+	dw	ido,pick
+	dw	base,at
+	dw	swap
+	dw	dup
+	dw	clit
+	db	6
+	dw	dotr
+	dw	pdotq
+	db	2
+	db	' ('
+	dw	hex
+	dw	zero
+	dw	bdigs
+	dw	dig,dig,dig,dig
+	dw	edigs
+	dw	type
+	dw	pdotq
+	db	2
+	db	'h)'
+	dw	base,store
+	dw	keyq
+	dw	zbran,dots2
+	dw	key,drop,pleav
+dots2:	dw	xloop,dots1
+dots3:	dw	bran,dots5
+dots4:	dw	pdotq
+	db	6
+	db	' Empty'
+dots5:	dw	space
+	dw	exit
+
+;	.line  ( +n1 +n2 -- )	block swap 64 * + 64 type space
+
+	hdr	0,'.LINE',,1
+dline:	call	docol
+	dw	block
+	dw	swap
+	dw	clit
+	db	64
+	dw	star,plus
+	dw	clit
+	db	64
+	dw	type,space
+	dw	exit
+
+;	INDEX  ( +n1 +n2 -- )	1+ swap do cr i 3 .r space 0 i .line
+;				key? if key drop leave then loop
+
+	hdr	5,'INDEX',,1
+index:	call	docol
+	dw	onep,swap
+	dw	xdo,index3
+index1:	dw	crr
+	dw	ido,three,dotr,space
+	dw	zero,ido,dline
+	dw	keyq
+	dw	zbran,index2
+	dw	key,drop,pleav
+index2:	dw	xloop,index1
+index3:	dw	exit
+
+;	LIST  ( +n -- )		dup scr ! cr ." Scr # " . 16 0 do cr i 3 .r
+;				space i scr @ .line loop
+
+	hdr	4,'LIST',,1
+list:	call	docol
+	dw	dup,scr,store
+	dw	crr
+	dw	pdotq
+	db	6
+	db	'Scr # '
+	dw	dot
+	dw	clit
+	db	16
+	dw	zero
+	dw	xdo,list2
+list1:	dw	crr
+	dw	ido
+	dw	three,dotr,space
+	dw	ido,scr,at,dline
+	dw	xloop,list1
+list2:	dw	exit
+
+;	SHOW  ( +n1 +n2 -- )	printer 1+ swap do cr filename [char] : scan
+;				1 /string type i 3 + i do cr i dup #screens u<
+;				and list loop page key? if key drop leave then
+;				3 +loop console
+
+	hdr	4,'SHOW',,1
+show:	call	docol
+	dw	prnt
+	dw	onep,swap
+	dw	xdo,show5
+show1:	dw	crr,fname
+	dw	clit
+	db	':'
+	dw	scan
+	dw	one,sstr
+	dw	type
+	dw	ido
+	dw	three,plus
+	dw	ido
+	dw	xdo,show3
+show2:	dw	crr,ido
+	dw	dup,nscr
+	dw	uless,andd
+	dw	list
+	dw	xloop,show2
+show3:	dw	page
+	dw	keyq
+	dw	zbran,show4
+	dw	key,drop,pleav
+show4:	dw	three
+	dw	xploo,show1
+show5:	dw	cons
+	dw	exit
+
+;	WORDS  [name]		parse-word >r cr context @ @ begin dup key?
+;				if key 2drop 0 then while dup 1+ r@ count swap
+;				over compare 0= if dup c@ 191 > [char] # and
+;				bl max emit limit over name> u< [char] | and
+;				bl max emit space dup .name out @ 64 < if 20
+;				out @ over mod - spaces else cr then then
+;				n>link @ repeat r> 2drop
+
+	hdr	5,'WORDS',,1
+wods:	call	docol
+	dw	parsw,tor
+	dw	crr
+	dw	cont,at,at
+wods1:	dw	dup
+	dw	keyq
+	dw	zbran,wods2
+	dw	key,tdrop,zero
+wods2:	dw	zbran,wods5
+	dw	dup,onep
+	dw	rat,count
+	dw	swap,over
+	dw	cmp,zequ
+	dw	zbran,wods4
+	dw	dup,cat		; flag immediate
+	dw	clit
+	db	191
+	dw	great
+	dw	clit
+	db	'#'
+	dw	andd
+	dw	bl,max
+	dw	emit
+	dw	limit,over	; flag system
+	dw	namef,uless
+	dw	clit
+	db	'|'
+	dw	andd
+	dw	bl,max
+	dw	emit
+	dw	space
+	dw	dup,dotnam
+	dw	outt,at
+	dw	clit
+	db	64
+	dw	less
+	dw	zbran,wods3
+	dw	clit
+	db	20
+	dw	outt,at
+	dw	over,modd
+	dw	subb,spacs
+	dw	bran,wods4
+wods3:	dw	crr
+wods4:	dw	nlnk,at
+	dw	bran,wods1
+wods5:	dw	fromr,tdrop
+	dw	exit
+
+;	DUMP  ( addr u -- )	base @ >r hex over + swap cr 4 spaces 16 0 do
+;				dup i + 15 and 3 .r loop do cr i 0 <# # # # #
+;				#> type ." : " i 16 + i do c@ 0 <# # # #> type
+;				space loop i 16 + i do i c@ dup 32 127 within
+;				if emit else drop ." ." then loop key? if key
+;				drop leave then 16 +loop space r> base !
+
+	hdr	4,'DUMP',,1
+dump:	call	docol
+	dw	base,at,tor
+	dw	hex
+	dw	over,plus,swap
+	dw	crr
+	dw	clit
+	db	4
+	dw	spacs
+	dw	clit
+	db	16
+	dw	zero
+	dw	xdo,dum2
+dum1:	dw	dup
+	dw	ido,plus
+	dw	clit
+	db	15
+	dw	andd
+	dw	three,dotr
+	dw	xloop,dum1
+dum2:	dw	xdo,dum11
+dum3:	dw	crr
+	dw	ido
+	dw	zero
+	dw	bdigs
+	dw	dig,dig,dig,dig
+	dw	edigs
+	dw	type
+	dw	pdotq
+	db	2
+	db	': '
+	dw	ido
+	dw	clit
+	db	16
+	dw	plus,ido
+	dw	xdo,dum5
+dum4:	dw	ido,cat
+	dw	zero
+	dw	bdigs
+	dw	dig,dig
+	dw	edigs
+	dw	type,space
+	dw	xloop,dum4
+dum5:	dw	ido
+	dw	clit
+	db	16
+	dw	plus
+	dw	ido
+	dw	xdo,dum9
+dum6:	dw	ido
+	dw	cat,dup
+	dw	clit
+	db	32
+	dw	clit
+	db	127
+	dw	within
+	dw	zbran,dum7
+	dw	emit
+	dw	bran,dum8
+dum7:	dw	drop
+	dw	pdotq
+	db	1
+	db	'.'
+dum8:	dw	xloop,dum6
+dum9:	dw	keyq
+	dw	zbran,dum10
+	dw	key,drop,pleav
+dum10:	dw	clit
+	db	16
+	dw	xploo,dum3
+dum11:	dw	space
+	dw	fromr,base,store
+	dw	exit
+
+;	MAP  ( -- )		cf @ heads @ cr ." Dictionary" cr
+;				." - application  " application here 256 - 8
+;				u.r s"  (" 2dup type unused 5 u.r s"  unused)"
+;				2dup type cr ." - system       " system dph @
+;				(hm) - 8 u.r 2swap type unused 5 u.r type cr
+;				." Vocabularies   " voc-link begin @ ?dup
+;				while dup 2- body> >name .name repeat cr
+;				." - context      " context @ body> >name .name
+;				then cr ." - current      " current @ body>
+;				>name .name cr ." Compilation   " here limit
+;				u< if ." APPLICATION" else ." SYSTEM" then cr
+;				." File buffers   " #buffers . cr
+;				." Logged drive   " 0 25 bdos [char] A + emit
+;				255 32 bdos 0 <# #s #> type scrfile fd c@ if
+;				cr ." Screen file    " filename type ."  ("
+;				#screens 1 u.r ." k)" then space heads ! cf !
+
+	hdr	3,'MAP',,1
+map:	call	docol
+	dw	cf,at,heads,at
+	dw	crr,pdotq
+	db	10
+	db	'Dictionary'
+	dw	crr,pdotq
+	db	15
+	db	'- application  '
+	dw	app
+	dw	here
+	dw	lit,256,subb
+	dw	clit
+	db	5
+	dw	udotr
+	dw	slit
+	db	2
+	db	' ('
+	dw	tdup,type
+	dw	unus
+	dw	clit
+	db	5
+	dw	udotr
+	dw	slit
+	db	8
+	db	' unused)'
+	dw	tdup,type
+	dw	crr,pdotq
+	db	15
+	db	'- system       '
+	dw	sys
+	dw	dph,at
+	dw	lit,hm
+	dw	subb
+	dw	clit
+	db	5
+	dw	udotr
+	dw	tswap,type
+	dw	unus
+	dw	clit
+	db	5
+	dw	udotr,type
+	dw	crr,pdotq
+	db	15
+	db	'Vocabularies   '
+	dw	vocl
+map1:	dw	at		; begin
+	dw	qdup
+	dw	zbran,map2	; while
+	dw	dup,twom
+	dw	fbody,tname
+	dw	dotnam
+	dw	bran,map1	; repeat
+map2:	dw	crr,pdotq
+	db	15
+	db	'- context      '
+	dw	cont,at
+	dw	fbody,tname
+	dw	dotnam
+	dw	crr,pdotq
+	db	15
+	db	'- current      '
+	dw	curr,at
+	dw	fbody,tname
+	dw	dotnam
+	dw	crr,pdotq
+	db	15
+	db	'Compilation    '
+	dw	here,limit,uless
+	dw	zbran,map3
+	dw	pdotq
+	db	11
+	db	'APPLICATION'
+	dw	bran,map4
+map3:	dw	pdotq
+	db	6
+	db	'SYSTEM'
+map4:	dw	crr,pdotq
+	db	15
+	db	'File buffers   '
+	dw	nbuf,dot
+	dw	crr,pdotq
+	db	15
+	db	'Logged drive   '
+	dw	zero
+	dw	clit
+	db	25
+	dw	bdos
+	dw	clit
+	db	'A'
+	dw	plus,emit
+	dw	clit
+	db	255
+	dw	clit
+	db	32
+	dw	bdos
+	dw	zero
+	dw	bdigs,digs,edigs
+	dw	type
+	dw	scrf
+	dw	fd,cat
+	dw	zbran,map5
+	dw	crr,pdotq
+	db	15
+	db	'Screen file    '
+	dw	fname,type
+	dw	pdotq
+	db	2
+	db	' ('
+	dw	nscr
+	dw	one,udotr
+	dw	pdotq
+	db	2
+	db	'k)'
+map5:	dw	space
+	dw	heads,store
+	dw	cf,store
+	dw	exit
+
+;	DIR  [fname]		bl word count (sbuf) dup >r parse-filename
+;				setusr1 r@ 1+ c@ bl = if s" ???????????" r@
+;				1+ swap cmove then cpmbuf 26 bdos drop r> 17
+;				bdos dup 255 - if cr begin out @ 64 > if cr
+;				then 32 * cpmbuf + 1+ 8 2dup type ." ." + 3
+;				type 3 spaces 0 18 bdos dup 255 = until then
+;				drop rstusr
+
+	hdr	3,'DIR',,1	; uses SBUF, CPMBUF
+dir:	call	docol
+	dw	bl,word
+	dw	count
+	dw	lit,sbuf
+	dw	dup,tor
+	dw	psfn
+	dw	setusr1
+	dw	rat,onep,cat
+	dw	bl,equal
+	dw	zbran,dir1	; no parameters
+	dw	slit
+	db	11
+	db	'???????????'
+	dw	rat,onep
+	dw	swap,cmove
+dir1:	dw	clit
+	db	cpmbuf
+	dw	clit
+	db	26
+	dw	bdos,drop
+	dw	fromr
+	dw	clit
+	db	17
+	dw	bdos,dup
+	dw	clit
+	db	255
+	dw	subb
+	dw	zbran,dir4
+	dw	crr
+dir2:	dw	outt,at
+	dw	clit
+	db	64
+	dw	great
+	dw	zbran,dir3
+	dw	crr
+dir3:	dw	clit
+	db	32
+	dw	star
+	dw	clit
+	db	cpmbuf
+	dw	plus,onep
+	dw	clit
+	db	8
+	dw	tdup,type
+	dw	pdotq
+	db	1
+	db	'.'
+	dw	plus,three,type
+	dw	three,spacs
+	dw	zero
+	dw	clit
+	db	18
+	dw	bdos,dup
+	dw	clit
+	db	255
+	dw	equal
+	dw	zbran,dir2
+dir4:	dw	drop
+	dw	rstusr
+	dw	exit
+
+;	DELETE  fname		?fname delete-file abort" can't delete file"
+
+	hdr	6,'DELETE',,1	; uses SBUF
+delete:	call	docol
+	dw	qfnam
+	dw	delf
+	dw	pabq
+	db	17
+	db	'can''t delete file'
+	dw	exit
+
+;	RENAME  oldnam newnam	(sbuf+36) ?fname 16 min >r over r@ cmove r>
+;				?fname rename-file abort" can't rename file"
+
+	hdr	6,'RENAME',,1	; uses SBUF
+renam:	call	docol
+	dw	lit,sbuf+36
+	dw	qfnam
+	dw	clit
+	db	16
+	dw	min,tor
+	dw	over,rat,cmove
+	dw	fromr
+	dw	qfnam
+	dw	renf
+	dw	pabq
+	db	17
+	db	'can''t rename file'
+	dw	exit
+
+;	end
+

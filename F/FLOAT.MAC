@@ -1,0 +1,1883 @@
+;
+;		FLOAT.MAC - Floating Point Functions
+;
+; 28/12/97
+;
+; FDROP  FDUP  FSWAP  FOVER  FROT  F@  F!  FABS  FNEGATE  D>F  F>D
+; F0=  F0<  F<  FMIN  FMAX  FLOOR  FROUND  FCONSTANT  FVARIABLE
+; FLITERAL  F+  F-  F*  F/  >FLOAT  REPRESENT  PRECISION  SET-PRECISION
+; (FS.)  FS.R  FS.  (F.)  F.R  F.  (FE.)  FE.R  FE.  FSQRT  FLN  FEXP
+; F**  FSIN  FCOS  FATAN  FRANDOM
+;
+
+;	FDROP  ( r -- )
+
+	hdr	5,'FDROP'	; ANS
+fdrop:	jp	tdrop
+
+;	FDUP  ( r -- r r )
+
+	hdr	4,'FDUP'	; ANS
+fdup:	jp	tdup
+
+;	FSWAP  ( r1 r2 -- r2 r1 )
+
+	hdr	5,'FSWAP'	; ANS
+fswap:	jp	tswap
+
+;	FOVER  ( r1 r2 -- r1 r2 r1 )
+
+	hdr	5,'FOVER'	; ANS
+fover:	jp	tover
+
+;	FROT  ( r1 r2 r3 -- r2 r3 r1 )
+
+	hdr	4,'FROT'	; ANS
+frot:	jp	trot
+
+;	F@  ( f-addr -- r )
+
+	hdr	2,'F@'		; ANS
+fat:	jp	tat
+
+;	F!  ( r f-addr -- )
+
+	hdr	2,'F!'		; ANS
+fstor:	jp	tstor
+
+;	FABS  ( r1 -- r2 )
+
+	hdr	4,'FABS'	; ANS
+fabs:	call	ldop
+	call	fab
+	jp	svop
+
+;	FNEGATE  ( r1 -- r2 )
+
+	hdr	7,'FNEGATE'	; ANS
+fneg:	call	ldop
+	call	chs
+	jp	svop
+
+;	D>F  ( d -- r )
+
+	hdr	3,'D>F'		; ANS
+dtof:	pop	hl
+	pop	de
+	push	bc
+	ld	c,l
+	ld	b,h
+	ld	a,32		; scaling factor
+	call	flt1
+	jp	svop
+
+;	F>D  ( r -- d )
+
+	hdr	3,'F>D'		; ANS
+ftod:	call	ldop
+	ld	e,32		; scaling factor
+	call	fix
+	ld	e,d
+	ld	d,c
+	ld	l,b
+	ld	h,a
+	pop	bc
+	jp	dpush
+
+;	F0=  ( r -- flag )
+
+	hdr	3,'F0='		; ANS
+fzeq:	pop	hl
+	ld	h,l
+	ex	(sp),hl
+	jp	zequ
+
+;	F0<  ( r -- flag )
+
+	hdr	3,'F0<'		; ANS
+fzle:	pop	hl
+	pop	de
+	ld	a,l
+	or	a
+	jp	z,false		; zero
+	ld	a,h
+	rla
+	jp	c,true		; negative
+	jp	false
+
+;	F<  ( r1 r2 -- flag )
+
+	hdr	2,'F<'		; ANS
+fles:	call	ld2op
+	call	fcmp
+	pop	bc
+	jp	m,true
+	jp	false
+
+;	FMIN  ( r1 r2 -- r1 | r2 )  fover fover f< 0= if fswap then fdrop
+
+	hdr	4,'FMIN'	; ANS
+fmin:	call	ld2op
+	push	hl
+	call	fcmp
+	pop	hl
+	call	p,lod		; r1 >= r2
+	jp	svop
+
+;	FMAX  ( r1 r2 -- r1 | r2 )  fover fover f< if fswap then fdrop
+
+	hdr	4,'FMAX'	; ANS
+fmax:	call	ld2op
+	push	hl
+	call	fcmp
+	pop	hl
+	call	m,lod		; r1 < r2
+	jp	svop
+
+;	FLOOR  ( r1 -- r2 )
+
+	hdr	5,'FLOOR'	; ANS
+floor:	call	ldop
+	call	flr
+	jp	svop
+
+;	FROUND  ( r1 -- r2 )
+
+	hdr	6,'FROUND'	; ANS
+frnd:	call	ldop
+	call	rnd
+	jp	svop
+
+;	FCONSTANT  ( -- r )
+
+	hdr	9,'FCONSTANT',,1  ; ANS
+fcon:	jp	tcon
+
+;	FVARIABLE  ( -- f-addr )
+
+	hdr	9,'FVARIABLE',,1  ; ANS
+fvar:	jp	tvar
+
+;	FLITERAL  ( -- r )
+
+	hdr	8,'FLITERAL',1,1  ; ANS
+flite:	jp	tlite
+
+;	F+  ( r1 r2 -- r3 )
+
+	hdr	2,'F+'		; ANS
+fadd:	call	ld2op
+	call	fad
+	jp	svop
+
+;	F-  ( r1 r2 -- r3 )
+
+	hdr	2,'F-'		; ANS
+fsub:	call	ld2op
+	call	fsu
+	jp	svop
+
+;	F*  ( r1 r2 -- r3 )
+
+	hdr	2,'F*'		; ANS
+fstar:	call	ld2op
+	call	fmu
+	jp	svop
+
+;	F/  ( r1 r2 -- r3 )
+
+	hdr	2,'F/'		; ANS
+fslas:	call	ld2op
+	call	fdi
+	jp	svop
+
+;	>FLOAT  ( c-addr u -- r true | false )
+
+	hdr	6,'>FLOAT'	; ANS
+tfl:	pop	hl
+	ld	a,l		; assume u <= 255
+	pop	hl
+	push	bc
+	call	fin
+	ld	e,c
+	ld	h,b
+	ld	l,a
+	pop	bc
+	jp	c,false
+	push	de
+	push	hl
+	jp	true
+
+;	fp-size  ( u1 -- u2 )	7 min 1 max
+
+	hdr	0,'FP-SIZE'
+fpsiz:	call	docol
+	dw	clit
+	db	7
+	dw	min
+	dw	one,max
+	dw	exit
+
+;	REPRESENT  ( r c-addr u -- exponent sign flag )
+;				fp-size 2>r fdup f0< 0 exp 2! fdup f0= not if
+;				fabs begin fdup 1e f< not if 10e f/ 1 exp +!
+;				0 else fdup .1e f< if 10e f* -1 exp +! 0 else
+;				1 then then until then 1e r@ 0 do 10e f* loop
+;				f* fround f>d <# r@ -1 do # loop #> drop count
+;				[char] 1 = if 1- 1 exp +! then 2r> cmove exp 2@
+;				swap -1 ;
+
+	hdr	9,'REPRESENT'	; ANS
+rep:	call	docol
+	dw	fpsiz,ttor
+	dw	fdup,fzle
+	dw	zero,rep11,tstor
+	dw	fdup,fzeq,nott
+	dw	zbran,rep5
+	dw	fabs
+rep1:	dw	fdup
+	dw	dlit
+	db	81h,0,0,0
+	dw	fles,nott
+	dw	zbran,rep2
+	dw	fften,fslas
+	dw	one,rep11,pstor
+	dw	zero
+	dw	bran,rep4
+rep2:	dw	fdup
+	dw	dlit
+	db	7dh,4ch,0cch,0cdh
+	dw	fles
+	dw	zbran,rep3
+	dw	fften,fstar
+	dw	true,rep11,pstor
+	dw	zero
+	dw	bran,rep4
+rep3:	dw	one
+rep4:	dw	zbran,rep1
+rep5:	dw	dlit
+	db	81h,0,0,0
+	dw	rat,zero
+	dw	xdo,rep7
+rep6:	dw	fften,fstar
+	dw	xloop,rep6
+rep7:	dw	fstar
+	dw	frnd,ftod
+	dw	bdigs
+	dw	rat
+	dw	true
+	dw	xdo,rep9
+rep8:	dw	dig
+	dw	xloop,rep8
+rep9:	dw	edigs
+	dw	drop
+	dw	count
+	dw	clit
+	db	'1'
+	dw	equal
+	dw	zbran,rep10
+	dw	onem
+	dw	one,rep11,pstor
+rep10:	dw	tfrom,cmove
+	dw	rep11,tat,swap
+	dw	true
+	dw	exit
+
+rep11:	call	dovar		; exponent
+	ds	4
+
+;	PRECISION  ( -- u )
+
+	hdr	9,'PRECISION'	; ANS
+prec:	call	docon
+prec1:	dw	7		; default
+
+;	SET-PRECISION  ( u -- )   fp-size (prec1) !
+
+	hdr	13,'SET-PRECISION'  ; ANS
+setpr:	call	docol
+	dw	fpsiz
+	dw	lit,prec1
+	dw	store
+	dw	exit
+
+	cseg
+
+fbuf:	call	docre		; fp output string buffer
+	ds	13
+
+;	(f1)  ( r -- exp )	fdup f0= >r fbuf dup 13 blank 2+ precision
+;				represent drop if [char] - fbuf c! then r>
+;				0= +
+
+	hdr	0,'(F1)'
+pf1:	call	docol
+	dw	fdup,fzeq,tor
+	dw	fbuf,dup
+	dw	clit
+	db	13
+	dw	blank
+	dw	twop,prec
+	dw	rep,drop
+	dw	zbran,pf11
+	dw	clit
+	db	'-'
+	dw	fbuf,cstor
+pf11:	dw	fromr
+	dw	zequ,plus
+	dw	exit
+
+;	(f2)  ( exp -- )	s>d swap over dabs <# # # rot 0< if [char] -
+;				else [char] + then hold [char] E hold #>
+;				fbuf 2+ precision + swap cmove
+
+	hdr	0,'(F2)'
+pf2:	call	docol
+	dw	stod,swap
+	dw	over,dabs
+	dw	bdigs,dig,dig
+	dw	rot,zless
+	dw	zbran,pf21
+	dw	clit
+	db	'-'
+	dw	bran,pf22
+pf21:	dw	clit
+	db	'+'
+pf22:	dw	hold
+	dw	clit
+	db	'E'
+	dw	hold,edigs
+	dw	fbuf,twop
+	dw	prec,plus
+	dw	swap,cmove
+	dw	exit
+
+;	(f3)  ( n -- c-addr u )  >r [char] . fbuf 1+ dup 1+ over r@ cmove r>
+;				 + c! fbuf 13 bl skip -trailing
+
+	hdr	0,'(F3)'
+pf3:	call	docol
+	dw	tor
+	dw	clit
+	db	'.'
+	dw	fbuf,onep
+	dw	dup,onep
+	dw	over,rat,cmove
+	dw	fromr,plus,cstor
+	dw	fbuf
+	dw	clit
+	db	13
+	dw	bl,skip,dtrai
+	dw	exit
+
+;	(FS.)  ( r -- c-addr u )  (f1) (f2) 1 (f3)
+
+	hdr	5,'(FS.)'
+pfsd:	call	docol
+	dw	pf1
+pfsd1:	dw	pf2
+	dw	one,pf3
+	dw	exit
+
+;	FS.R  ( r u -- )	>r (fs.) r> over - swap spaces type
+
+	hdr	4,'FS.R'
+fsdr:	call	docol
+	dw	tor
+	dw	pfsd
+	dw	bran,ddotr1
+
+;	FS.  ( r -- )		0 fs.r space
+
+	hdr	3,'FS.'		; ANS
+fsdot:	call	docol
+	dw	zero,fsdr
+	dw	space
+	dw	exit
+
+;	(F.)  ( r -- c-addr u )	 (f1) dup -1 precision within if 1+ else
+;				 (f2) 1 then (f3)
+
+	hdr	4,'(F.)'
+pfd:	call	docol
+	dw	pf1,dup,true
+	dw	prec,within
+	dw	zbran,pfsd1
+	dw	onep,pf3
+	dw	exit
+
+;	F.R  ( r u -- )		>r (f.) r> over - spaces type
+
+	hdr	3,'F.R'
+fdotr:	call	docol
+	dw	tor
+	dw	pfd
+	dw	bran,ddotr1
+
+;	F.  ( r -- )		0 f.r space
+
+	hdr	2,'F.'		; ANS
+fdot:	call	docol
+	dw	zero,fdotr
+	dw	space
+	dw	exit
+
+;	(FE.)  ( r -- c-addr u )  (f1) 3 /mod 3 * (f2) 1+ (f3)
+;
+;	hdr	5,'(FE.)'
+;pfse:	call	docol
+;	dw	pf1
+;	dw	three,slmod
+;	dw	three,star
+;	dw	pf2
+;	dw	onep,pf3
+;	dw	exit
+;
+;	FE.R  ( r u -- )	>r (fe.) r> over - swap spaces type
+;
+;	hdr	4,'FE.R'
+;fedr:	call	docol
+;	dw	tor
+;	dw	pfse
+;	dw	bran,ddotr1
+;
+;	FE.  ( r -- )		0 fe.r space
+;
+;	hdr	3,'FE.'
+;fedot:	call	docol
+;	dw	zero,fedr
+;	dw	space
+;	dw	exit
+
+;	FSQRT  ( r1 -- r2 )
+
+	hdr	5,'FSQRT'	; ANS
+fsqr:	call	ldop
+	call	sqr
+	jp	svop
+
+;	FLN  ( r1 -- r2 )
+
+	hdr	3,'FLN'		; ANS
+ffln:	call	ldop
+	call	log
+	jp	svop
+
+;	FEXP  ( r1 -- r2 )
+
+	hdr	4,'FEXP'	; ANS
+fexp:	call	ldop
+	call	exp
+	jp	svop
+
+;	F**  ( r1 r2 -- r3 )	fswap fln f* fexp
+
+	hdr	3,'F**'		; ANS
+ftst:	call	docol
+	dw	fswap,ffln
+	dw	fstar,fexp
+	dw	exit
+
+;	FSIN  ( r1 -- r2 )
+
+	hdr	4,'FSIN'	; ANS
+fsin:	call	ldop
+	call	sin
+	jp	svop
+
+;	FCOS  ( r1 -- r2 )
+
+	hdr	4,'FCOS'	; ANS
+fcos:	call	ldop
+	call	cos
+	jp	svop
+
+;	FATAN  ( r1 -- r2 )
+
+	hdr	5,'FATAN'	; ANS
+fatan:	call	ldop
+	call	atan
+	jp	svop
+
+;	FRANDOM  ( r1 -- r2 )
+
+	hdr	7,'FRANDOM'
+rand:	call	ldop
+	jp	m,rand1		; seed generator
+	push	af
+	ld	hl,rand4
+	call	lod
+	ld	e,a
+	pop	af
+	ld	a,e
+	jp	z,svop		; return last value
+	ld	hl,rand2	; get next value
+	call	fmu
+	ld	hl,rand3
+	call	fad
+rand1:	ld	hl,acc3
+	ld	b,(hl)		; swap msb lsb
+	dec	hl
+	ld	c,(hl)
+	dec	hl
+	ld	d,(hl)
+	dec	hl
+	ld	(hl),80h	; make positive
+	dec	hl
+	ld	e,(hl)
+	ld	(hl),80h	; fix exponent
+	call	fad6		; normalise
+	ld	hl,rand4
+	call	str
+	jp	svop
+
+rand2:	db	98h,35h,44h,7ah
+rand3:	db	68h,28h,0b1h,46h
+rand4:	db	80h,31h,41h,59h		; seed
+
+	cseg
+
+; pop float from stack to accum, saving bc
+
+ldop:	pop	de
+	pop	hl
+	ld	(f1),hl
+	pop	hl
+	ld	(f1+2),hl
+	push	bc
+	push	de
+	ld	hl,f1
+	jp	lod
+
+; pop 2 float from stack to hl (f2) and accum, saving bc
+
+ld2op:	pop	hl
+	ld	(ld2op1),hl
+	pop	hl
+	ld	(f2),hl
+	pop	hl
+	ld	(f2+2),hl
+	call	ldop
+	ld	hl,(ld2op1)
+	push	hl
+	ld	hl,f2
+	ret
+
+ld2op1:	ds	2
+
+; push float registers to stack, restore bc and exit
+
+svop:	ld	l,a
+	ld	h,b
+	ld	e,c
+	pop	bc
+	jp	dpush
+
+;
+; str	store registers to accum
+;
+
+strr:	ld	hl,acce
+	ld	(hl),e
+	inc	hl
+
+; entry - hl=adr, a=exp, bcd (packed)
+; exit  - none
+
+str:	ld	(hl),a
+str1:	inc	hl		; entry when hl=accs
+	ld	(hl),b
+	inc	hl
+	ld	(hl),c
+	inc	hl
+	ld	(hl),d
+	ret
+
+;
+; zero - set accum and regs to zero
+;
+; entry - none
+; exit  - none
+
+zro:	xor	a
+	ld	(acce),a
+	ld	b,a
+	ld	c,a
+	ld	d,a
+	ret
+
+; overflow - set regs to maximum, set cy
+
+ovf:	ld	bc,7fffh
+	ld	a,c
+	ld	d,c
+	scf
+	ret
+
+;
+; chs	change sign of accumulator
+;
+; entry - none
+; exit  - bcd (packed), a=exp, flags set
+
+chs:	ld	a,80h
+	jp	fab1
+
+;
+; change sign of accumulator and again on result
+; (when calling routine completes)
+
+chss:	call	chs
+	ld	hl,chs
+	ex	(sp),hl
+	jp	(hl)
+
+;
+; fab	set acc to absolute
+;
+; entry - none
+; exit  - bcd (packed), a=exp, flags set
+
+fab:	xor	a
+fab1:	ld	hl,accs
+	and	(hl)
+	xor	80h
+	ld	(hl),a		; fall thru tst
+
+;
+; tst	load registers from acc and test
+;
+; exit  - bcd (packed), a=exp, flags set
+
+tst:	ld	hl,acce
+	ld	a,(hl)
+	and	a
+	jp	z,zro
+	ld	e,a		; e exp
+	inc	hl
+	ld	a,(hl)		; accs
+	inc	hl
+	xor	(hl)		; pack msb with sign
+	inc	hl
+	ld	c,(hl)
+	inc	hl
+	ld	d,(hl)
+	jp	fad8
+
+;
+; lod	load float (hl) to accum and regs, set flags
+;
+; entry - hl=adr
+; exit  - bcd (packed), a=exp, flags set
+
+lod:	ld	a,(hl)
+	and	a
+	jp	z,zro
+	ld	e,a
+	inc	hl
+	ld	a,(hl)
+	inc	hl
+	ld	c,(hl)
+	inc	hl
+	ld	d,(hl)
+	ld	l,a
+	or	80h
+	ld	b,a
+	xor	l
+	call	strr
+	xor	b
+	jp	fad8
+
+;
+; tstr	test registers and set flags; Z if zero, M if minus
+;
+
+tstr:	ld	e,a
+tstr1:	or	a
+	ret	z
+tstr2:	ld	a,b
+tstr3:	or	1
+	ld	a,e
+	ret
+
+;
+; fcmp	compare registers with (hl), return M if regs < (hl)
+;
+
+fcmp:	ld	e,a
+	ld	a,(hl)
+	or	a
+	ld	a,e
+	jp	z,tstr1		; hl zero, test sign regs
+	or	a
+	inc	hl
+	ld	a,(hl)
+	cpl
+	jp	z,tstr3		; regs zero, test sign hl
+	xor	b
+	jp	p,tstr2		; signs differ
+	call	fcmp1
+	rra
+	xor	b		; complement sign for neg values
+	ld	a,e
+	ret
+
+fcmp1:	dec	hl
+	ld	a,e
+	cp	(hl)
+	ret	nz
+	inc	hl
+	ld	a,b
+	cp	(hl)
+	ret	nz
+	inc	hl
+	ld	a,c
+	cp	(hl)
+	ret	nz
+	inc	hl
+	ld	a,d
+	cp	(hl)
+	ret	nz
+	pop	hl
+	ld	a,e
+	ret
+
+;
+; fsu	floating point subtract subroutine
+;
+
+fsu:	ld	a,80h		; mask to change operand sign
+	jp	fad1
+
+;
+; fad	floating point add subroutine
+;
+
+fad:	xor	a
+fad1:	ld	e,(hl)		; load operand to abcd
+	inc	hl
+	xor	(hl)
+	ld	b,a
+	inc	hl
+	ld	c,(hl)
+	inc	hl
+	ld	d,(hl)
+	ld	a,e
+	and	a
+	jp	z,tst		; operand zero
+
+	ld	l,b		; unpack
+	ld	a,b
+	or	80h
+	ld	b,a
+	xor	l		; generate subtraction flag
+	ld	hl,accs
+	xor	(hl)
+	ld	(sf),a
+
+; determine relative magnitudes of operand and accum
+
+	dec	hl		; acce
+	ld	a,(hl)
+	and	a
+	jp	z,fad9		; accum zero
+
+	sub	e		; get difference of exponents
+	jp	c,fad2		; accum smaller
+
+; check for insignificant operand
+
+	jp	m,tst
+	cp	25		; compare shift count to 25
+	jp	c,fad3
+	jp	tst
+
+; check for insignificant accum, exchange accum and operand
+
+fad2:	jp	p,fad9
+	cp	0-25		; compare shift count to -25
+	jp	c,fad9
+
+	ld	(hl),e		; set acce
+
+	ld	e,a		; save shift count
+
+	ld	a,(sf)		; set accum sign
+	inc	hl		; accs
+	xor	(hl)
+	ld	(hl),a
+
+	xor	a		; complement shift count
+	sub	e
+
+	inc	hl		; exchange fraction
+	ld	e,(hl)
+	ld	(hl),b
+	ld	b,e
+	inc	hl
+	ld	e,(hl)
+	ld	(hl),c
+	ld	c,e
+	inc	hl
+	ld	e,(hl)
+	ld	(hl),d
+	ld	d,e
+
+; position the operand, check if add or subtract
+
+fad3:	call	shr
+	ld	hl,acc3
+	ld	a,(sf)
+	and	a
+	jp	m,fad4
+
+	ld	a,(hl)		; add
+	add	a,d
+	ld	d,a
+	dec	hl
+	ld	a,(hl)
+	adc	a,c
+	ld	c,a
+	dec	hl
+	ld	a,(hl)
+	adc	a,b
+	ld	b,a
+	jp	nc,fad7
+
+	rra			; got carry, so rshift fraction
+	ld	b,a
+	ld	a,c
+	rra
+	ld	c,a
+	ld	a,d
+	rra
+	ld	d,a
+	rra
+	ld	e,a
+	ld	hl,acce		; and adjust exponent
+	ld	a,(hl)
+	add	a,1
+	ld	(hl),a
+	jp	c,ovf		; overflow
+	jp	fad7
+
+fad4:	xor	a		; subtract
+	sub	e
+	ld	e,a
+	ld	a,(hl)
+	sbc	a,d
+	ld	d,a
+	dec	hl
+	ld	a,(hl)
+	sbc	a,c
+	ld	c,a
+	dec	hl
+	ld	a,(hl)
+	sbc	a,b
+	ld	b,a
+
+fad5:	call	c,fcpl		; got carry, so complement
+
+fad6:	ld	a,b		; normalise if necessary
+	and	a
+	call	p,norm
+	jp	p,zro		; underflow or zero
+
+fad7:	call	rondr		; round bcde
+	jp	c,ovf
+
+; entry - acd (packed), e=exp
+; exit  - bcd (packed), a=exp, flags set
+
+fad8:	ld	b,a
+	or	1		; test sign, clear Z C flags
+	ld	a,e
+	ret
+
+; accum insignificant, so load the accum with the operand
+
+fad9:	ld	a,(sf)
+	ld	hl,accs
+	xor	(hl)
+	call	strr
+	xor	b
+	jp	fad8
+
+;
+; read the operand at (hl), check the accum exponent
+;
+
+mdex:	ld	b,a
+	inc	hl
+	ld	c,(hl)
+	inc	hl
+	ld	d,(hl)
+	inc	hl
+	ld	e,(hl)
+
+	ld	hl,acce		; accum exp
+	ld	a,(hl)
+	and	a
+	ret	z		; is zero
+
+	add	a,b		; result exp plus bias
+	ld	b,a
+	rra			; carry to sign
+	xor	b		; carry and sign must differ
+	ld	a,b		; result exp plus bias
+	ld	b,80h		; exp bias, sign mask, most sig bit
+	jp	p,mdex1		; if over or underflow
+	sub	b		; remove excess exp bias
+	ret	z		; return if underflow
+	ld	(hl),a		; result exp
+	inc	hl		; address accum sign
+	ld	a,(hl)
+	xor	c		; result sign in sign bit
+	and	b		; result sign
+	ld	(hl),a		; store it
+	ld	a,c		; operand sign and 1st fraction
+	or	b		; operand first fraction
+	ret
+
+mdex1:	rlca			; set carry bit if overflow
+	ret	c
+	xor	a		; clear a register
+	ret			; return if underflow
+
+;
+; fmu	floating point multiplication subroutine
+;
+
+fmu:	ld	a,(hl)		; operand exponent
+	and	a
+	push	hl
+	call	nz,mdex		; read operand
+	pop	hl
+	jp	z,zro		; zero or underflow
+	jp	c,ovf		; overflow
+	call	mulx		; fixed mult
+	ld	a,b		; normalize if necessary
+	and	a
+	jp	m,fad7
+
+	ld	hl,acce		; dec accum exp
+	dec	(hl)
+	ret	z		; underflow
+	call	shl
+	jp	fad7
+
+; fixed point multiply subroutine
+
+mulx:	ld	hl,mulx4
+	ld	(hl),e		; 3rd multiplicand
+	inc	hl
+	ld	(hl),d		; 2nd multiplicand
+	inc	hl
+	ld	(hl),a		; 1st multiplicand
+
+	xor	a		; clear 6th product
+	ld	e,a		; clear 5th product
+	ld	d,a		; clear 4th product
+
+; multiply  by each accumulator fraction in turn
+
+	ld	hl,acc3
+	call	mulx2		; multiply by accum 3rd fraction
+	ld	hl,acc2
+	call	mulx1		; multiply by accum 2nd fraction
+	ld	hl,acc1
+
+; multiply by one accumulator byte
+
+mulx1:	ld	a,d		; 5th partial product
+	ld	e,c		; 4th partial prod
+	ld	d,b		; 3rd partial prod
+mulx2:	ld	b,(hl)		; multiplier
+	ld	l,a		; 5th partial prod
+	xor	a		; zero a register
+	ld	c,a		; 2nd partial prod
+	sub	b		; set carry bit for exit flag
+	jp	c,mulx3		; if multiplier is not zero
+	ld	c,d		; 2nd partial product
+	ld	d,e		; 3rd partial prod
+	ret
+
+; loop for each bit of multiplier byte
+
+mulx3:	ld	a,l		; 5th partial product, exit flag
+	adc	a,a		; shift exit flag out if done
+	ret	z		; exit if multiplication done
+	ld	l,a		; 5th partial prod, exit flag
+	ld	a,e		; 4th partial prod
+	rla			; shift 4th partial prod
+	ld	e,a		; 4th partial prod
+	ld	a,d		; 3rd partial prod
+	rla
+	ld	d,a
+	ld	a,c		; 2nd partial prod
+	rla
+	ld	c,a
+	ld	a,b		; 1st partial prod and multiplier
+	rla
+	ld	b,a
+	jp	nc,mulx3	; if no addition required
+
+; add the multiplicand to the product if the multiplier bit is one
+
+	ld	a,(mulx4)	; operand 3rd fraction
+	add	a,e
+	ld	e,a		; 4th partial prod
+	ld	a,(mulx4+1)	; operand 2nd fraction
+	adc	a,d
+	ld	d,a		; 3rd partial prod
+	ld	a,(mulx4+2)	; operand 1st fraction
+	adc	a,c
+	ld	c,a		; 2nd partial prod
+	jp	nc,mulx3	; if no carry to 1st prod
+	inc	b		; add carry to 1st prod
+	and	a		; clear carry bit
+	jp	mulx3
+
+mulx4:	ds	3
+
+;
+; fdi	floating point division subroutine
+;
+
+fdi:	xor	a
+	sub	(hl)		; complement of divisor exponent
+	cp	1		; set carry if division by zero
+	push	hl
+	call	nc,mdex		; read operand if not zero
+	pop	hl
+	jp	c,ovf		; overflow or division by zero
+	jp	z,zro		; underflow or zero
+	ld	c,a
+	call	divx		; fixed division
+	jp	nc,ovf
+	jp	fad7
+
+; fixed point divide subroutine
+
+; subtract divisor from accum to obtain 1st remainder
+
+divx:	ld	hl,acc3
+	ld	a,(hl)		; accum 3rd fraction
+	sub	e
+	ld	(hl),a
+	dec	hl
+	ld	a,(hl)		; accum 2nd fraction
+	sbc	a,d
+	ld	(hl),a
+	dec	hl
+	ld	a,(hl)		; accum 1st fraction
+	sbc	a,c
+	ld	(hl),a
+
+; halve the divisor and store for addition or subtraction
+
+	ld	a,c		; get carry bit
+	rla
+	ld	a,c		; divisor 1st fraction
+	rra
+	ld	(divx4+3),a
+	ld	a,d		; divisor 2nd fraction
+	rra
+	ld	(divx4+2),a
+	ld	a,e		; divisor 3rd fraction
+	rra
+	ld	(divx4+1),a	; 3rd subtract divisor
+	ld	b,0		; init quot 1st fraction
+	ld	a,b		; divisor 4th fraction is zero
+	rra
+	ld	(divx4),a	; 4th subtract divisor
+
+; load 1st remainder
+
+	ld	a,(hl)		; 1st fraction
+	inc	hl
+	ld	d,(hl)		; 2nd fraction
+	inc	hl
+	ld	e,(hl)		; 3rd fraction
+
+; position remainder, initialise quotient, check sign
+
+	ex	de,hl		; remainder 3rd fraction
+				; remainder 2nd fraction
+	ld	e,a		; remainder 1st fraction
+	ld	c,b		; init quot 2nd fraction
+	ld	d,b		; init quot 3rd fraction
+	and	a
+	jp	m,divx3		; if remainder is negative
+
+; adjust exponent
+
+	ld	a,(acce)	; increment quotient exp
+	inc	a
+	ret	z		; overflow
+	ld	(acce),a
+
+	inc	d		; init quot 3rd fraction
+
+; subtract the divisor if remainder positive
+
+divx1:	push	bc
+	ld	c,l
+	ld	b,h
+	xor	a		; 4th fraction is zero
+	ld	hl,divx4
+	sub	(hl)
+	ld	a,c		; 3rd fraction
+	inc	hl
+	sbc	a,(hl)
+	ld	c,a
+	ld	a,b		; 2nd fraction
+	inc	hl
+	sbc	a,(hl)
+	ld	b,a
+	ld	a,e		; 1st fraction
+	inc	hl
+	sbc	a,(hl)
+	ld	e,a
+	ld	l,c
+	ld	h,b
+divx2:	pop	bc
+
+	ld	a,(divx4)	; remainder 4th fraction
+	rlca			; shift remainder 4th fraction to carry
+
+; shift the remainder left one bit
+
+	ld	a,b
+	rla
+	ret	c		; division complete
+	rra			; shift BCDEHL
+	ld	a,l
+	rla
+	ld	l,a
+	ld	a,h
+	rla
+	ld	h,a
+	call	shl
+
+; branch if subtraction is required
+
+	ld	a,d		; quotient 3rd fraction
+	rrca			; remainder sign indic to carry bit
+	jp	c,divx1		; to sub divisor if remainder positive
+
+; add the divisor if the remainder is negative
+
+divx3:	push	bc
+	ld	bc,divx4+1
+	ld	a,(bc)		; 3rd fraction
+	add	a,l
+	ld	l,a
+	inc	bc
+	ld	a,(bc)		; 2nd fraction
+	adc	a,h
+	ld	h,a
+	inc	bc
+	ld	a,(bc)		; 1st fraction
+	adc	a,e
+	ld	e,a
+	jp	divx2
+
+divx4:	ds	4
+
+;
+; left shift bcde one bit
+;
+; entry - bcde
+; exit  - bcde
+
+shl:	ld	a,e
+	rla
+	ld	e,a
+	ld	a,d
+	rla
+	ld	d,a
+	ld	a,c
+	rla
+	ld	c,a
+	ld	a,b
+	adc	a,a
+	ld	b,a
+	ret
+
+;
+; right shift bcd by a bits
+;
+; entry - bcd, a=shift count
+; exit  - bcde
+
+shr:	ld	e,0
+	ld	l,8		; shift 8 bits by moving registers
+shr1:	cp	l
+	jp	m,shr2		; less than 8
+	ld	e,d
+	ld	d,c
+	ld	c,b
+	ld	b,0
+	sub	l
+	jp	nz,shr1
+shr2:	and	a
+	ret	z		; done
+	ld	l,a
+shr3:	and	a		; clear carry
+	ld	a,b
+	rra
+	ld	b,a
+	ld	a,c
+	rra
+	ld	c,a
+	ld	a,d
+	rra
+	ld	d,a
+	ld	a,e
+	rra
+	ld	e,a
+	dec	l
+	jp	nz,shr3
+	ret
+
+;
+; Complement bcde adjust accs, return sign flag
+;
+
+fcpl:	ld	hl,accs		; change accum sign
+	ld	a,(hl)
+	xor	80h
+	ld	(hl),a
+	xor	a		; complement fraction
+	ld	l,a
+	sub	e
+	ld	e,a
+	ld	a,l
+	sbc	a,d
+	ld	d,a
+	ld	a,l
+	sbc	a,c
+	ld	c,a
+	ld	a,l
+	sbc	a,b
+	ld	b,a
+	ret
+
+;
+; Normalize bcde registers, adjust acce
+;
+; entry - bcde
+; exit  - bcde, z= bcde=0 or acce=0
+
+norm:	ld	l,32		; max shift
+norm1:	ld	a,b
+	and	a
+	jp	nz,norm3
+	ld	b,c
+	ld	c,d
+	ld	d,e
+	ld	e,a
+	ld	a,l
+	sub	8
+	ld	l,a
+	jp	nz,norm1
+	ret			; bcde = zero
+
+norm2:	dec	l		; shl until bit 31 set
+	call	shl
+norm3:	jp	p,norm2
+
+	ld	a,l		; adjust accum exp
+	sub	32
+	ld	hl,acce
+	add	a,(hl)
+	ld	(hl),a
+	ret	z		; if zero exp
+	rra			; move borrow bit to sign
+	and	a		; set sign to indicate underflow
+	ret
+
+;
+; Round the bcde registers, save to acc
+;
+; entry - bcde
+; exit  - bcd, a=packed msb, e=exp, cy=ovf
+
+rondr:	ld	a,e		; lsb
+	and	a		; test sign and clear cy
+	ld	hl,acce		; exp
+	ld	e,(hl)
+	call	m,rondr1
+	ret	c		; rounder overflow
+	ld	a,b
+	inc	hl		; accs
+	xor	(hl)		; a=packed msb
+	jp	str1		; save bcd to acc
+
+; round up bcd e=exp, cy=ovf
+
+rondr1:	inc	d
+	ret	nz
+	inc	c
+	ret	nz
+	inc	b
+	ret	nz
+	ld	b,80h		; new 1st fraction
+	ld	a,e		; inc exp
+	add	a,1		; adjust cy
+	ld	e,a
+	ld	(acce),a	; new acc exp
+	ret
+
+;
+; flt	convert 32 bit signed integer to float
+;
+; entry - abcd (int), e=scaling
+
+flt:	ld	l,e
+	ld	e,d
+	ld	d,c
+	ld	c,b
+	ld	b,a
+	ld	a,l
+flt1:	xor	80h		; apply exponent bias
+	ld	hl,acce
+	ld	(hl),a
+	inc	hl
+	ld	(hl),80h	; assume positive accum sign
+	ld	a,b		; set cy if integer negative
+	and	a
+	rla
+	jp	fad5		; complete the conversion
+
+;
+; fix	convert float in acc to 32 bit integer
+;
+; entry - e=scaling
+; exit  - abcd (int)
+
+fix:	ld	hl,acce
+	ld	a,(hl)
+	and	a
+	jp	z,zro		; zero
+	ld	a,e
+	add	a,80h-1		; add bias-1
+	sub	(hl)		; shift count -1
+	ret	c		; accum too large
+	cp	31		; compare to large shift
+	jp	nc,zro		; accum too small
+	add	a,1		; shift count
+	ld	hl,acc1
+	ld	b,(hl)
+	inc	hl
+	ld	c,(hl)
+	inc	hl
+	ld	d,(hl)
+	call	shr		; position the fraction
+	ld	a,(accs)	; complement if negative
+	and	a
+	call	p,fcpl
+	ld	a,1		; set flags
+	or	b
+	ld	a,b
+	ld	b,c
+	ld	c,d
+	ld	d,e
+	ret
+
+;
+; Round accum to integer
+;
+
+rnd:	call	tstr
+	call	m,chss
+	cp	98h
+	ret	nc		; no fraction
+	ld	hl,ffiv		; 0.5
+	call	fad
+	jp	flr1
+
+;
+; Floor accum to integer
+;
+; entry - abcd
+; exit  - abcd e=signed integer
+
+flr:	ld	e,d
+	cp	98h
+	ret	nc		; no fraction
+flr1:	ld	e,a
+	ld	a,80h		; unpack b
+	or	b
+	ld	b,a
+	ld	a,(accs)
+	rla
+	push	af
+	jp	c,flr3		; positive
+	ld	a,d		; decr bcd
+	or	a
+	jp	nz,flr2
+	dec	bc
+flr2:	dec	d
+flr3:	ld	a,98h
+	sub	e
+	call	shr
+	pop	af
+	call	nc,rondr1	; incr bcd
+	ld	a,98h
+	ld	(acce),a
+	ld	a,d
+	jp	c,flr4
+	cpl
+	inc	a
+flr4:	push	af
+	ld	e,0
+	call	fad6		; normalise and pack
+	pop	hl
+	ld	e,h
+	ret
+
+;
+; fin	convert character string to float
+;
+; entry - hl=adr, a=len
+; exit  - result in accum, cy=error
+
+fin:	dec	hl		; init string adr, count
+	ld	(fin16),hl
+	inc	a
+	ld	(fin17),a
+
+	ld	a,80h		; set sign positive
+	ld	(fin18),a
+	xor	a
+	ld	(fin19),a	; clear decimal point flag
+	ld	(fin20),a	; set decimal exponent = 0
+	ld	b,a
+	ld	(acce),a	; zero accum
+
+	call	fin13		; get 1st char
+	jp	z,fin10		; treat zero length as zero blanks
+	cp	' '
+	jp	nz,fin2
+fin1:	call	fin13		; treat all blanks as zero
+	jp	z,fin10
+	cp	' '
+	jp	z,fin1
+	scf
+	ret
+
+fin2:	cp	'+'		; check for sign
+	jp	z,fin3
+	cp	'-'
+	jp	nz,fin4
+	xor	a		; set negative flag
+	ld	(fin18),a
+
+fin3:	call	fin14		; get char after sign
+	scf
+	ret	z		; none
+
+fin4:	cp	'.'		; check for decimal point
+	jp	nz,fin5
+	ld	hl,fin19
+	xor	(hl)
+	ld	(hl),a
+	jp	nz,fin6
+	scf			; 2nd decimal point
+	ret
+
+; process char
+
+fin5:	call	fin15		; convert char to digit
+	ret	c		; bad
+	push	af
+	ld	hl,ften		; mult old value by 10
+	call	fmu
+	call	savf1
+	pop	af		; convert digit to floating point
+	ld	bc,0000h
+	ld	de,0008h	; e=8
+	call	flt
+	ld	hl,f1		; add to old value
+	call	fad
+
+	ld	a,(fin19)	; if decimal point
+	and	a
+	jp	z,fin6
+	ld	hl,fin20	; decrement exponent
+	dec	(hl)
+
+; get next char
+
+fin6:	ld	b,0		; zero exponent
+	call	fin14
+	jp	z,fin10		; done
+
+	call	upc
+	cp	'E'
+	jp	nz,fin4
+
+; process exponent
+
+	call	fin14		; next char
+	jp	z,fin10		; done
+	ld	b,a		; save 1st char
+	sub	'-'		; compare minus sign
+	ld	e,a
+	jp	z,fin7
+	add	a,'-'-'+'	; compare plus sign
+	ld	a,b
+	jp	nz,fin8
+fin7:	call	fin14		; got sign, get 1st digit
+	scf
+	ret	z		; none
+fin8:	ld	b,0		; possible decimal exponent
+fin9:	call	fin15
+	ret	c		; not digit
+	ld	c,a		; accumulate exponent
+	ld	a,b
+	add	a,a
+	add	a,a
+	add	a,b
+	add	a,a
+	add	a,c
+	ld	b,a
+	call	fin14		; get next
+	jp	nz,fin9
+
+	ld	a,e		; test exponent sign
+	and	a
+	jp	nz,fin10
+	sub	b		; complement if neg
+	ld	b,a
+
+fin10:	ld	a,(fin18)	; store accum sign
+	ld	(accs),a
+
+; adjust exponent
+
+	ld	a,b
+fin11:	ld	hl,fin20
+	add	a,(hl)
+	jp	z,tst		; done
+	ld	(hl),a
+	ld	hl,ften
+	jp	p,fin12
+	call	fdi		; div by 10
+	ld	a,1
+	jp	fin11
+
+fin12:	call	fmu		; mul by 10
+	ret	c		; overflow
+	ld	a,0ffh
+	jp	fin11
+
+; get next char, return z if end reached
+
+fin13:	ld	hl,fin17
+	dec	(hl)
+	ld	hl,(fin16)
+	inc	hl
+	ld	(fin16),hl
+	ld	a,(hl)
+	ret
+
+; get next char, return z if end or blank
+
+fin14:	call	fin13
+	ret	z
+	cp	' '
+	ret
+
+; convert ascii char (a) to digit, return cy if not in range 0-9
+
+fin15:	sub	'0'
+	ret	c
+	cp	10
+	ccf
+	ret
+
+fin16:	ds	2		; string adr
+fin17:	ds	1		; string count
+
+fin18:	ds	1		; sign
+fin19:	ds	1		; decimal point flag
+fin20:	ds	1		; decimal exponent
+
+;	sqr
+
+sqr:	call	tstr
+	ret	z		; zero
+	jp	m,ovf		; neg
+	call	savf1
+	and	a
+	rra
+	add	a,40h
+	call	savf2
+	ld	d,5
+sqr1:	push	de
+	call	lodf1
+	ld	hl,f2
+	call	fdi
+	ld	hl,f2
+	call	fad
+	sub	1
+	call	savf2
+	pop	de
+	dec	d
+	jp	nz,sqr1
+	ld	hl,f2
+	jp	lod
+
+;	exp
+
+exp:	ld	hl,ln2
+	call	fdi
+	cp	88h
+	jp	nc,ovf
+	cp	68h
+	ld	hl,fone
+	jp	c,lod
+	call	savf2
+	call	flr
+	call	savf1
+	ld	a,e
+	add	a,81h
+	jp	z,exp1
+	push	af
+	call	lodf2
+	ld	hl,f1
+	call	fsu
+	ld	hl,exp2
+	call	poly
+	pop	af
+	ld	bc,0
+	ld	d,b
+	call	savf1
+	ld	hl,f1
+	jp	fmu
+
+exp1:	call	tst
+	jp	m,zro
+	jp	ovf
+
+exp2:	db	7
+	db	74h,59h,88h,7ch
+	db	77h,26h,97h,0e0h
+	db	7ah,1eh,1dh,0c4h
+	db	7ch,63h,50h,5eh
+	db	7eh,75h,0feh,1ah
+ln2:	db	80h,31h,72h,18h		; ln2
+fone:	db	81h,0,0,0		; 1.0
+
+;	log
+
+log:	call	tstr
+	jp	m,ovf		; neg
+	jp	z,ovf		; zero
+	xor	80h
+	push	af
+	ld	a,80h
+	ld	hl,log1
+	call	poly
+	call	savf1
+	pop	af
+	ld	d,a
+	rla
+	sbc	a,a
+	ld	c,a
+	ld	b,a
+	ld	e,32
+	call	flt
+	ld	hl,f1
+	call	fad
+	ld	hl,ln2
+	jp	fmu
+
+log1:	db	9
+	db	82h,94h,0eeh,0d8h
+	db	84h,7dh,0aah,0a9h
+	db	86h,0bfh,99h,7dh
+	db	87h,28h,0e5h,7bh
+	db	87h,0c0h,71h,8ah
+	db	87h,14h,95h,6eh
+	db	86h,0a0h,1eh,0b2h
+	db	85h,02h,7ah,0adh
+	db	83h,8dh,9dh,09h
+
+;	sin / cos
+
+cos:	ld	hl,fpi2
+	call	fad
+sin:	or	a
+	ret	z
+	cp	99h
+	jp	nc,ovf
+	ld	hl,f2pi
+	call	fdi
+	call	savf1
+	call	flr
+	or	a
+	push	af
+	ld	hl,f2
+	call	nz,str
+	call	lodf1
+	pop	af
+	ld	hl,f2
+	call	nz,fsu
+	ld	hl,sin2
+	call	fsu
+	push	af
+	jp	m,sin1
+	ld	hl,ffiv
+	call	fsu
+	call	p,chs
+sin1:	ld	hl,sin2
+	call	fad
+	ld	e,a
+	pop	af
+	ld	a,e
+	call	p,chs
+	ld	hl,sin3
+	jp	polx
+
+sin2:	db	7fh,0,0,0		; 0.25
+
+sin3:	db	5
+	db	86h,1eh,0d7h,0fbh
+	db	87h,99h,26h,64h
+	db	87h,23h,34h,58h
+	db	86h,0a5h,5dh,0e1h
+f2pi:	db	83h,49h,0fh,0dbh	; 2pi
+
+fpi2:	db	81h,49h,0fh,0dbh	; pi/2
+
+;	atan
+
+atan:	call	tstr
+	call	m,chss		; make positive
+	cp	81h
+	jp	c,atan1		; < 1
+	ld	hl,atan3
+	push	hl
+	call	savf1
+	ld	hl,fone
+	call	lod
+	ld	hl,f1
+	call	fdi
+atan1:	ld	hl,atan8
+	call	fcmp
+	jp	m,atan2
+	ld	hl,atan4
+	push	hl
+	call	savf1
+	ld	hl,atan6
+	call	fad
+	ld	hl,atan10
+	call	str
+	call	lodf1
+	ld	hl,atan5
+	call	poly
+	ld	hl,atan10
+	call	fdi
+atan2:	ld	hl,atan7
+	jp	polx
+
+atan3:	ld	hl,fpi2
+	call	fsu
+	jp	chs
+
+atan4:	ld	hl,atan9
+	jp	fad
+	
+atan5:	db	2
+atan6:	db	81h,5dh,0b3h,0d7h
+	db	81h,80h,0,0		; -1.0
+
+atan7:	db	4
+	db	7eh,83h,35h,62h
+	db	7eh,4ch,24h,50h
+	db	7fh,0aah,0a9h,79h
+	db	81h,0,0,0
+
+atan8:	db	7fh,09h,38h,0a3h
+atan9:	db	80h,06h,0ah,92h
+
+atan10:	ds	4
+
+;
+
+polx:	push	hl
+	call	savf2
+	ld	hl,f2
+	call	fmu
+	pop	hl
+	call	poly
+	ld	hl,f2
+	jp	fmu
+
+poly:	push	hl
+	call	savf1
+	pop	hl
+	ld	a,(hl)
+	ld	(poly3),a
+	inc	hl
+	push	hl
+	call	lod
+	jp	poly2
+	
+poly1:	ld	hl,poly3
+	dec	(hl)
+	pop	hl
+	ret	z
+	push	hl
+	ld	hl,f1
+	call	fmu
+	pop	hl
+	push	hl
+	call	fad
+poly2:	pop	hl
+	inc	hl
+	inc	hl
+	inc	hl
+	inc	hl
+	push	hl
+	jp	poly1
+
+poly3:	ds	1
+
+	cseg
+
+savf1:	ld	hl,f1		; save regs to f1
+	jp	str
+
+savf2:	ld	hl,f2		; save regs to f2
+	jp	str
+
+lodf1:	ld	hl,f1		; load accum/regs from f1
+	jp	lod
+
+lodf2:	ld	hl,f2		; load accum/regs from f2
+	jp	lod
+
+
+fften:	call	tat		; fconstant
+ften:	db	84h,20h,0,0	; 10.0
+
+ffiv:	db	80h,0,0,0	; 0.5
+
+acce:	ds	5		; accumulator exponent
+accs	equ	acce+1		; accumulator sign
+acc1	equ	accs+1		; accumulator 1st fraction
+acc2	equ	acc1+1		; accumulator 2nd fraction
+acc3	equ	acc2+1		; accumulator 3rd fraction
+
+sf:	ds	1		; subtraction flag
+
+f1:	ds	4		; temp float storage
+f2:	ds	4		;
+
+;	end
+

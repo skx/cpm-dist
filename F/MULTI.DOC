@@ -1,0 +1,169 @@
+
+DX-Forth Multitasker                                   97-12-28
+--------------------
+
+Á co-operativå multitaskeò ió provideä witè DX-Forth®  Iô allowó 
+severaì independenô taskó tï ruî concurrentlù withiî aî 
+application.
+
+Eacè tasë haó itó owî PAD¬ parameteò anä returî stackó anä useò 
+variablå area®  Tasë switchinç ió co-operativå anä undeò completå 
+controì oæ thå programmer®
+
+Taskó arå linkeä iî á 'round-robiî' looğ witè switchinç occurinç 
+eacè timå PAUSÅ ió encountered®  Iî DX-Fortè alì thå input/outpuô 
+wordó anä disë read/writå havå PAUSÅ built-in®  Iî mosô cases¬ 
+thå applicationó programmeò wilì neeä tï includå additionaì 
+PAUSEó aô keù points withiî thå program.
+
+
+Multitasking considerations
+---------------------------
+- Eacè tasë musô PAUSÅ periodicallù otherwiså otheò taskó wilì 
+  neveò havå á chancå tï execute®  Iî DX-Forth¬ PAUSÅ ió 
+  automaticallù executeä bù KEY¿ KEÙ EMIÔ TYPÅ anä durinç disë 
+  reaä oò write®  Thus¬ iæ á tasë doeó noô perforí input/output¬ 
+  PAUSÅ musô bå explicitlù included.
+
+- Taskó arå typicallù defineä aó aî infinitå looğ e.g® withiî á 
+  BEGIÎ AGAIÎ construct®  Iæ á tasë needó tï terminate¬ uså STOĞ 
+  oò SLEEP®  Thió removeó iô froí thå tasë lisô anä passeó 
+  controì tï thå next task.
+
+- Onlù onå tasë ió permitteä tï accesó thå disë - nï exceptions¡  
+  Iæ severaì taskó neeä disë access¬ arrangå foò onå tasë tï dï 
+  alì disë I/Ï anä havå thå otheò taskó communicatå usinç á 
+  messagå scheme.
+
+- Beforå compilinç á multitaskinç application¬ reseô thå tasë 
+  linkó as follows:
+
+     1 ENTRY !  ENTRY LINK !  LINK (LINK) !
+
+  (Á betteò waù ió tï simplù includå thå screenó froí MULTI.SCÒ 
+  within your application screens.)
+
+- Durinç testing¬ dï noô FORGEÔ tasks®  Insteaä uså COLÄ anä 
+  reloaä the application.
+
+- Dï noô uså SAVÅ oò TURNKEÙ whilå thå multitaskeò ió active.
+
+Multitasking words
+------------------
+
+ TASK:  ( u1 u2 -- )   compiling                       S
+        ( -- t-addr )  run-timeŠ
+     Used in the form:
+
+          u1 u2 TASK: ccc  ...  ;
+
+     Definå á tasë nameä ccc®  u± anä u² ió thå sizå iî byteó 
+     reserveä foò thå task'ó parameteò anä returî stackó 
+     respectively®  Iæ thå tasë requireó spacå aô PAD¬ thió needó 
+     tï bå includeä iî u1®  Tasë actioî ió defineä bù thå fortè 
+     wordó betweeî ccã anä ;®  Initiallù thå tasë ió seô tï 
+     SLEEP.
+
+     Wheî ccã ió subsequentlù executed¬ thå tasë blocë addresó 
+     t-addò ió lefô oî thå stack®  Seå ACTIVATE.
+
+ TASKER  ( -- )
+
+     Initialiså anä ruî thå multitasker®  TASKEÒ neeä bå executeä 
+     onlù once at the start of the application.
+
+ PAUSE  ( -- )
+
+     Savå thå statå oæ thå currenô tasë anä switcè tï thå nexô 
+     activå task.
+
+ ACTIVATE  ( t-addr -- )
+
+     Initialiså thå tasë stackó anä executå WAKE.
+
+ WAKE  ( t-addr -- )
+
+     Resumå anotheò task.
+
+ SLEEP  ( t-addr -- )
+
+     Suspenä anotheò task.
+
+ STOP  ( -- )
+
+     Suspenä thå currenô tasë anä switcè tï nexô activå task.
+
+ SINGLE  ( -- )
+
+     Suspenä multitaskinç - onlù thå currenô tasë remainó active.
+
+ MULTI  ( -- )
+
+     Resumå multitasking.
+
+     Noteº MULTÉ doeó noô enablå thå individuaì tasks®  Seå 
+     ACTIVATE.
+
+ SIGNAL  ( s-addr -- )
+
+     Signaì thå resourcå identifieä bù semaphorå s-addò ió Š     available.
+
+ WAIT  ( s-addr -- )
+
+     Waiô untiì thå resourcå identifieä bù semaphorå s-addò ió 
+     available.
+
+
+Semaphores
+----------
+Semaphoreó arå useä tï prevenô conflictó thaô maù ariså wheî 
+several tasks attempt to access a resource.
+
+Consideò thå caså wheî twï taskó senä outpuô tï thå screen®  
+Normallù thió woulä resulô iî á jumbleä displaù duå tï thå PAUSÅ 
+whicè ió builô intï EMIT®  Onå solutioî ió tï encloså thå displaù 
+routinå bù SINGLÅ anä MULTI®  However¬ thió haó thå disadvantagå 
+oæ disablinç the multitasker albeit temporarily.
+
+Á betteò waù ió witè semaphores®  Á semaphorå ió simplù á flaç 
+whicè indicateó whetheò á resourcå ió available®  Iî thå examplå 
+showî belo÷ thå multitaskeò doeó noô stoğ - onlù otheò taskó 
+whicè accesó thå screeî wilì bå pauseä whilå thå currenô tasë ió 
+displaying.
+
+     VARIABLE SCREEN	\ create a semaphore for the screen
+     SCREEN SIGNAL	\ signal screen is available
+
+     \ TASK1
+       SCREEN WAIT
+       10 10 AT-XY  ." Task 1"
+       SCREEN SIGNAL
+
+     \ TASK2
+       SCREEN WAIT
+       50 10 AT-XY  ." Task 2"
+       SCREEN SIGNAL
+
+
+Messages
+--------
+Messageó (alsï knowî aó mailboxes© providå á waù oæ passinç datá 
+betweeî tasks®  Thå followinç ió aî examplå oæ á simplå messagå 
+system®  Whilå 1¶ biô datá ió assumed¬ thå concepô caî bå 
+expandeä tï pasó datá oæ anù typå oò sizå - strings¬ CP/Í recordó 
+etc.
+
+     \ Define a message variable
+     CREATE <name>  ( -- m-addr )
+       0 ,               \ empty flag
+       2 ALLOT           \ storage space
+
+     \ Send message
+     : SEND  ( n m-addr -- )
+       BEGIN PAUSE DUP @ 0= UNTIL  1 OVER !  2+ ! ;Š
+     \ Receive message
+     : RECEIVE  ( m-addr -- n )
+       BEGIN PAUSE DUP @ UNTIL  0 OVER !  2+ @ ;
+
+
+

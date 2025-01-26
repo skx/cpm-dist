@@ -1,0 +1,420 @@
+;
+;		CONTROL.MAC - Control Structures
+;
+; 97/12/28
+;
+; BRANCH  ?BRANCH  >MARK  >RESOLVE  <MARK  <RESOLVE  IF  ELSE  THEN
+; BEGIN  WHILE  REPEAT  UNTIL  AGAIN  (do)  DO  (?do)  ?DO  I  J
+; (leave)  LEAVE  (loop)  LOOP  (+loop)  +LOOP  UNLOOP  CASE  (of)
+; OF  ENDOF  ENDCASE  [IF]  [ELSE]  [THEN]
+;
+
+;	BRANCH  ( -- )
+
+	hdr	6,'BRANCH'
+bran:	ld	h,b
+	ld	l,c
+	ld	c,(hl)
+	inc	hl
+	ld	b,(hl)
+	jp	next
+
+;	?BRANCH  ( flag -- )
+
+	hdr	7,'?BRANCH'
+zbran:	pop	hl
+	ld	a,l
+	or	h
+	jp	z,bran
+zbran1:	inc	bc
+	inc	bc
+	jp	next
+
+;	>MARK  ( -- addr )	here 0 ,
+
+	hdr	5,'>MARK',,1
+fmark:	call	docol
+	dw	here
+	dw	zero,comma
+	dw	exit
+
+;	>RESOLVE  ( addr -- )	here swap !
+
+	hdr	8,'>RESOLVE',,1
+fresol:	call	docol
+	dw	here
+	dw	swap,store
+	dw	exit
+
+;	<MARK  ( -- addr )	here
+
+	hdr	5,'<MARK',,1
+bmark:	jp	here
+
+;	<RESOLVE  ( addr -- )	,
+
+	hdr	8,'<RESOLVE',,1
+bresol:	jp	comma
+
+;	IF  ( -- addr 2 )	compile ?branch >mark 2 ;immediate
+
+	hdr	2,'IF',1,1
+iff:	call	docol
+	dw	comp,zbran
+	dw	fmark
+	dw	two
+	dw	exit
+
+;	ELSE  ( addr1 2 -- addr2 2 )  2 ?pairs compile branch >mark swap 2
+;				      [compile] then 2 ;immediate
+
+	hdr	4,'ELSE',1,1
+elsee:	call	docol
+	dw	two,qpair
+	dw	comp,bran
+	dw	fmark
+	dw	swap
+	dw	two
+	dw	then
+	dw	two
+	dw	exit
+
+;	THEN  ( addr 2 -- )	2 ?pairs >resolve ;immediate
+
+	hdr	4,'THEN',1,1
+then:	call	docol
+	dw	two,qpair
+	dw	fresol
+	dw	exit
+
+;	BEGIN  ( -- addr 1 )	?comp <mark 1 ;immediate
+
+	hdr	5,'BEGIN',1,1
+begin:	call	docol
+	dw	qcomp
+	dw	bmark
+	dw	one
+	dw	exit
+
+;	UNTIL  ( addr 1 -- )	1 ?pairs compile ?branch <resolve ;immediate
+
+	hdr	5,'UNTIL',1,1
+until:	call	docol
+	dw	one,qpair
+	dw	comp,zbran
+	dw	bresol
+	dw	exit
+
+;	AGAIN  ( addr 1 -- )	1 ?pairs compile branch <resolve ;immediate
+
+	hdr	5,'AGAIN',1,1	; ANS
+again:	call	docol
+	dw	one,qpair
+	dw	comp,bran
+	dw	bresol
+	dw	exit
+
+;	WHILE  ( addr1 1 -- addr1 1 addr2 4 )  [compile] if 2+ ;immediate
+
+	hdr	5,'WHILE',1,1
+while:	call	docol
+	dw	iff
+	dw	twop
+	dw	exit
+
+;	REPEAT  ( addr1 1 addr2 4 -- )  dup 4 ?pairs 2swap [compile] again 2-
+;					[compile] then ;immediate
+
+	hdr	6,'REPEAT',1,1
+repeat:	call	docol
+	dw	dup
+	dw	clit
+	db	4
+	dw	qpair
+	dw	tswap
+	dw	again
+	dw	twom	
+	dw	then
+	dw	exit
+
+;	(do)  ( n1 n2 -- )	r> dup @ >r 2+ swap rot dup >r - >r >r
+
+	hdr	0,'(DO)'
+xdo:	call	docol
+xdo1:	dw	fromr,dup
+	dw	at,tor		; leave adr
+	dw	twop
+	dw	swap,rot
+	dw	dup,tor		; limit
+	dw	subb
+	dw	tor		; index-limit
+	dw	tor
+	dw	exit
+
+;	DO  ( -- addr1 addr2 3 )  compile (do) >mark <mark 3 ;immediate
+
+	hdr	2,'DO',1,1
+do:	call	docol
+	dw	comp,xdo
+	dw	fmark,bmark
+	dw	three
+	dw	exit
+
+;	(?do)  ( n1 n2 -- )	2dup = if 2drop r> @ >r exit then (xdo1)
+
+	hdr	0,'(?DO)'
+xqdo:	call	docol
+	dw	tdup,equal
+	dw	zbran,xdo1
+	dw	tdrop
+	dw	fromr,at,tor
+	dw	exit
+
+;	?DO  ( -- addr1 addr2 3 )  compile (?do) >mark <mark 3 ;immediate
+
+	hdr	3,'?DO',1,1	; ANS
+qdo:	call	docol
+	dw	comp,xqdo
+	dw	fmark,bmark
+	dw	three
+	dw	exit
+
+;	I  ( -- x )
+
+	hdr	1,'I'
+ido:	ld	hl,(rpp)
+ido1:	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	inc	hl
+	ld	a,(hl)
+	inc	hl
+	ld	h,(hl)
+	ld	l,a
+	add	hl,de
+	jp	hpush
+
+;	J  ( -- x )
+
+	hdr	1,'J'
+jdo:	ld	de,6
+	ld	hl,(rpp)
+	add	hl,de
+	jp	ido1
+
+;	(leave)  ( -- )
+
+	hdr	0,'(LEAVE)'
+pleav:	ld	hl,(rpp)
+	inc	hl
+	inc	hl
+	inc	hl
+	inc	hl
+	ld	(rpp),hl
+	jp	exit
+
+;	LEAVE  ( -- )		compile (leave)  ;immediate
+
+	hdr	5,'LEAVE',1,1	; ANS LEAVE may not be immediate ???
+leave:	call	docol
+	dw	comp,pleav
+	dw	exit
+
+;	(loop)  ( -- )
+
+	hdr	0,'(LOOP)'
+xloop:	ld	hl,(rpp)
+	inc	(hl)
+	jp	nz,bran
+	inc	hl
+	inc	(hl)
+	jp	nz,bran
+xloop1:	inc	bc		; skip over branch
+	inc	bc
+xloop2:	ld	hl,(rpp)	; discard loop parameters
+	ld	de,6
+	add	hl,de
+	ld	(rpp),hl
+	jp	next
+
+;	LOOP  ( addr1 addr2 3 -- )  3 ?pairs compile (loop) <resolve >resolve
+;				    ;immediate
+
+	hdr	4,'LOOP',1,1
+loop:	call	docol
+	dw	three,qpair
+	dw	comp,xloop
+	dw	bresol
+	dw	fresol
+	dw	exit
+
+;	(+loop)  ( n -- )
+
+	hdr	0,'(+LOOP)'
+xploo:	ld	hl,(rpp)
+	ld	e,(hl)
+	inc	hl
+	ld	d,(hl)
+	pop	hl
+	ld	a,h
+	or	a
+	jp	m,xploo2
+	add	hl,de
+	jp	c,xloop1
+xploo1:	ex	de,hl
+	ld	hl,(rpp)
+	ld	(hl),e
+	inc	hl
+	ld	(hl),d
+	jp	bran
+
+xploo2:	add	hl,de
+	jp	c,xploo1
+	jp	xloop1
+
+;	+LOOP  ( addr1 addr2 3 -- )  3 ?pairs compile (+loop) <resolve >resolve
+;				     ;immediate
+
+	hdr	5,'+LOOP',1,1
+ploop:	call	docol
+	dw	three,qpair
+	dw	comp,xploo
+	dw	bresol,fresol
+	dw	exit
+
+;	UNLOOP  ( -- )
+
+	hdr	6,'UNLOOP'	; ANS
+unloo:	jp	xloop2
+
+;	CASE  ( -- 0 4 )	?comp 0 4 ;immediate
+
+	hdr	4,'CASE',1,1	; ANS
+casee:	call	docol
+	dw	qcomp
+	dw	zero
+	dw	clit
+	db	4
+	dw	exit
+
+;	(of)  ( n1 n2 -- )
+
+	hdr	0,'(OF)'
+pof:	pop	hl
+	pop	de
+	call	ssub		; equal?
+	ld	a,l
+	or	h
+	jp	z,zbran1
+	push	de
+	jp	bran
+
+;	OF  ( 4 -- addr 5 )	4 ?pairs compile (of) >mark 5 ;immediate
+
+	hdr	2,'OF',1,1	; ANS
+of:	call	docol
+	dw	clit
+	db	4
+	dw	qpair
+	dw	comp,pof
+	dw	fmark
+	dw	clit
+	db	5
+	dw	exit
+
+;	ENDOF  ( addr1 5 -- addr2 4 )	3 - [compile] else 2+ ;immediate
+
+	hdr	5,'ENDOF',1,1	; ANS
+endof:	call	docol
+	dw	three,subb
+	dw	elsee
+	dw	twop
+	dw	exit
+
+;	ENDCASE  ( 0 addr 4 -- )  4 ?pairs compile drop begin ?dup while
+;				  >resolve repeat ;immediate
+
+	hdr	7,'ENDCASE',1,1	; ANS
+endc:	call	docol
+	dw	clit
+	db	4
+	dw	qpair
+	dw	comp,drop
+endc1:	dw	qdup
+	dw	zbran,endc2
+	dw	fresol
+	dw	bran,endc1
+endc2:	dw	exit
+
+;	[IF]  ( flag -- )	0= if [compile] [else] then ;immediate
+
+	hdr	4,'[IF]',1,1	; ANS
+pif:	pop	hl
+	ld	a,l
+	or	h
+	jp	z,pels
+	jp	next
+
+;	[ELSE]  ( -- )		1 begin begin parse-word count dup while 2dup
+;				s" [IF]" compare 0= if 2drop 1+ else 2dup
+;				s" [ELSE]" compare 0= if 2drop 1- dup if 1+
+;				then else s" [THEN]" compare 0= if 1- then
+;				then then ?dup 0= if exit then repeat 2drop
+;				blk @ if [compile] --> blk @ #screens u< else
+;				0 then 0= until drop ;immediate
+
+	hdr	6,'[ELSE]',1,1	; ANS
+pels:	call	docol
+	dw	one
+pels1:	dw	parsw
+	dw	count,dup
+	dw	zbran,pels7
+	dw	tdup
+	dw	slit
+	db	4
+	db	'[IF]'
+	dw	cmp,zequ
+	dw	zbran,pels2
+	dw	tdrop,onep
+	dw	bran,pels5
+pels2:	dw	tdup
+	dw	slit
+	db	6
+	db	'[ELSE]'
+	dw	cmp,zequ
+	dw	zbran,pels4
+	dw	tdrop,onem
+	dw	dup
+	dw	zbran,pels3
+	dw	onep
+pels3:	dw	bran,pels5
+pels4:	dw	slit
+	db	6
+	db	'[THEN]'
+	dw	cmp,zequ
+	dw	zbran,pels5
+	dw	onem
+pels5:	dw	qdup,zequ
+	dw	zbran,pels6
+	dw	exit
+pels6:	dw	bran,pels1
+pels7:	dw	tdrop
+	dw	blk,at
+	dw	zbran,pels8
+	dw	arrow
+	dw	blk,at
+	dw	nscr,uless
+	dw	bran,pels9
+pels8:	dw	zero
+pels9:	dw	zequ
+	dw	zbran,pels1
+	dw	drop
+	dw	exit
+
+;	[THEN]  ( -- )		;immediate
+
+	hdr	6,'[THEN]',1,1	; ANS
+	jp	next
+
+;	end
+
