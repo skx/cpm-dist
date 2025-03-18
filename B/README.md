@@ -25,6 +25,8 @@ The B-drive contains BASIC, in this case:
 * [ASM.BBC](ASM.BBC)
   * Simple assembly language demonstration program.
   * Ouptuts `A*`.
+* [VT100.BAS](VT100.BAS) and [COLOR.BAS](COLOR.BAS)
+  * Both work with MBASIC to demonstrate ANSI escape codes and terminal colour-updates.
 
 
 
