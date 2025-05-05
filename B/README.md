@@ -2,6 +2,8 @@
 
 The B-drive contains BASIC, in this case:
 
+* CONVERT.COM
+  * Converts files between BBC BASIC (.BBC) and ASCII (.BAS)
 * BBCBASIC.COM
   * BBC BASIC, with integrated assembler.
   * Enter "*CPM" to exit.
