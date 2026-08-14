@@ -2,6 +2,10 @@
 
 This repository contains a list of binaries, Z80-based, for use with CP/M systems.
 
+If you enjoy this repository then you might enjoy David Lee's repository of CP/M compilers:
+
+* https://github.com/davidly/cpm_compilers
+
 
 
 ## Organization
