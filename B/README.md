@@ -11,17 +11,17 @@ The BASIC-related binaries are:
   * Converts files between BBC BASIC (.BBC) and ASCII (.BAS)
 * BBCBASIC.COM
   * BBC BASIC, with integrated assembler.
-  * Enter "*CPM" to exit.
-  * Enter "*DIR", to list files, etc.
+  * Enter "`*CPM`" to exit.
+  * Enter "`*DIR`", to list files, etc.
 * MBASIC.COM
   * Microsoft BASIC v5.29 [28-Jul-85]
-  * Enter "SYSTEM" to exit.
+  * Enter "`SYSTEM`" to exit.
 * OBASIC.COM
   * An older Microsoft BASIC, v5.21 [28-Jul-81]
-  * Enter "SYSTEM" to exit.
+  * Enter "`SYSTEM`" to exit.
 * TBASIC.COM
   * [Tasty BASIC](https://github.com/dimitrit/tastybasic)
-  * Enter "BYE" to exit.
+  * Enter "`BYE`" to exit.
 
 
 
@@ -31,7 +31,7 @@ The BASIC-related binaries are:
   * Show a sin-wave of stars.
 * [ASM.BBC](ASM.BBC)
   * Simple assembly language demonstration program.
-  * Ouptuts `A*`.
+  * Outputs text via BDOS calls.
 * [VT100.BAS](VT100.BAS) and [COLOR.BAS](COLOR.BAS)
   * Both work with MBASIC to demonstrate ANSI escape codes and terminal colour-updates.
 
