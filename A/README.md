@@ -23,6 +23,8 @@ The A-drive contains some "standard" utilities that you might expect to find on 
   * Loader for generated .hex files, produced by ASM.COM
 * PAUSE.COM
   * Pause for a key-press.  Source included in `PAUSE.ASM`.
+* PIP.COM
+  * Standard CP/M utility for copying files, etc.  ("PIP NEW.COM=SRC.COM")
 * S.COM
   * A simple vi-like editor, source code can be found in [this repository](https://github.com/udo-munk/s/).
 * SLASH.COM
@@ -31,5 +33,7 @@ The A-drive contains some "standard" utilities that you might expect to find on 
   * Source from [slant](http://www.retroarchive.org/cpm/cdrom/SIMTEL/SIGM/VOLS000/VOL072/)
 * STAT.COM
   * Show file details; note that currently file-sizes are not correct.
+* TE.COM
+  * [Text Editor](https://github.com/MiguelVis/te).
 
 Note that the assembler presented here is pretty basic, and you should probably prefer the one included in the [C:](../C/), alongside the Aztec C-compiler.
