@@ -1,10 +1,14 @@
 # CP/M Distribution
 
-This repository contains a list of binaries, Z80-based, for use with CP/M systems.
+This repository contains a collecton of Z80-based binaries for use with CP/M systems.
 
-If you enjoy this repository then you might enjoy David Lee's repository of CP/M compilers:
+If you enjoy this repository then you might also enjoy David Lee's repository of CP/M compilers:
 
 * https://github.com/davidly/cpm_compilers
+
+I also put together a tiny collection of test-programs for authors of CP/M emulators, which is minimal but somewhat related:
+
+* https://github.com/skx/cpm-test
 
 
 
